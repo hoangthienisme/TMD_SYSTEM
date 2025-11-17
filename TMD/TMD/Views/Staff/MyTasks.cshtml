@@ -1,0 +1,885 @@
+﻿@model List<TMD.Models.UserTask>
+@{
+    ViewData["Title"] = "Công việc của tôi";
+    Layout = "~/Views/Shared/_LayoutStaff.cshtml";
+}
+
+<link href="~/css/tasklist-ad.css" rel="stylesheet" />
+
+<div class="tm-container">
+    <!-- PAGE HEADER -->
+    <div class="tm-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="tm-page-title">
+                    <i class="fas fa-clipboard-list me-2"></i> Công việc của tôi
+                </h2>
+                <p class="tm-page-subtitle">Quản lý và cập nhật trạng thái công việc được giao</p>
+            </div>
+            <div>
+                <span class="tm-badge tm-badge-info" style="font-size: 1rem; padding: 0.75rem 1.25rem;">
+                    <i class="fas fa-tasks me-2"></i> Tổng: @Model.Count công việc
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="tm-stats-card tm-stats-secondary">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Chưa bắt đầu</div>
+                    <div class="tm-stats-value" id="todoCount">0</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-hourglass-start"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="tm-stats-card tm-stats-primary">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Đang làm</div>
+                    <div class="tm-stats-value" id="inProgressCount">0</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-circle-notch"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="tm-stats-card tm-stats-success">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Hoàn thành</div>
+                    <div class="tm-stats-value" id="completedCount">0</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-trophy"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="tm-stats-card tm-stats-danger">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Quá hạn</div>
+                    <div class="tm-stats-value" id="overdueCount">0</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="tm-card mb-4">
+        <div class="tm-card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="tm-form-label">
+                        <i class="fas fa-search me-1"></i> Tìm kiếm
+                    </label>
+                    <input type="text" id="searchInput" class="tm-form-control" placeholder="Tên công việc...">
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-traffic-light me-1"></i> Trạng thái
+                    </label>
+                    <select id="statusFilter" class="tm-form-control">
+                        <option value="">Tất cả</option>
+                        <option value="TODO">Chưa bắt đầu</option>
+                        <option value="InProgress">Đang làm</option>
+                        <option value="Completed">Hoàn thành</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-flag me-1"></i> Độ ưu tiên
+                    </label>
+                    <select id="priorityFilter" class="tm-form-control">
+                        <option value="">Tất cả</option>
+                        <option value="High">Cao</option>
+                        <option value="Medium">Trung bình</option>
+                        <option value="Low">Thấp</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-laptop me-1"></i> Platform
+                    </label>
+                    <select id="platformFilter" class="tm-form-control">
+                        <option value="">Tất cả</option>
+                        @foreach (var platform in Model.Select(t => t.Task.Platform).Distinct().Where(p => !string.IsNullOrEmpty(p)))
+                        {
+                            <option value="@platform">@platform</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-sort me-1"></i> Sắp xếp
+                    </label>
+                    <select id="sortFilter" class="tm-form-control">
+                        <option value="priority">Độ ưu tiên</option>
+                        <option value="deadline">Deadline</option>
+                        <option value="name">Tên A-Z</option>
+                        <option value="status">Trạng thái</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="tm-card">
+            <div class="tm-card-body">
+                <div class="tm-empty-state">
+                    <i class="fas fa-inbox fa-4x"></i>
+                    <p class="mt-3 mb-2"><strong>Chưa có công việc nào được giao</strong></p>
+                    <p class="tm-text-muted">Hiện tại bạn chưa được phân công công việc nào. Vui lòng liên hệ quản lý.</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- TASK GRID -->
+        <div class="row g-4" id="taskGrid">
+            @foreach (var userTask in Model)
+            {
+                var task = userTask.Task;
+                var isOverdue = task.Deadline.HasValue && task.Deadline.Value < DateTime.Now;
+                var status = userTask.CompletedThisWeek == null ? "TODO" :
+                userTask.CompletedThisWeek >= task.TargetPerWeek ? "Completed" : "InProgress";
+
+                <div class="col-md-6 col-lg-4 task-item"
+                     data-task-id="@task.TaskId"
+                     data-status="@status"
+                     data-priority="@(task.Priority ?? "Medium")"
+                     data-platform="@(task.Platform ?? "")"
+                     data-name="@task.TaskName.ToLower()"
+                     data-overdue="@isOverdue.ToString().ToLower()">
+
+                    <div class="tm-card task-card @(isOverdue ? "tm-task-overdue" : "")" onclick="viewTaskDetail(@userTask.UserTaskId)">
+                        <div class="task-card-header">
+                            <div class="task-card-header-content">
+                                <div class="task-priority-badge tm-badge tm-badge-@(task.Priority == "High" ? "danger" : task.Priority == "Low" ? "success" : "warning")">
+                                    <i class="fas fa-flag me-1"></i> @(task.Priority ?? "Medium")
+                                </div>
+                                @if (isOverdue)
+                                {
+                                    <div class="task-overdue-badge">
+                                        <i class="fas fa-exclamation-triangle"></i> Quá hạn
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="tm-card-body">
+                            <h5 class="task-card-title">
+                                <i class="fas fa-tasks me-2"></i>
+                                @task.TaskName
+                            </h5>
+
+                            @if (!string.IsNullOrEmpty(task.Description))
+                            {
+                                <p class="task-card-description">@task.Description</p>
+                            }
+
+                            @if (!string.IsNullOrEmpty(task.Platform))
+                            {
+                                <div class="mb-3">
+                                    <span class="tm-badge tm-badge-info">
+                                        <i class="fas fa-laptop me-1"></i> @task.Platform
+                                    </span>
+                                </div>
+                            }
+
+                            <!-- STATUS BADGE -->
+                            <div class="task-status-section mb-3">
+                                @if (status == "TODO")
+                                {
+                                    <div class="tm-badge tm-badge-secondary" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                        <i class="fas fa-inbox me-1"></i> Chưa bắt đầu
+                                    </div>
+                                }
+                                else if (status == "InProgress")
+                                {
+                                    <div class="tm-badge tm-badge-warning" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                        <i class="fas fa-spinner me-1"></i> Đang làm
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="tm-badge tm-badge-success" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                        <i class="fas fa-check-circle me-1"></i> Hoàn thành
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- TASK INFO -->
+                            <div class="task-info-grid">
+                                @if (task.Deadline.HasValue)
+                                {
+                                    <div class="task-info-item">
+                                        <i class="fas fa-calendar-alt @(isOverdue ? "text-danger" : "text-info")"></i>
+                                        <span>Deadline: <strong class="@(isOverdue ? "text-danger" : "")">@task.Deadline.Value.ToString("dd/MM/yyyy")</strong></span>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(userTask.ReportLink))
+                            {
+                                <div class="task-report-link mt-3">
+                                    <a href="@userTask.ReportLink" target="_blank" onclick="event.stopPropagation();">
+                                        <i class="fas fa-link me-1"></i> Xem báo cáo
+                                    </a>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="task-card-footer">
+                            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); updateStatusModal(@userTask.UserTaskId, '@task.TaskName', '@status', @(task.TargetPerWeek ?? 0), @(userTask.CompletedThisWeek ?? 0), '@(userTask.ReportLink ?? "")')">
+                                <i class="fas fa-edit me-1"></i> Cập nhật trạng thái
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal: Update Status -->
+<div class="modal fade tm-modal" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="tm-modal-header">
+                <h5 class="tm-modal-title">
+                    <i class="fas fa-edit me-2"></i> Cập nhật trạng thái công việc
+                </h5>
+                <button type="button" class="tm-btn-close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tm-modal-body">
+                <input type="hidden" id="updateUserTaskId">
+                <input type="hidden" id="updateTargetPerWeek">
+
+                <div class="mb-3">
+                    <label class="tm-form-label">Công việc:</label>
+                    <p id="updateTaskName" class="tm-text-muted"></p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="tm-form-label">
+                        <i class="fas fa-traffic-light me-1"></i> Trạng thái công việc:
+                    </label>
+                    <div class="status-buttons">
+                        <button type="button" class="status-btn" data-status="TODO" onclick="selectStatus('TODO')">
+                            <i class="fas fa-inbox"></i>
+                            <span>Chưa bắt đầu</span>
+                        </button>
+                        <button type="button" class="status-btn" data-status="InProgress" onclick="selectStatus('InProgress')">
+                            <i class="fas fa-spinner"></i>
+                            <span>Đang làm</span>
+                        </button>
+                        <button type="button" class="status-btn" data-status="Completed" onclick="selectStatus('Completed')">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Hoàn thành</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="updateReportLink" class="tm-form-label">
+                        <i class="fas fa-link me-1"></i> Link báo cáo (tùy chọn):
+                    </label>
+                    <input type="url" class="tm-form-control" id="updateReportLink"
+                           placeholder="https://drive.google.com/...">
+                    <small class="tm-text-muted d-block mt-1">Nhập link Google Drive, Notion, hoặc tài liệu báo cáo khác</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitUpdateStatus()">
+                    <i class="fas fa-save"></i> Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Task Detail -->
+<div class="modal fade tm-modal" id="taskDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="tm-modal-header">
+                <h5 class="tm-modal-title" id="detailTaskName">
+                    <i class="fas fa-info-circle me-2"></i> Chi tiết công việc
+                </h5>
+                <button type="button" class="tm-btn-close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tm-modal-body" id="taskDetailContent">
+                <div class="tm-loading">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 tm-text-muted">Đang tải...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .task-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+
+    .tm-task-overdue {
+        border-left: 4px solid #f5365c;
+    }
+
+    .task-card-header {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .task-card-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .task-priority-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+    }
+
+    .task-overdue-badge {
+        background: #f5365c;
+        color: white;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .task-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--tm-dark);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .task-card-description {
+        font-size: 0.9rem;
+        color: var(--tm-secondary);
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .task-status-section {
+        text-align: center;
+    }
+
+    .task-info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--tm-light);
+        border-radius: var(--tm-border-radius-sm);
+    }
+
+    .task-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+        .task-info-item i {
+            width: 20px;
+            font-size: 1rem;
+        }
+
+    .task-report-link a {
+        color: var(--tm-info);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .task-report-link a:hover {
+            text-decoration: underline;
+        }
+
+    .task-card-footer {
+        padding: 1rem 1.5rem;
+        background: var(--tm-light);
+        border-top: 1px solid rgba(0,0,0,0.05);
+        margin-top: auto;
+    }
+
+    /* Status Buttons */
+    .status-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .status-btn {
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: var(--tm-border-radius-sm);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .status-btn i {
+            font-size: 1.5rem;
+            color: var(--tm-secondary);
+        }
+
+        .status-btn span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--tm-dark);
+        }
+
+        .status-btn:hover {
+            border-color: var(--tm-primary);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .status-btn.active {
+            border-color: var(--tm-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+            .status-btn.active i,
+            .status-btn.active span {
+                color: white;
+            }
+
+    /* Task Detail Grid */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-item {
+        padding: 1rem;
+        background: var(--tm-light);
+        border-radius: var(--tm-border-radius-sm);
+    }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--tm-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item .value {
+            font-size: 1rem;
+            color: var(--tm-dark);
+            font-weight: 500;
+        }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let updateModal, detailModal;
+        let selectedStatus = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            detailModal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+            updateStatistics();
+            filterTasks();
+        });
+
+        // ========== UPDATE STATISTICS ==========
+        function updateStatistics() {
+            const tasks = document.querySelectorAll('.task-item');
+            let todo = 0, inProgress = 0, completed = 0, overdue = 0;
+
+            tasks.forEach(task => {
+                const status = task.getAttribute('data-status');
+                const isOverdue = task.getAttribute('data-overdue') === 'true';
+
+                if (status === 'TODO') todo++;
+                else if (status === 'InProgress') inProgress++;
+                else if (status === 'Completed') completed++;
+
+                if (isOverdue && status !== 'Completed') overdue++;
+            });
+
+            document.getElementById('todoCount').textContent = todo;
+            document.getElementById('inProgressCount').textContent = inProgress;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('overdueCount').textContent = overdue;
+        }
+
+        // ========== FILTERS ==========
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const priorityFilter = document.getElementById('priorityFilter');
+        const platformFilter = document.getElementById('platformFilter');
+        const sortFilter = document.getElementById('sortFilter');
+
+        searchInput?.addEventListener('input', filterTasks);
+        statusFilter?.addEventListener('change', filterTasks);
+        priorityFilter?.addEventListener('change', filterTasks);
+        platformFilter?.addEventListener('change', filterTasks);
+        sortFilter?.addEventListener('change', filterTasks);
+
+        function filterTasks() {
+            const search = searchInput.value.toLowerCase();
+            const status = statusFilter.value;
+            const priority = priorityFilter.value;
+            const platform = platformFilter.value;
+            const sort = sortFilter.value;
+
+            let tasks = Array.from(document.querySelectorAll('.task-item'));
+
+            // Filter
+            tasks.forEach(task => {
+                const name = task.getAttribute('data-name');
+                const taskStatus = task.getAttribute('data-status');
+                const taskPriority = task.getAttribute('data-priority');
+                const taskPlatform = task.getAttribute('data-platform');
+
+                const matchSearch = !search || name.includes(search);
+                const matchStatus = !status || taskStatus === status;
+                const matchPriority = !priority || taskPriority === priority;
+                const matchPlatform = !platform || taskPlatform === platform;
+
+                if (matchSearch && matchStatus && matchPriority && matchPlatform) {
+                    task.style.display = '';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+
+            // Sort
+            tasks = tasks.filter(t => t.style.display !== 'none');
+            const grid = document.getElementById('taskGrid');
+
+            if (sort === 'priority') {
+                tasks.sort((a, b) => {
+                    const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+                    return priorityOrder[a.getAttribute('data-priority')] - priorityOrder[b.getAttribute('data-priority')];
+                });
+            } else if (sort === 'name') {
+                tasks.sort((a, b) => a.getAttribute('data-name').localeCompare(b.getAttribute('data-name')));
+            } else if (sort === 'status') {
+                tasks.sort((a, b) => {
+                    const statusOrder = { 'TODO': 1, 'InProgress': 2, 'Completed': 3 };
+                    return statusOrder[a.getAttribute('data-status')] - statusOrder[b.getAttribute('data-status')];
+                });
+            }
+
+            tasks.forEach(task => grid.appendChild(task));
+        }
+
+        function resetFilters() {
+            searchInput.value = '';
+            statusFilter.value = '';
+            priorityFilter.value = '';
+            platformFilter.value = '';
+            sortFilter.value = 'priority';
+            filterTasks();
+        }
+
+        // ========== UPDATE STATUS MODAL ==========
+        function updateStatusModal(userTaskId, taskName, status, targetPerWeek, completedThisWeek, reportLink) {
+            document.getElementById('updateUserTaskId').value = userTaskId;
+            document.getElementById('updateTargetPerWeek').value = targetPerWeek;
+            document.getElementById('updateTaskName').textContent = taskName;
+            document.getElementById('updateReportLink').value = reportLink || '';
+
+            // Reset buttons
+            document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Set current status
+            selectStatus(status);
+            updateModal.show();
+        }
+
+        function selectStatus(status) {
+            selectedStatus = status;
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-status') === status) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        async function submitUpdateStatus() {
+            const userTaskId = parseInt(document.getElementById('updateUserTaskId').value);
+            const targetPerWeek = parseInt(document.getElementById('updateTargetPerWeek').value);
+            const reportLink = document.getElementById('updateReportLink').value.trim();
+
+            if (!selectedStatus) {
+                Swal.fire('Cảnh báo', 'Vui lòng chọn trạng thái công việc', 'warning');
+                return;
+            }
+
+            // Calculate completedThisWeek based on status
+            let completedThisWeek = 0;
+            if (selectedStatus === 'InProgress') {
+                completedThisWeek = Math.floor(targetPerWeek / 2); // 50% for InProgress
+            } else if (selectedStatus === 'Completed') {
+                completedThisWeek = targetPerWeek; // 100% for Completed
+            }
+
+            Swal.fire({
+                title: 'Đang cập nhật...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const response = await fetch('/Staff/UpdateTaskProgress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userTaskId: userTaskId,
+                        completedThisWeek: completedThisWeek,
+                        reportLink: reportLink || null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    updateModal.hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Lỗi', data.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Lỗi', 'Có lỗi xảy ra: ' + error.message, 'error');
+            }
+        }
+
+        // ========== VIEW TASK DETAIL ==========
+        async function viewTaskDetail(userTaskId) {
+            detailModal.show();
+
+            document.getElementById('taskDetailContent').innerHTML = `
+                <div class="tm-loading">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 tm-text-muted">Đang tải chi tiết...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/Staff/GetTaskDetail?userTaskId=${userTaskId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const task = data.task;
+
+                    // Determine status
+                    let statusBadge = '';
+                    let statusText = '';
+                    if (task.completedThisWeek === null || task.completedThisWeek === 0) {
+                        statusBadge = '<span class="tm-badge tm-badge-secondary" style="font-size: 1rem; padding: 0.5rem 1rem;"><i class="fas fa-inbox me-2"></i>Chưa bắt đầu</span>';
+                        statusText = 'TODO';
+                    } else if (task.completedThisWeek < task.targetPerWeek) {
+                        statusBadge = '<span class="tm-badge tm-badge-warning" style="font-size: 1rem; padding: 0.5rem 1rem;"><i class="fas fa-spinner me-2"></i>Đang làm</span>';
+                        statusText = 'In Progress';
+                    } else {
+                        statusBadge = '<span class="tm-badge tm-badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;"><i class="fas fa-check-circle me-2"></i>Hoàn thành</span>';
+                        statusText = 'Completed';
+                    }
+
+                    const isOverdue = task.isOverdue;
+                    const priorityColor = task.priority === 'High' ? 'danger' : task.priority === 'Low' ? 'success' : 'warning';
+
+                    document.getElementById('detailTaskName').innerHTML = `
+                        <i class="fas fa-tasks me-2"></i> ${task.taskName}
+                    `;
+
+                    document.getElementById('taskDetailContent').innerHTML = `
+                        <div class="mb-4 text-center">
+                            ${statusBadge}
+                            ${isOverdue ? '<span class="tm-badge tm-badge-danger ms-2" style="font-size: 1rem; padding: 0.5rem 1rem;"><i class="fas fa-exclamation-triangle me-2"></i>Quá hạn</span>' : ''}
+                        </div>
+
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label><i class="fas fa-tasks me-1"></i> Tên công việc</label>
+                                <div class="value">${task.taskName}</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <label><i class="fas fa-flag me-1"></i> Độ ưu tiên</label>
+                                <div class="value">
+                                    <span class="tm-badge tm-badge-${priorityColor}">
+                                        <i class="fas fa-flag me-1"></i> ${task.priority}
+                                    </span>
+                                </div>
+                            </div>
+
+                            ${task.platform ? `
+                                <div class="detail-item">
+                                    <label><i class="fas fa-laptop me-1"></i> Platform</label>
+                                    <div class="value">
+                                        <span class="tm-badge tm-badge-info">
+                                            <i class="fas fa-laptop me-1"></i> ${task.platform}
+                                        </span>
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            <div class="detail-item">
+                                <label><i class="fas fa-traffic-light me-1"></i> Trạng thái</label>
+                                <div class="value">${statusText}</div>
+                            </div>
+
+                            ${task.startDate ? `
+                                <div class="detail-item">
+                                    <label><i class="fas fa-calendar-plus me-1"></i> Ngày bắt đầu</label>
+                                    <div class="value">${task.startDate}</div>
+                                </div>
+                            ` : ''}
+
+                            ${task.deadline ? `
+                                <div class="detail-item">
+                                    <label><i class="fas fa-calendar-times me-1"></i> Deadline</label>
+                                    <div class="value ${isOverdue ? 'text-danger' : ''}">${task.deadline}</div>
+                                </div>
+                            ` : ''}
+
+                            ${task.weekStartDate ? `
+                                <div class="detail-item">
+                                    <label><i class="fas fa-calendar-week me-1"></i> Tuần bắt đầu</label>
+                                    <div class="value">${task.weekStartDate}</div>
+                                </div>
+                            ` : ''}
+
+                            ${task.createdAt ? `
+                                <div class="detail-item">
+                                    <label><i class="fas fa-clock me-1"></i> Được giao lúc</label>
+                                    <div class="value">${task.createdAt}</div>
+                                </div>
+                            ` : ''}
+
+                            ${task.updatedAt ? `
+                                <div class="detail-item">
+                                    <label><i class="fas fa-sync-alt me-1"></i> Cập nhật cuối</label>
+                                    <div class="value">${task.updatedAt}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${task.description ? `
+                            <div class="tm-divider"></div>
+                            <div class="detail-item">
+                                <label><i class="fas fa-align-left me-1"></i> Mô tả chi tiết</label>
+                                <div class="value">${task.description}</div>
+                            </div>
+                        ` : ''}
+
+                        ${task.reportLink ? `
+                            <div class="tm-divider"></div>
+                            <div class="detail-item">
+                                <label><i class="fas fa-link me-1"></i> Link báo cáo</label>
+                                <div class="value">
+                                    <a href="${task.reportLink}" target="_blank" class="text-primary">
+                                        <i class="fas fa-external-link-alt me-1"></i> Mở báo cáo
+                                    </a>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="tm-divider"></div>
+                        <div class="text-center">
+                            <button class="btn btn-primary" onclick="detailModal.hide(); updateStatusModal(${task.userTaskId}, '${task.taskName}', '${statusText === 'TODO' ? 'TODO' : statusText === 'In Progress' ? 'InProgress' : 'Completed'}', ${task.targetPerWeek}, ${task.completedThisWeek || 0}, '${task.reportLink || ''}')">
+                                <i class="fas fa-edit me-2"></i> Cập nhật trạng thái
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('taskDetailContent').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('taskDetailContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Có lỗi xảy ra: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+}

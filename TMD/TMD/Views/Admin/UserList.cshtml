@@ -1,0 +1,937 @@
+﻿@model List<TMD.Models.User>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/tasklist-ad.css" rel="stylesheet" />
+<link href="~/css/user-management.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
+
+<div class="tm-container">
+    <!-- PAGE HEADER -->
+    <div class="tm-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="tm-page-title">
+                    <i class="fas fa-users me-2"></i> Quản lý người dùng
+                </h2>
+                <p class="tm-page-subtitle">Danh sách tất cả người dùng và công việc của họ</p>
+            </div>
+            <a href="/Account/Register" class="tm-btn-create btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i> Tạo người dùng mới
+            </a>
+        </div>
+    </div>
+
+    <!-- STATISTICS CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="tm-stats-card tm-stats-primary">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Tổng người dùng</div>
+                    <div class="tm-stats-value">@Model.Count</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="tm-stats-card tm-stats-success">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Đang hoạt động</div>
+                    <div class="tm-stats-value">@Model.Count(u => u.IsActive == true)</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="tm-stats-card tm-stats-warning">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Admin</div>
+                    <div class="tm-stats-value">@Model.Count(u => u.Role?.RoleName == "Admin")</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="tm-stats-card tm-stats-danger">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Vô hiệu hóa</div>
+                    <div class="tm-stats-value">@Model.Count(u => u.IsActive == false)</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-ban"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER & SEARCH -->
+    <div class="tm-card mb-4">
+        <div class="tm-um-filters-header">
+            <h6>
+                <i class="fas fa-filter me-2"></i> Bộ lọc và tìm kiếm
+            </h6>
+        </div>
+        <div class="tm-card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="tm-form-label">
+                        <i class="fas fa-search me-1"></i> Tìm kiếm
+                    </label>
+                    <div class="tm-um-search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" class="tm-form-control" placeholder="Tên, username, email, số điện thoại...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-building me-1"></i> Phòng ban
+                    </label>
+                    <select id="deptFilter" class="tm-form-control">
+                        <option value="">Tất cả</option>
+                        @foreach (var dept in Model.Select(u => u.Department).Distinct().Where(d => d != null))
+                        {
+                            <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-user-tag me-1"></i> Vai trò
+                    </label>
+                    <select id="roleFilter" class="tm-form-control">
+                        <option value="">Tất cả</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Staff">Staff</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="tm-form-label">
+                        <i class="fas fa-toggle-on me-1"></i> Trạng thái
+                    </label>
+                    <select id="statusFilter" class="tm-form-control">
+                        <option value="">Tất cả</option>
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Vô hiệu hóa</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="fas fa-redo me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER TABLE -->
+    <div class="tm-card">
+        <div class="tm-card-header">
+            <h5>
+                <i class="fas fa-table me-2"></i>
+                Danh sách người dùng (<span id="showingCount">@Model.Count</span>/<span id="totalCount">@Model.Count</span>)
+            </h5>
+        </div>
+        <div class="tm-card-body tm-card-body-table">
+            <div class="table-responsive">
+                <table class="tm-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th width="5%">STT</th>
+                            <th width="20%">Người dùng</th>
+                            <th width="12%">Username</th>
+                            <th width="13%">Email</th>
+                            <th width="12%">Phòng ban</th>
+                            <th width="10%">Vai trò</th>
+                            <th width="10%">Trạng thái</th>
+                            <th width="10%">Đăng nhập cuối</th>
+                            <th width="13%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            var user = Model[i];
+                            <tr data-role="@user.Role?.RoleName"
+                                data-status="@(user.IsActive == true ? "active" : "inactive")"
+                                data-dept="@user.DepartmentId"
+                                data-fullname="@user.FullName?.ToLower()"
+                                data-username="@user.Username?.ToLower()"
+                                data-email="@user.Email?.ToLower()"
+                                data-phone="@user.PhoneNumber">
+                                <td class="text-center fw-bold">@(i + 1)</td>
+                                <td>
+                                    <div class="tm-um-user-info">
+                                        <div class="tm-um-user-avatar">
+                                            @if (!string.IsNullOrEmpty(user.Avatar))
+                                            {
+                                                <img src="@user.Avatar" alt="@user.FullName"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <span style="display:none;">@user.FullName?.Substring(0, 1)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@user.FullName?.Substring(0, 1)</span>
+                                            }
+                                        </div>
+                                        <div class="tm-um-user-details">
+                                            <div class="tm-um-user-name">@user.FullName</div>
+                                            <small class="tm-text-muted">
+                                                <i class="fas fa-phone-alt me-1"></i>@(user.PhoneNumber ?? "N/A")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="tm-um-username-badge">@@@user.Username</span></td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(user.Email))
+                                    {
+                                        <span class="tm-um-email">
+                                            <i class="fas fa-envelope me-1"></i>@user.Email
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tm-text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.Department != null)
+                                    {
+                                        <span class="tm-badge tm-badge-info">
+                                            <i class="fas fa-building me-1"></i>@user.Department.DepartmentName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tm-text-muted">Chưa phân công</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.Role?.RoleName == "Admin")
+                                    {
+                                        <span class="tm-badge tm-um-badge-admin">
+                                            <i class="fas fa-crown me-1"></i> Admin
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tm-badge tm-badge-secondary">
+                                            <i class="fas fa-user me-1"></i> Staff
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.IsActive == true)
+                                    {
+                                        <span class="tm-badge tm-badge-success">
+                                            <i class="fas fa-check-circle me-1"></i> Hoạt động
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="tm-badge tm-badge-danger">
+                                            <i class="fas fa-ban me-1"></i> Vô hiệu
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.LastLoginAt.HasValue)
+                                    {
+                                        <div class="tm-um-last-login">
+                                            <i class="far fa-clock me-1"></i>
+                                            <small>@user.LastLoginAt.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="tm-text-muted"><small>Chưa đăng nhập</small></span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="tm-action-buttons">
+                                        <button class="tm-btn-action tm-btn-action-success btn-view-tasks"
+                                                data-id="@user.UserId"
+                                                data-name="@user.FullName"
+                                                title="Xem task của @user.FullName">
+                                            <i class="fas fa-tasks"></i>
+                                        </button>
+                                        <button class="tm-btn-action tm-btn-action-warning"
+                                                onclick="toggleUserStatus(@user.UserId, '@user.FullName', @(user.IsActive.ToString().ToLower()))"
+                                                title="@(user.IsActive == true ? "Vô hiệu hóa" : "Kích hoạt")">
+                                            <i class="fas fa-@(user.IsActive == true ? "ban" : "check")"></i>
+                                        </button>
+                                        <a href="/Admin/ResetUserPassword/@user.UserId"
+                                           class="tm-btn-action tm-btn-action-info"
+                                           title="Reset mật khẩu">
+                                            <i class="fas fa-key"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Task Calendar -->
+<div class="modal fade tm-modal" id="taskCalendarModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="tm-modal-header">
+                <h5 class="tm-modal-title" id="modalUserName">
+                    <i class="fas fa-calendar-alt me-2"></i> Công việc của người dùng
+                </h5>
+                <button type="button" class="tm-btn-close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tm-modal-body">
+                <!-- Task Statistics -->
+                <div class="row g-3 mb-4" id="taskStats">
+                    <div class="col-md-3">
+                        <div class="tm-um-stat-card tm-um-stat-card--primary">
+                            <div class="tm-um-stat-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="tm-um-stat-content">
+                                <div class="tm-um-stat-value" id="totalTasks">0</div>
+                                <div class="tm-um-stat-label">Tổng task</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tm-um-stat-card tm-um-stat-card--warning">
+                            <div class="tm-um-stat-icon">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="tm-um-stat-content">
+                                <div class="tm-um-stat-value" id="inProgressTasks">0</div>
+                                <div class="tm-um-stat-label">Đang làm</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tm-um-stat-card tm-um-stat-card--success">
+                            <div class="tm-um-stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="tm-um-stat-content">
+                                <div class="tm-um-stat-value" id="completedTasks">0</div>
+                                <div class="tm-um-stat-label">Hoàn thành</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="tm-um-stat-card tm-um-stat-card--danger">
+                            <div class="tm-um-stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="tm-um-stat-content">
+                                <div class="tm-um-stat-value" id="overdueTasks">0</div>
+                                <div class="tm-um-stat-label">Quá hạn</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Legend -->
+                <div class="mb-3 p-3" style="background: #f8f9fa; border-radius: 8px;">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-auto">
+                            <strong><i class="fas fa-info-circle me-1"></i> Chú thích:</strong>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge" style="background: #2dce89; padding: 6px 12px;">
+                                <i class="fas fa-check-circle me-1"></i> Hoàn thành
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge" style="background: #5e72e4; padding: 6px 12px;">
+                                <i class="fas fa-hourglass-half me-1"></i> Đang làm
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge" style="background: #f5365c; padding: 6px 12px;">
+                                <i class="fas fa-exclamation-triangle me-1"></i> Quá hạn
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="calendarLoading" class="text-center py-5">
+                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+                    <p class="mt-3 text-muted">Đang tải dữ liệu task...</p>
+                </div>
+
+                <!-- Calendar -->
+                <div id="calendar" class="tm-um-calendar" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+    <style>
+        /* Avatar Styles */
+        .tm-um-user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+            .tm-um-user-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .tm-um-user-avatar span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                text-transform: uppercase;
+            }
+
+        /* Calendar Styles */
+        .tm-um-calendar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .fc {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .fc-event {
+            cursor: pointer;
+            border: none !important;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+            .fc-event:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                z-index: 10;
+            }
+
+        .fc-event-title {
+            font-weight: 600;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .fc-daygrid-event {
+            white-space: normal !important;
+            align-items: flex-start !important;
+        }
+
+        .fc-toolbar-title {
+            font-size: 1.5rem !important;
+            font-weight: 600 !important;
+            color: #2c3e50;
+        }
+
+        .fc-button {
+            background: #5e72e4 !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            font-weight: 500 !important;
+            text-transform: none !important;
+        }
+
+            .fc-button:hover {
+                background: #4c63d2 !important;
+            }
+
+        .fc-button-active {
+            background: #324cdd !important;
+        }
+
+        /* Loading Spinner */
+        #calendarLoading {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
+    <script>
+        let calendar;
+        let allTasksData = [];
+        let currentUserId = null;
+
+        // SEARCH & FILTER
+        const searchInput = document.getElementById('searchInput');
+        const roleFilter = document.getElementById('roleFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const deptFilter = document.getElementById('deptFilter');
+        const tableRows = document.querySelectorAll('#userTable tbody tr');
+
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedRole = roleFilter.value;
+            const selectedStatus = statusFilter.value;
+            const selectedDept = deptFilter.value;
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const fullname = row.getAttribute('data-fullname') || '';
+                const username = row.getAttribute('data-username') || '';
+                const email = row.getAttribute('data-email') || '';
+                const phone = row.getAttribute('data-phone') || '';
+                const role = row.getAttribute('data-role');
+                const status = row.getAttribute('data-status');
+                const dept = row.getAttribute('data-dept');
+
+                const matchSearch = fullname.includes(searchTerm) ||
+                                  username.includes(searchTerm) ||
+                                  email.includes(searchTerm) ||
+                                  phone.includes(searchTerm);
+                const matchRole = !selectedRole || role === selectedRole;
+                const matchStatus = !selectedStatus || status === selectedStatus;
+                const matchDept = !selectedDept || dept === selectedDept;
+
+                if (matchSearch && matchRole && matchStatus && matchDept) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showingCount').textContent = visibleCount;
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        roleFilter.addEventListener('change', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+        deptFilter.addEventListener('change', filterTable);
+
+        function resetFilters() {
+            searchInput.value = '';
+            roleFilter.value = '';
+            statusFilter.value = '';
+            deptFilter.value = '';
+            filterTable();
+        }
+
+        // TOGGLE USER STATUS
+        async function toggleUserStatus(userId, fullName, currentStatus) {
+            const action = currentStatus ? 'vô hiệu hóa' : 'kích hoạt';
+
+            const result = await Swal.fire({
+                title: `${action.charAt(0).toUpperCase() + action.slice(1)} tài khoản?`,
+                text: `Bạn có chắc muốn ${action} tài khoản của ${fullName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: currentStatus ? '#f5365c' : '#2dce89',
+                cancelButtonColor: '#8898aa',
+                confirmButtonText: `Có, ${action}!`,
+                cancelButtonText: 'Hủy'
+            });
+
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                try {
+                    const response = await fetch('/Admin/ToggleUserStatus', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: userId })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: data.message,
+                            confirmButtonColor: '#5e72e4'
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại',
+                            text: data.message,
+                            confirmButtonColor: '#f5365c'
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra. Vui lòng thử lại.',
+                        confirmButtonColor: '#f5365c'
+                    });
+                }
+            }
+        }
+
+        // VIEW USER TASKS - Auto load when modal opens
+        document.querySelectorAll('.btn-view-tasks').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const userId = this.dataset.id;
+                const userName = this.dataset.name;
+                currentUserId = userId;
+
+                // Update modal title
+                document.getElementById('modalUserName').innerHTML =
+                    `<i class="fas fa-calendar-alt me-2"></i> Công việc của ${userName}`;
+
+                // Show modal
+                const modal = document.getElementById('taskCalendarModal');
+                const bsModal = new bootstrap.Modal(modal);
+                bsModal.show();
+
+                // Reset UI
+                document.getElementById('calendarLoading').style.display = 'flex';
+                document.getElementById('calendar').style.display = 'none';
+
+                // Auto load tasks
+                await loadUserTasks(userId);
+            });
+        });
+
+        async function loadUserTasks(userId) {
+            try {
+                console.log('🔍 Loading tasks for user:', userId);
+
+                const response = await fetch(`/Admin/GetUserTasks?userId=${userId}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('📦 Response data:', data);
+
+                if (data.success) {
+                    allTasksData = data.tasks || [];
+                    console.log('✅ Tasks loaded:', allTasksData.length);
+
+                    // Hide loading, show calendar
+                    document.getElementById('calendarLoading').style.display = 'none';
+                    document.getElementById('calendar').style.display = 'block';
+
+                    if (allTasksData.length === 0) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Thông báo',
+                            text: `${data.user?.fullName || 'User'} chưa được gán task nào!`,
+                            confirmButtonColor: '#5e72e4'
+                        });
+                    }
+
+                    updateTaskStats(allTasksData);
+                    initCalendar(allTasksData);
+                } else {
+                    console.error('❌ API error:', data.message);
+                    document.getElementById('calendarLoading').innerHTML =
+                        `<div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>${data.message}
+                        </div>`;
+                }
+            } catch (error) {
+                console.error('💥 Error loading tasks:', error);
+                document.getElementById('calendarLoading').innerHTML =
+                    `<div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Không thể tải dữ liệu: ${error.message}
+                    </div>`;
+            }
+        }
+
+        function updateTaskStats(tasks) {
+            const total = tasks.length;
+            const inProgress = tasks.filter(t => t.status === 'InProgress').length;
+            const completed = tasks.filter(t => t.status === 'Completed').length;
+            const overdue = tasks.filter(t => t.isOverdue).length;
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('inProgressTasks').textContent = inProgress;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('overdueTasks').textContent = overdue;
+        }
+
+        function initCalendar(tasks) {
+            const calendarEl = document.getElementById('calendar');
+
+            // Destroy existing calendar if any
+            if (calendar) {
+                calendar.destroy();
+            }
+
+            // Create calendar events - hiển thị task với deadline
+            const events = tasks.map(task => {
+                let color = '#5e72e4'; // Default: In Progress (blue)
+                let icon = '⏳';
+
+                if (task.isOverdue) {
+                    color = '#f5365c'; // Overdue (red)
+                    icon = '⚠️';
+                } else if (task.status === 'Completed') {
+                    color = '#2dce89'; // Completed (green)
+                    icon = '✓';
+                }
+
+                // Format deadline để hiển thị
+                const deadlineDate = new Date(task.deadline);
+                const deadlineStr = deadlineDate.toLocaleDateString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit'
+                });
+
+                return {
+                    id: task.taskId,
+                    title: `${icon} ${task.taskName} (DL: ${deadlineStr})`,
+                    start: task.deadline, // Hiển thị ở ngày deadline
+                    allDay: true,
+                    color: color,
+                    extendedProps: {
+                        taskId: task.taskId,
+                        taskName: task.taskName,
+                        description: task.description,
+                        platform: task.platform,
+                        priority: task.priority,
+                        status: task.status,
+                        targetPerWeek: task.targetPerWeek,
+                        completedThisWeek: task.completedThisWeek,
+                        isOverdue: task.isOverdue,
+                        startDate: task.startDate,
+                        deadline: task.deadline,
+                        reportLink: task.reportLink
+                    }
+                };
+            });
+
+            console.log('📅 Calendar events:', events);
+
+            // Initialize FullCalendar
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+                locale: 'vi',
+                buttonText: {
+                    today: 'Hôm nay',
+                    month: 'Tháng',
+                    week: 'Tuần',
+                    day: 'Ngày',
+                    list: 'Danh sách'
+                },
+                events: events,
+                eventClick: function(info) {
+                    showTaskDetail(info.event);
+                },
+                eventDidMount: function(info) {
+                    const props = info.event.extendedProps;
+                    const deadline = new Date(props.deadline).toLocaleDateString('vi-VN');
+                    const status = props.status === 'Completed' ? 'Hoàn thành' : 'Đang làm';
+                    const progress = `${props.completedThisWeek}/${props.targetPerWeek}`;
+
+                    // Tooltip
+                    info.el.title = `${props.taskName}\nDeadline: ${deadline}\nTrạng thái: ${status}\nTiến độ: ${progress}`;
+                },
+                height: 'auto',
+                displayEventTime: false,
+                eventDisplay: 'block',
+                dayMaxEvents: 3, // Limit events per day
+                moreLinkClick: 'popover',
+                moreLinkText: function(num) {
+                    return `+${num} task khác`;
+                }
+            });
+
+            calendar.render();
+            console.log('✅ Calendar rendered successfully');
+        }
+
+        function showTaskDetail(event) {
+            const props = event.extendedProps;
+            const deadline = new Date(props.deadline).toLocaleDateString('vi-VN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const startDate = new Date(props.startDate).toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const priorityBadge = props.priority === 'High'
+                ? '<span class="badge bg-danger"><i class="fas fa-arrow-up me-1"></i>High</span>'
+                : props.priority === 'Medium'
+                ? '<span class="badge bg-warning text-dark"><i class="fas fa-minus me-1"></i>Medium</span>'
+                : '<span class="badge bg-success"><i class="fas fa-arrow-down me-1"></i>Low</span>';
+
+            const statusBadge = props.status === 'Completed'
+                ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Hoàn thành</span>'
+                : '<span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Đang làm</span>';
+
+            const overdueBadge = props.isOverdue
+                ? '<span class="badge bg-danger ms-2"><i class="fas fa-exclamation-triangle me-1"></i>Quá hạn</span>'
+                : '';
+
+            const progressPercent = props.targetPerWeek > 0
+                ? Math.round((props.completedThisWeek / props.targetPerWeek) * 100)
+                : 0;
+
+            const progressColor = progressPercent >= 100 ? 'success' : progressPercent >= 50 ? 'warning' : 'danger';
+
+            Swal.fire({
+                title: `<div style="text-align: left;">
+                            <i class="fas fa-tasks me-2 text-primary"></i>${props.taskName}
+                        </div>`,
+                html: `
+                    <div class="text-start" style="font-size: 0.95rem; line-height: 1.8;">
+
+                        ${props.description ? `
+                            <div class="mb-3">
+                                <strong><i class="fas fa-info-circle me-2 text-info"></i>Mô tả:</strong>
+                                <p class="ms-4 mb-0">${props.description}</p>
+                            </div>
+                        ` : ''}
+
+                        ${props.platform ? `
+                            <div class="mb-3">
+                                <strong><i class="fas fa-globe me-2 text-info"></i>Platform:</strong>
+                                <span class="badge bg-info ms-2">${props.platform}</span>
+                            </div>
+                        ` : ''}
+
+                        <div class="mb-3">
+                            <strong><i class="fas fa-flag me-2 text-warning"></i>Priority:</strong>
+                            ${priorityBadge}
+                        </div>
+
+                        <div class="mb-3">
+                            <strong><i class="fas fa-traffic-light me-2 text-success"></i>Trạng thái:</strong>
+                            ${statusBadge}${overdueBadge}
+                        </div>
+
+                        <div class="mb-3">
+                            <strong><i class="fas fa-calendar-alt me-2 text-primary"></i>Thời gian:</strong>
+                            <div class="ms-4">
+                                <div><i class="far fa-calendar-check me-2"></i>Bắt đầu: <strong>${startDate}</strong></div>
+                                <div class="${props.isOverdue ? 'text-danger' : ''}">
+                                    <i class="far fa-calendar-times me-2"></i>Deadline: <strong>${deadline}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong><i class="fas fa-chart-line me-2 text-success"></i>Tiến độ tuần này:</strong>
+                            <div class="ms-4 mt-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>${props.completedThisWeek}/${props.targetPerWeek}</span>
+                                    <span class="text-${progressColor} fw-bold">${progressPercent}%</span>
+                                </div>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-${progressColor}"
+                                         role="progressbar"
+                                         style="width: ${progressPercent}%"
+                                         aria-valuenow="${progressPercent}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                        ${progressPercent}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${props.reportLink ? `
+                            <div class="mb-3">
+                                <strong><i class="fas fa-link me-2 text-info"></i>Report Link:</strong>
+                                <div class="ms-4">
+                                    <a href="${props.reportLink}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-external-link-alt me-1"></i>Xem báo cáo
+                                    </a>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `,
+                confirmButtonText: '<i class="fas fa-times me-1"></i> Đóng',
+                confirmButtonColor: '#5e72e4',
+                width: 700,
+                customClass: {
+                    popup: 'swal-task-detail'
+                }
+            });
+        }
+
+        // Clean up on modal close
+        document.getElementById('taskCalendarModal').addEventListener('hidden.bs.modal', function() {
+            if (calendar) {
+                calendar.destroy();
+                calendar = null;
+            }
+            allTasksData = [];
+            currentUserId = null;
+            document.getElementById('calendarLoading').style.display = 'flex';
+            document.getElementById('calendar').style.display = 'none';
+        });
+    </script>
+}

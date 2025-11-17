@@ -1,0 +1,432 @@
+﻿@model TMD.Models.Task
+@{
+    ViewData["Title"] = "Chỉnh sửa Task";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var assignedUserIds = ViewBag.AssignedUserIds as List<int> ?? new List<int>();
+}
+<link href="~/css/edittask-ad.css" rel="stylesheet" />
+<link href="~/css/tasklist-ad.css" rel="stylesheet" />
+
+<div class="container-fluid px-4 py-4 tm-container">
+    <!-- Header Section -->
+    <div class="tm-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="tm-page-title">
+                    <i class="fas fa-edit me-2"></i> Chỉnh sửa Task
+                </h1>
+                <p class="tm-page-subtitle">Cập nhật thông tin task #@Model.TaskId</p>
+            </div>
+            <a asp-action="TaskList" class="btn btn-secondary tm-btn-back">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form -->
+        <div class="col-lg-8">
+            <div class="tm-card">
+                <div class="tm-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-edit me-2"></i> Thông tin Task
+                        </h6>
+                        <span class="tm-badge @(Model.IsActive == true ? "tm-badge-success" : "tm-badge-secondary")">
+                            <i class="fas fa-@(Model.IsActive == true ? "check" : "pause")-circle me-1"></i>
+                            @(Model.IsActive == true ? "Active" : "Inactive")
+                        </span>
+                    </div>
+                </div>
+                <div class="tm-card-body">
+                    <form id="updateTaskForm">
+                        <input type="hidden" id="taskId" value="@Model.TaskId">
+
+                        <div class="tm-form-group">
+                            <label for="taskName" class="tm-form-label">
+                                Tên Task <span class="tm-text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control tm-form-control tm-form-control-lg" id="taskName"
+                                   value="@Model.TaskName" required>
+                        </div>
+
+                        <div class="tm-form-group">
+                            <label for="description" class="tm-form-label">Mô tả</label>
+                            <textarea class="form-control tm-form-control" id="description" rows="4">@Model.Description</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="tm-form-group">
+                                    <label for="platform" class="tm-form-label">Platform</label>
+                                    <select class="form-control tm-form-control" id="platform">
+                                        <option value="">-- Chọn Platform --</option>
+                                        <option value="Facebook">📘 Facebook</option>
+                                        <option value="Instagram">📷 Instagram</option>
+                                        <option value="TikTok">🎵 TikTok</option>
+                                        <option value="YouTube">📺 YouTube</option>
+                                        <option value="LinkedIn">💼 LinkedIn</option>
+                                        <option value="Twitter">🐦 Twitter</option>
+                                        <option value="Google Ads">🎯 Google Ads</option>
+                                        <option value="Website">🌐 Website</option>
+                                        <option value="Other">📌 Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="tm-form-group">
+                                    <label for="deadline" class="tm-form-label">Deadline</label>
+                                    <input type="datetime-local" class="form-control tm-form-control" id="deadline"
+                                           value="@(Model.Deadline?.ToString("yyyy-MM-ddTHH:mm"))">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tm-form-group">
+                            <label for="priority" class="tm-form-label">Priority</label>
+                            <select class="form-control tm-form-control" id="priority">
+                                <option value="Low">🟢 Low - Ưu tiên thấp</option>
+                                <option value="Medium">🟡 Medium - Ưu tiên trung bình</option>
+                                <option value="High">🔴 High - Ưu tiên cao</option>
+                            </select>
+                        </div>
+
+                        <div class="tm-divider"></div>
+
+                        <div class="tm-form-group">
+                            <label class="tm-form-label">
+                                <i class="fas fa-users me-2"></i> Gán cho nhân viên
+                                <span class="tm-text-muted font-weight-normal">(Chọn nhiều)</span>
+                            </label>
+                            <div class="tm-card" style="border: 2px solid var(--tm-primary);">
+                                <div class="tm-card-body">
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text tm-bg-gradient-primary tm-text-white">
+                                                    <i class="fas fa-search"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control tm-form-control" id="searchUsers"
+                                                   placeholder="Tìm kiếm nhân viên theo tên hoặc phòng ban...">
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox mb-3 pb-2 border-bottom">
+                                        <input type="checkbox" class="custom-control-input" id="selectAll">
+                                        <label class="custom-control-label font-weight-bold tm-text-primary" for="selectAll">
+                                            <i class="fas fa-check-double me-1"></i> Chọn tất cả
+                                        </label>
+                                        <span class="tm-badge tm-badge-info float-right" id="selectedCount">0</span>
+                                    </div>
+
+                                    <div class="tm-user-list" id="userList">
+                                        @if (ViewBag.Users != null)
+                                        {
+                                            var usersByDept = ((List<TMD.Models.User>)ViewBag.Users)
+                                            .GroupBy(u => u.Department?.DepartmentName ?? "Chưa có phòng ban")
+                                            .OrderBy(g => g.Key);
+
+                                            foreach (var deptGroup in usersByDept)
+                                            {
+                                                <div class="tm-dept-group">
+                                                    <div class="tm-dept-header">
+                                                        <h6 class="tm-dept-title">
+                                                            <i class="fas fa-building me-2"></i> @deptGroup.Key
+                                                            <span class="tm-badge tm-badge-info ms-2">@deptGroup.Count()</span>
+                                                        </h6>
+                                                    </div>
+                                                    @foreach (var user in deptGroup.OrderBy(u => u.FullName))
+                                                    {
+                                                        var isChecked = assignedUserIds.Contains(user.UserId);
+                                                        <div class="custom-control custom-checkbox ms-3 tm-user-item"
+                                                             data-name="@user.FullName.ToLower()"
+                                                             data-dept="@(user.Department?.DepartmentName?.ToLower() ?? "")">
+                                                            <input type="checkbox" class="custom-control-input user-checkbox"
+                                                                   id="user_@user.UserId" value="@user.UserId"
+                                                            @(isChecked ? "checked" : "")>
+                                                            <label class="custom-control-label tm-user-label" for="user_@user.UserId">
+                                                                <div class="d-flex align-items-center">
+                                                                    <img src="@(user.Avatar ?? "/images/default-avatar.png")"
+                                                                         class="rounded-circle me-2" width="35" height="35"
+                                                                         onerror="this.src='/images/default-avatar.png'">
+                                                                    <div>
+                                                                        <strong class="d-block">@user.FullName</strong>
+                                                                        <small class="tm-text-muted">@user.Username</small>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tm-divider"></div>
+
+                        <div class="tm-alert tm-alert-info">
+                            <i class="fas fa-info-circle fa-lg"></i>
+                            <div>
+                                <strong>Thông tin:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Task được tạo: <strong>@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</strong></li>
+                                    <li>Cập nhật lần cuối: <strong>@Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm")</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a asp-action="TaskList" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg tm-shadow" id="btnSubmit">
+                                <i class="fas fa-save me-2"></i> Cập nhật Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Current Assignments -->
+            <div class="tm-card">
+                <div class="tm-card-header tm-bg-gradient-success tm-text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-users me-2"></i> Hiện đang gán (@Model.UserTasks.Count)
+                    </h6>
+                </div>
+                <div class="tm-card-body" style="max-height: 400px; overflow-y: auto;">
+                    @if (Model.UserTasks.Any())
+                    {
+                        foreach (var ut in Model.UserTasks.OrderBy(ut => ut.User.FullName))
+                        {
+                            <div class="tm-user-card mb-3">
+                                <img src="@(ut.User.Avatar ?? "/images/default-avatar.png")"
+                                     class="tm-user-avatar"
+                                     onerror="this.src='/images/default-avatar.png'"
+                                     alt="@ut.User.FullName">
+                                <div class="tm-user-info">
+                                    <div class="tm-user-name">@ut.User.FullName</div>
+                                    <div class="tm-user-department">
+                                        <i class="fas fa-building me-1"></i> @(ut.User.Department?.DepartmentName ?? "N/A")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="tm-empty-state">
+                            <i class="fas fa-users fa-3x"></i>
+                            <p>Chưa có ai được gán</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="tm-card mt-4">
+                <div class="tm-card-header tm-bg-gradient-info tm-text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i> Thống kê
+                    </h6>
+                </div>
+                <div class="tm-card-body">
+                    <div class="tm-stat-item mb-3">
+                        <small class="tm-text-muted d-block mb-2">
+                            <i class="fas fa-users"></i> Tổng số người gán
+                        </small>
+                        <h3 class="mb-0 tm-text-primary font-weight-bold">
+                            @Model.UserTasks.Count <span class="small">người</span>
+                        </h3>
+                    </div>
+
+                    @if (Model.Deadline.HasValue)
+                    {
+                        var daysLeft = (Model.Deadline.Value - DateTime.Now).Days;
+                        var hoursLeft = (Model.Deadline.Value - DateTime.Now).Hours;
+                        var alertClass = daysLeft < 0 ? "tm-alert-danger" : daysLeft < 7 ? "tm-alert-warning" : "tm-alert-info";
+                        var iconClass = daysLeft < 0 ? "fa-exclamation-triangle" : "fa-clock";
+
+                        <div class="tm-divider"></div>
+
+                        <div class="tm-stat-item">
+                            <small class="tm-text-muted d-block mb-2">
+                                <i class="far fa-calendar-alt"></i> Thời hạn
+                            </small>
+                            <div class="tm-alert @alertClass mb-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas @iconClass fa-2x me-3"></i>
+                                    <div>
+                                        <strong class="d-block">
+                                            @if (daysLeft < 0)
+                                            {
+                                                <span>Quá hạn @Math.Abs(daysLeft) ngày</span>
+                                            }
+                                            else if (daysLeft == 0)
+                                            {
+                                                <span>Hết hạn hôm nay</span>
+                                                <small class="d-block">(@hoursLeft giờ nữa)</small>
+                                            }
+                                            else
+                                            {
+                                                <span>Còn @daysLeft ngày</span>
+                                            }
+                                        </strong>
+                                        <small class="d-block mt-1">
+                                            @Model.Deadline.Value.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const userCheckboxes = document.querySelectorAll('.user-checkbox');
+            const searchInput = document.getElementById('searchUsers');
+            const selectedCountSpan = document.getElementById('selectedCount');
+            const form = document.getElementById('updateTaskForm');
+            const btnSubmit = document.getElementById('btnSubmit');
+
+            document.getElementById('platform').value = '@Model.Platform';
+            document.getElementById('priority').value = '@Model.Priority';
+
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `tm-toast tm-toast-${type}`;
+                toast.innerHTML = `
+                    <div class="tm-toast-content">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} tm-toast-icon"></i>
+                        <span class="tm-toast-message">${message}</span>
+                        <button class="tm-toast-close" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            function updateSelectedCount() {
+                const count = document.querySelectorAll('.user-checkbox:checked').length;
+                selectedCountSpan.textContent = count;
+            }
+
+            function updateSelectAllCheckbox() {
+                const visibleCheckboxes = Array.from(userCheckboxes).filter(cb =>
+                    cb.closest('.tm-user-item').style.display !== 'none'
+                );
+                const checkedVisible = visibleCheckboxes.filter(cb => cb.checked);
+                selectAllCheckbox.checked = visibleCheckboxes.length > 0 &&
+                                           visibleCheckboxes.length === checkedVisible.length;
+            }
+
+            updateSelectedCount();
+            updateSelectAllCheckbox();
+
+            selectAllCheckbox.addEventListener('change', function() {
+                userCheckboxes.forEach(cb => {
+                    if (cb.closest('.tm-user-item').style.display !== 'none') {
+                        cb.checked = this.checked;
+                    }
+                });
+                updateSelectedCount();
+            });
+
+            userCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    updateSelectedCount();
+                    updateSelectAllCheckbox();
+                });
+            });
+
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase().trim();
+                document.querySelectorAll('.tm-user-item').forEach(item => {
+                    const name = item.dataset.name || '';
+                    const dept = item.dataset.dept || '';
+                    const matches = name.includes(searchText) || dept.includes(searchText);
+                    item.style.display = matches || searchText === '' ? '' : 'none';
+                });
+                updateSelectAllCheckbox();
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const taskId = parseInt(document.getElementById('taskId').value);
+                const taskName = document.getElementById('taskName').value.trim();
+                const description = document.getElementById('description').value.trim();
+                const platform = document.getElementById('platform').value;
+                const deadlineInput = document.getElementById('deadline').value;
+                const deadline = deadlineInput ? new Date(deadlineInput).toISOString() : null;
+                const priority = document.getElementById('priority').value;
+                const assignedUserIds = Array.from(document.querySelectorAll('.user-checkbox:checked'))
+                    .map(cb => parseInt(cb.value));
+
+                if (!taskName) {
+                    showToast('Vui lòng nhập tên task!', 'danger');
+                    document.getElementById('taskName').focus();
+                    return;
+                }
+
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang cập nhật...';
+
+                fetch('@Url.Action("UpdateTask", "Admin")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        taskName: taskName,
+                        description: description,
+                        platform: platform,
+                        targetPerWeek: 0,
+                        deadline: deadline,
+                        priority: priority,
+                        assignedUserIds: assignedUserIds
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        setTimeout(() => {
+                            window.location.href = '@Url.Action("TaskList", "Admin")';
+                        }, 1500);
+                    } else {
+                        showToast(data.message || 'Có lỗi xảy ra!', 'danger');
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = '<i class="fas fa-save me-2"></i> Cập nhật Task';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Có lỗi xảy ra khi cập nhật task!', 'danger');
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fas fa-save me-2"></i> Cập nhật Task';
+                });
+            });
+        });
+    </script>
+}

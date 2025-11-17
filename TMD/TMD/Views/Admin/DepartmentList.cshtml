@@ -1,0 +1,617 @@
+﻿@model List<TMD.Models.Department>
+@{
+    ViewData["Title"] = "Quản lý phòng ban";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/tasklist-ad.css" rel="stylesheet" />
+
+<div class="container-fluid px-4 py-4 tm-container">
+    <!-- Header Section -->
+    <div class="tm-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="tm-page-title">
+                    <i class="fas fa-building me-2"></i> Quản lý phòng ban
+                </h1>
+                <p class="tm-page-subtitle">Danh sách các phòng ban trong hệ thống</p>
+            </div>
+            <button class="btn btn-primary tm-btn-create" onclick="addDepartment()">
+                <i class="fas fa-plus me-2"></i> Thêm phòng ban
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-4 col-md-6">
+            <div class="tm-stats-card tm-stats-primary">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Tổng phòng ban</div>
+                    <div class="tm-stats-value">@Model.Count</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="tm-stats-card tm-stats-success">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Tổng nhân viên</div>
+                    <div class="tm-stats-value">@Model.Sum(d => d.Users?.Count ?? 0)</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="tm-stats-card tm-stats-info">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Trung bình/phòng</div>
+                    <div class="tm-stats-value">@(Model.Count > 0 ? Math.Round((double)Model.Sum(d => d.Users?.Count ?? 0) / Model.Count, 1) : 0)</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Cards -->
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var dept in Model)
+            {
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="tm-dept-card">
+                        <div class="tm-dept-card__header">
+                            <div class="tm-dept-card__icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="tm-dept-card__actions">
+                                <a asp-action="DepartmentDetail" asp-route-id="@dept.DepartmentId" class="tm-btn-icon tm-btn-icon--info" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button class="tm-btn-icon tm-btn-icon--primary" onclick="editDepartment(@dept.DepartmentId, '@dept.DepartmentName', '@(dept.Description ?? "")', @dept.IsActive.ToString().ToLower())" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                @if (dept.IsActive == true)
+                                {
+                                    <button class="tm-btn-icon tm-btn-icon--danger" onclick="toggleDepartmentStatus(@dept.DepartmentId, '@dept.DepartmentName')" title="Vô hiệu hóa">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="tm-btn-icon tm-btn-icon--success" onclick="toggleDepartmentStatus(@dept.DepartmentId, '@dept.DepartmentName')" title="Kích hoạt">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="tm-dept-card__body">
+                            <h4 class="tm-dept-card__name">@dept.DepartmentName</h4>
+
+                            <div class="tm-dept-card__stats">
+                                <div class="tm-stat-badge">
+                                    <i class="fas fa-users me-1"></i>
+                                    <span>@(dept.Users?.Count ?? 0) nhân viên</span>
+                                </div>
+                                @if (dept.IsActive == true)
+                                {
+                                    <span class="tm-badge tm-badge-success">
+                                        <i class="fas fa-check-circle me-1"></i> Hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="tm-badge tm-badge-secondary">
+                                        <i class="fas fa-ban me-1"></i> Không hoạt động
+                                    </span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(dept.Description))
+                            {
+                                <p class="tm-dept-card__desc">@dept.Description</p>
+                            }
+
+                            @if (dept.Users != null && dept.Users.Any())
+                            {
+                                <div class="tm-dept-card__members">
+                                    <p class="tm-members-title">
+                                        <i class="fas fa-users me-1"></i> Thành viên:
+                                    </p>
+                                    <div class="tm-member-avatars">
+                                        @foreach (var user in dept.Users.Take(5))
+                                        {
+                                            <div class="tm-member-avatar" title="@user.FullName">
+                                                @if (!string.IsNullOrEmpty(user.Avatar))
+                                                {
+                                                    <img src="@user.Avatar" alt="@user.FullName" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <span style="display:none;">@user.FullName?.Substring(0, 1)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@user.FullName?.Substring(0, 1)</span>
+                                                }
+                                            </div>
+                                        }
+                                        @if (dept.Users.Count > 5)
+                                        {
+                                            <div class="tm-member-avatar tm-member-avatar--more">
+                                                +@(dept.Users.Count - 5)
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="tm-dept-card__footer">
+                            <small class="tm-text-muted">
+                                <i class="far fa-calendar me-1"></i>
+                                Tạo: @(dept.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="tm-empty-state">
+            <i class="fas fa-building fa-3x"></i>
+            <h4>Chưa có phòng ban nào</h4>
+            <p>Nhấn nút "Thêm phòng ban" để tạo phòng ban mới</p>
+        </div>
+    }
+</div>
+
+<!-- Modal Add/Edit Department -->
+<div class="modal fade tm-modal" id="departmentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="tm-modal-header">
+                <h5 class="tm-modal-title" id="modalTitle">
+                    <i class="fas fa-building me-2"></i> Thêm phòng ban
+                </h5>
+                <button type="button" class="tm-btn-close" data-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tm-modal-body">
+                <form id="departmentForm">
+                    <input type="hidden" id="departmentId" value="0">
+
+                    <div class="tm-form-group">
+                        <label for="departmentName" class="tm-form-label">
+                            Tên phòng ban <span class="tm-text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control tm-form-control" id="departmentName"
+                               placeholder="Nhập tên phòng ban..." required>
+                    </div>
+
+                    <div class="tm-form-group">
+                        <label for="departmentDescription" class="tm-form-label">Mô tả</label>
+                        <textarea class="form-control tm-form-control" id="departmentDescription" rows="3"
+                                  placeholder="Mô tả về phòng ban..."></textarea>
+                    </div>
+
+                    <div class="tm-form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="departmentIsActive" checked>
+                            <label class="custom-control-label" for="departmentIsActive">
+                                <i class="fas fa-check-circle me-1"></i> Kích hoạt phòng ban
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="tm-divider"></div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Hủy
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnSaveDepartment">
+                            <i class="fas fa-save me-1"></i> Lưu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `tm-toast tm-toast-${type}`;
+            toast.innerHTML = `
+                <div class="tm-toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} tm-toast-icon"></i>
+                    <span class="tm-toast-message">${message}</span>
+                    <button class="tm-toast-close" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        function addDepartment() {
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus me-2"></i> Thêm phòng ban';
+            document.getElementById('departmentId').value = '0';
+            document.getElementById('departmentName').value = '';
+            document.getElementById('departmentDescription').value = '';
+            document.getElementById('departmentIsActive').checked = true;
+
+            const modal = new bootstrap.Modal(document.getElementById('departmentModal'));
+            modal.show();
+        }
+
+        function editDepartment(id, name, description, isActive) {
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit me-2"></i> Chỉnh sửa phòng ban';
+            document.getElementById('departmentId').value = id;
+            document.getElementById('departmentName').value = name;
+            document.getElementById('departmentDescription').value = description || '';
+            document.getElementById('departmentIsActive').checked = isActive;
+
+            const modal = new bootstrap.Modal(document.getElementById('departmentModal'));
+            modal.show();
+        }
+
+        function toggleDepartmentStatus(id, name) {
+            if (!confirm(`Bạn có chắc muốn thay đổi trạng thái phòng ban "${name}"?`)) return;
+
+            fetch('@Url.Action("ToggleDepartmentStatus", "Admin")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ departmentId: parseInt(id) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.message, 'danger');
+                }
+            })
+            .catch(() => showToast('Có lỗi xảy ra!', 'danger'));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('departmentForm');
+            const btnSave = document.getElementById('btnSaveDepartment');
+
+            // Close modal handlers
+            document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('departmentModal'));
+                    if (modal) modal.hide();
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const departmentId = parseInt(document.getElementById('departmentId').value);
+                const departmentName = document.getElementById('departmentName').value.trim();
+                const description = document.getElementById('departmentDescription').value.trim();
+                const isActive = document.getElementById('departmentIsActive').checked;
+
+                if (!departmentName) {
+                    showToast('Vui lòng nhập tên phòng ban!', 'danger');
+                    return;
+                }
+
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang xử lý...';
+
+                const url = departmentId > 0
+                    ? '@Url.Action("UpdateDepartment", "Admin")'
+                    : '@Url.Action("CreateDepartment", "Admin")';
+
+                const data = departmentId > 0
+                    ? { departmentId, departmentName, description, isActive }
+                    : { departmentName, description, isActive };
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('departmentModal'));
+                        if (modal) modal.hide();
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast(data.message, 'danger');
+                        btnSave.disabled = false;
+                        btnSave.innerHTML = '<i class="fas fa-save me-1"></i> Lưu';
+                    }
+                })
+                .catch(() => {
+                    showToast('Có lỗi xảy ra!', 'danger');
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = '<i class="fas fa-save me-1"></i> Lưu';
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    /* Department Card Specific Styles */
+    .tm-dept-card {
+        background: var(--tm-white);
+        border-radius: var(--tm-border-radius);
+        box-shadow: var(--tm-box-shadow);
+        overflow: hidden;
+        transition: var(--tm-transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        animation: tmFadeIn 0.5s ease-out;
+    }
+
+        .tm-dept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--tm-box-shadow-hover);
+        }
+
+    .tm-dept-card__header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tm-dept-card__icon {
+        width: 50px;
+        height: 50px;
+        border-radius: var(--tm-border-radius-sm);
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--tm-white);
+    }
+
+    .tm-dept-card__actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .tm-btn-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: var(--tm-border-radius-sm);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--tm-transition);
+        color: var(--tm-white);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+        .tm-btn-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+    .tm-btn-icon--primary {
+        background: rgba(94, 114, 228, 0.2);
+    }
+
+    .tm-btn-icon--danger {
+        background: rgba(245, 54, 92, 0.2);
+    }
+
+    .tm-btn-icon--success {
+        background: rgba(45, 206, 137, 0.2);
+    }
+
+    .tm-dept-card__body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tm-dept-card__name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--tm-dark);
+        margin-bottom: 1rem;
+    }
+
+    .tm-dept-card__stats {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .tm-stat-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--tm-secondary);
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--tm-light);
+        border-radius: 50px;
+    }
+
+    .tm-dept-card__desc {
+        color: var(--tm-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .tm-dept-card__members {
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        margin-top: auto;
+    }
+
+    .tm-members-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--tm-secondary);
+        margin-bottom: 0.75rem;
+    }
+
+    .tm-member-avatars {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .tm-member-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--tm-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: 3px solid var(--tm-white);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: var(--tm-transition);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .tm-member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .tm-member-avatar span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tm-member-avatar:hover {
+            transform: translateY(-3px) scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+    .tm-member-avatar--more {
+        background: var(--tm-secondary);
+        font-size: 0.75rem;
+    }
+
+    .tm-dept-card__footer {
+        padding: 1rem 1.5rem;
+        background: var(--tm-light);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Modal adjustments */
+    .gap-2 {
+        gap: 0.5rem;
+    }
+
+    /* Animation delays for cards */
+    .tm-dept-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .tm-dept-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .tm-dept-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .tm-dept-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .tm-dept-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .tm-dept-card:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .tm-dept-card__header
+
+    {
+        padding: 1.25rem;
+    }
+
+    .tm-dept-card__icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+
+    .tm-btn-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .tm-dept-card__name {
+        font-size: 1.125rem;
+    }
+
+    .tm-member-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 0.75rem;
+    }
+
+    }
+</style>

@@ -1,0 +1,16 @@
+﻿@{
+    var roleName = Context.Session.GetString("RoleName");
+
+    if (roleName == "Admin")
+    {
+        Layout = "_Layout";
+    }
+    else if (roleName == "Staff")
+    {
+        Layout = "_LayoutStaff";
+    }
+    else
+    {
+        Layout = null; // Cho trang login
+    }
+}

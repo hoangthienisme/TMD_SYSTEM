@@ -1,0 +1,862 @@
+﻿@model List<TMD.Models.Attendance>
+@{
+    ViewData["Title"] = "Lịch sử chấm công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/attendance-management.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div class="container-fluid px-4 py-4 att-container">
+    <!-- HEADER -->
+    <div class="att-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="att-page-title">
+                    <i class="fas fa-history me-2"></i> Lịch sử chấm công
+                </h2>
+            </div>
+            <button class="att-btn-export" onclick="exportToExcel()">
+                <i class="fas fa-file-excel me-2"></i> Xuất Excel
+            </button>
+        </div>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="att-stats-grid">
+        <div class="att-stat-card att-stat-primary">
+            <div class="att-stat-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Tổng bản ghi</div>
+                <div class="att-stat-value">@ViewBag.TotalRecords</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-success">
+            <div class="att-stat-icon">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Hoàn thành đủ</div>
+                <div class="att-stat-value">@ViewBag.CompletedDays</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-info">
+            <div class="att-stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Đúng giờ</div>
+                <div class="att-stat-value">@ViewBag.OnTimeCount</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-warning">
+            <div class="att-stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Đi muộn</div>
+                <div class="att-stat-value">@ViewBag.LateCount</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-primary">
+            <div class="att-stat-icon">
+                <i class="fas fa-business-time"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Tổng giờ làm</div>
+                <div class="att-stat-value">@ViewBag.TotalWorkHours.ToString("F1")h</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-secondary">
+            <div class="att-stat-icon">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Lượt Check-in</div>
+                <div class="att-stat-value">@ViewBag.TotalCheckIns</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-danger">
+            <div class="att-stat-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Lượt Check-out</div>
+                <div class="att-stat-value">@ViewBag.TotalCheckOuts</div>
+            </div>
+        </div>
+
+        <div class="att-stat-card att-stat-danger">
+            <div class="att-stat-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="att-stat-content">
+                <div class="att-stat-label">Ngoài khu vực</div>
+                <div class="att-stat-value">@ViewBag.OutsideGeofence</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="att-filters">
+        <form method="get" action="/Admin/AttendanceHistory">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="att-form-label">Nhân viên</label>
+                    <select name="userId" class="att-form-select">
+                        <option value="">-- Tất cả nhân viên --</option>
+                        @foreach (var user in ViewBag.Users as List<TMD.Models.User>)
+                        {
+                            var selectedUser = ViewBag.SelectedUserId == user.UserId;
+                            <option value="@user.UserId" selected="@selectedUser">
+                                @user.FullName (@user.Username)
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="att-form-label">Phòng ban</label>
+                    <select name="departmentId" class="att-form-select">
+                        <option value="">-- Tất cả phòng ban --</option>
+                        @foreach (var dept in ViewBag.Departments as List<TMD.Models.Department>)
+                        {
+                            var selectedDept = ViewBag.SelectedDepartmentId == dept.DepartmentId;
+                            <option value="@dept.DepartmentId" selected="@selectedDept">
+                                @dept.DepartmentName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="att-form-label">Từ ngày</label>
+                    <input type="date" name="fromDate" class="att-form-control"
+                           value="@(ViewBag.FromDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="att-form-label">Đến ngày</label>
+                    <input type="date" name="toDate" class="att-form-control"
+                           value="@(ViewBag.ToDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="att-btn-filter">
+                        <i class="fas fa-search me-1"></i> Lọc
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- TABLE -->
+    <div class="att-card">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="att-table">
+                    <thead>
+                        <tr>
+                            <th width="5%">STT</th>
+                            <th width="10%">Ngày</th>
+                            <th width="15%">Nhân viên</th>
+                            <th width="10%">Phòng ban</th>
+                            <th width="10%">Check-in</th>
+                            <th width="10%">Check-out</th>
+                            <th width="8%">Giờ làm</th>
+                            <th width="10%">Ảnh</th>
+                            <th width="17%">Trạng thái</th>
+                            <th width="5%">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var attendance in Model)
+                        {
+                            var workHours = attendance.TotalHours ?? 0;
+
+                            <tr>
+                                <td class="text-center">@index</td>
+                                <td>
+                                    <div class="att-work-date">
+                                        <strong>@attendance.WorkDate.ToString("dd/MM/yyyy")</strong>
+                                        <small>@attendance.WorkDate.DayOfWeek</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="att-user-info">
+                                        <div class="att-user-avatar">
+                                            @if (!string.IsNullOrEmpty(attendance.User.Avatar))
+                                            {
+                                                <img src="@attendance.User.Avatar" alt="@attendance.User.FullName"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <span style="display:none;">@attendance.User.FullName?.Substring(0, 1)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@attendance.User.FullName?.Substring(0, 1)</span>
+                                            }
+                                        </div>
+                                        <div class="att-user-details">
+                                            <div class="att-user-name">@attendance.User.FullName</div>
+                                            <small class="att-user-username">@attendance.User.Username</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (attendance.User.Department != null)
+                                    {
+                                        <span class="att-badge att-badge-department">
+                                            <i class="fas fa-building me-1"></i>
+                                            @attendance.User.Department.DepartmentName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="att-text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (attendance.CheckInTime != null)
+                                    {
+                                        <div class="att-time-badge checkin">
+                                            <i class="fas fa-sign-in-alt text-success"></i>
+                                            @attendance.CheckInTime?.ToString("HH:mm:ss")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="att-text-muted">--:--</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (attendance.CheckOutTime != null)
+                                    {
+                                        <div class="att-time-badge checkout">
+                                            <i class="fas fa-sign-out-alt text-danger"></i>
+                                            @attendance.CheckOutTime?.ToString("HH:mm:ss")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="att-text-muted">--:--</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (workHours > 0)
+                                    {
+                                        <strong class="att-text-primary">@workHours.ToString("F1")h</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="att-text-muted">0h</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="att-photo-thumbnails">
+                                        @if (!string.IsNullOrEmpty(attendance.CheckInPhotos))
+                                        {
+                                            <img src="@attendance.CheckInPhotos" alt="Check-in"
+                                                 class="att-photo-thumbnail"
+                                                 onclick="showPhoto('@attendance.CheckInPhotos', 'Check-in')"
+                                                 title="Ảnh Check-in" />
+                                        }
+                                        @if (!string.IsNullOrEmpty(attendance.CheckOutPhotos))
+                                        {
+                                            <img src="@attendance.CheckOutPhotos" alt="Check-out"
+                                                 class="att-photo-thumbnail"
+                                                 onclick="showPhoto('@attendance.CheckOutPhotos', 'Check-out')"
+                                                 title="Ảnh Check-out" />
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        @if (attendance.CheckInTime != null && attendance.CheckOutTime != null)
+                                        {
+                                            <span class="att-badge att-badge-completed">
+                                                <i class="fas fa-check-circle"></i> Hoàn thành
+                                            </span>
+                                        }
+                                        else if (attendance.CheckInTime != null)
+                                        {
+                                            <span class="att-badge att-badge-partial">
+                                                <i class="fas fa-clock"></i> Chưa checkout
+                                            </span>
+                                        }
+
+                                        @if (attendance.IsLate == true)
+                                        {
+                                            <span class="att-badge att-badge-late">
+                                                <i class="fas fa-exclamation-triangle"></i> Đi muộn
+                                            </span>
+                                        }
+                                        else if (attendance.IsLate == false)
+                                        {
+                                            <span class="att-badge att-badge-ontime">
+                                                <i class="fas fa-check"></i> Đúng giờ
+                                            </span>
+                                        }
+
+                                        @if (attendance.IsWithinGeofence == false)
+                                        {
+                                            <span class="att-badge att-badge-outside">
+                                                <i class="fas fa-map-marker-alt"></i> Ngoài khu vực
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <button class="att-btn-action"
+                                            onclick="viewDetail(@attendance.AttendanceId, {
+                                                WorkDate: '@attendance.WorkDate.ToString("yyyy-MM-dd")',
+                                                UserName: '@attendance.User.FullName',
+                                                UserAvatar: '@(attendance.User.Avatar ?? "")',
+                                                Department: '@(attendance.User.Department?.DepartmentName ?? "N/A")',
+                                                CheckInTime: '@(attendance.CheckInTime?.ToString("yyyy-MM-ddTHH:mm:ss"))',
+                                                CheckOutTime: '@(attendance.CheckOutTime?.ToString("yyyy-MM-ddTHH:mm:ss"))',
+                                                TotalHours: @(attendance.TotalHours ?? 0),
+                                                CheckInLatitude: @(attendance.CheckInLatitude ?? 0),
+                                                CheckInLongitude: @(attendance.CheckInLongitude ?? 0),
+                                                CheckInAddress: '@Html.Raw(attendance.CheckInAddress?.Replace("'", "\\'"))',
+                                                CheckInIpaddress: '@attendance.CheckInIpaddress',
+                                                CheckInNotes: '@Html.Raw(attendance.CheckInNotes?.Replace("'", "\\'"))',
+                                                CheckInPhotos: '@attendance.CheckInPhotos',
+                                                CheckOutLatitude: @(attendance.CheckOutLatitude ?? 0),
+                                                CheckOutLongitude: @(attendance.CheckOutLongitude ?? 0),
+                                                CheckOutAddress: '@Html.Raw(attendance.CheckOutAddress?.Replace("'", "\\'"))',
+                                                CheckOutIpaddress: '@attendance.CheckOutIpaddress',
+                                                CheckOutNotes: '@Html.Raw(attendance.CheckOutNotes?.Replace("'", "\\'"))',
+                                                CheckOutPhotos: '@attendance.CheckOutPhotos',
+                                                IsLate: @(attendance.IsLate?.ToString().ToLower() ?? "null"),
+                                                IsWithinGeofence: @(attendance.IsWithinGeofence?.ToString().ToLower() ?? "null")
+                                            })"
+                                            title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="att-empty-state">
+                <i class="fas fa-inbox"></i>
+                <h5>Không có dữ liệu chấm công</h5>
+                <p>Vui lòng thử điều chỉnh bộ lọc</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Photo Modal -->
+<div class="modal fade att-modal" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="att-modal-header">
+                <h5 class="att-modal-title" id="photoModalTitle">Ảnh chấm công</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="att-modal-body text-center">
+                <img id="photoModalImage" src="" class="img-fluid" style="max-height: 70vh; border-radius: 8px;" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="att-btn att-btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Đóng
+                </button>
+                <a id="photoDownloadBtn" href="" download class="att-btn att-btn-success">
+                    <i class="fas fa-download me-1"></i> Tải xuống
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade att-modal" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="att-modal-header">
+                <h5 class="att-modal-title">
+                    <i class="fas fa-info-circle me-2"></i> Chi Tiết Chấm Công
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="att-modal-body">
+                <!-- User Info Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="att-user-card">
+                            <div class="att-user-avatar-large" id="detailUserAvatar"></div>
+                            <div class="att-user-card-info">
+                                <div class="att-user-card-name" id="detailUserName">-</div>
+                                <div class="att-user-card-meta">
+                                    <div class="att-user-card-meta-item">
+                                        <i class="fas fa-building"></i>
+                                        <span id="detailDepartment">-</span>
+                                    </div>
+                                    <div class="att-user-card-meta-item">
+                                        <i class="far fa-calendar"></i>
+                                        <span id="detailWorkDate">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- CHECK-IN INFO -->
+                    <div class="col-md-6 mb-4">
+                        <div class="att-detail-section">
+                            <h6 class="att-section-title">
+                                <i class="fas fa-sign-in-alt text-success"></i> Thông tin Check-in
+                            </h6>
+
+                            <div class="att-info-group">
+                                <label><i class="far fa-clock"></i> Thời gian check-in</label>
+                                <p id="detailCheckInTime">-</p>
+                            </div>
+
+                            <div class="att-info-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Vị trí check-in</label>
+                                <p id="detailCheckInAddress" class="small">-</p>
+                                <button class="att-btn att-btn-primary btn-sm mt-2" id="btnViewCheckInMap" style="display: none;">
+                                    <i class="fas fa-map me-1"></i> Xem bản đồ
+                                </button>
+                            </div>
+
+                            <div class="att-info-group">
+                                <label><i class="fas fa-network-wired"></i> IP Address</label>
+                                <p id="detailCheckInIP" class="att-coordinates">-</p>
+                            </div>
+
+                            <div class="att-info-group" id="checkInNotesGroup" style="display: none;">
+                                <label><i class="fas fa-sticky-note"></i> Ghi chú</label>
+                                <p id="detailCheckInNotes" class="att-text-info">-</p>
+                            </div>
+
+                            <div class="att-info-group" id="checkInPhotoGroup" style="display: none;">
+                                <label><i class="fas fa-image"></i> Hình ảnh check-in</label>
+                                <div class="att-photo-preview" id="checkInPhotoContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHECK-OUT INFO -->
+                    <div class="col-md-6 mb-4">
+                        <div class="att-detail-section">
+                            <h6 class="att-section-title">
+                                <i class="fas fa-sign-out-alt text-danger"></i> Thông tin Check-out
+                            </h6>
+
+                            <div class="att-info-group">
+                                <label><i class="far fa-clock"></i> Thời gian check-out</label>
+                                <p id="detailCheckOutTime">-</p>
+                            </div>
+
+                            <div class="att-info-group">
+                                <label><i class="fas fa-hourglass-half"></i> Tổng giờ làm việc</label>
+                                <p id="detailTotalHours" class="att-text-primary att-fw-bold">-</p>
+                            </div>
+
+                            <div class="att-info-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Vị trí check-out</label>
+                                <p id="detailCheckOutAddress" class="small">-</p>
+                                <button class="att-btn att-btn-primary btn-sm mt-2" id="btnViewCheckOutMap" style="display: none;">
+                                    <i class="fas fa-map me-1"></i> Xem bản đồ
+                                </button>
+                            </div>
+
+                            <div class="att-info-group">
+                                <label><i class="fas fa-network-wired"></i> IP Address</label>
+                                <p id="detailCheckOutIP" class="att-coordinates">-</p>
+                            </div>
+
+                            <div class="att-info-group" id="checkOutNotesGroup" style="display: none;">
+                                <label><i class="fas fa-sticky-note"></i> Ghi chú</label>
+                                <p id="detailCheckOutNotes" class="att-text-info">-</p>
+                            </div>
+
+                            <div class="att-info-group" id="checkOutPhotoGroup" style="display: none;">
+                                <label><i class="fas fa-image"></i> Hình ảnh check-out</label>
+                                <div class="att-photo-preview" id="checkOutPhotoContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATUS INFO -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="att-detail-section">
+                            <h6 class="att-section-title">
+                                <i class="fas fa-info-circle"></i> Trạng thái
+                            </h6>
+                            <div class="att-status-container" id="detailStatus"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="att-btn att-btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Map Modal -->
+<div class="modal fade att-modal" id="mapModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="att-modal-header">
+                <h5 class="att-modal-title" id="mapModalTitle">Vị trí chấm công</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="att-modal-body">
+                <div id="mapContainer" class="att-map-container"></div>
+                <div class="att-map-info mt-3">
+                    <p class="mb-2"><strong>Địa chỉ:</strong></p>
+                    <p class="mb-3" id="mapAddress">-</p>
+                    <p class="mb-2"><strong>Tọa độ:</strong></p>
+                    <p class="mb-0 att-coordinates" id="mapCoordinates">-</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="att-btn att-btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Đóng
+                </button>
+                <button type="button" class="att-btn att-btn-success" id="btnOpenGoogleMaps">
+                    <i class="fab fa-google me-1"></i> Mở Google Maps
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* Avatar Styles */
+        .att-user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+            .att-user-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .att-user-avatar span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                text-transform: uppercase;
+            }
+
+        .att-user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 2rem;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .att-user-avatar-large img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .att-user-avatar-large span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                text-transform: uppercase;
+            }
+    </style>
+    <script>
+        let currentMap = null;
+        let currentLat = 0;
+        let currentLng = 0;
+        let currentAddress = '';
+
+        function showPhoto(photoUrl, title) {
+            document.getElementById('photoModalTitle').textContent = `Ảnh ${title}`;
+            document.getElementById('photoModalImage').src = photoUrl;
+            document.getElementById('photoDownloadBtn').href = photoUrl;
+            new bootstrap.Modal(document.getElementById('photoModal')).show();
+        }
+
+        function viewDetail(attendanceId, data) {
+            // User Info
+            const userAvatar = data.UserAvatar;
+            const userInitial = data.UserName?.substring(0, 1) || '?';
+
+            const avatarHtml = userAvatar && userAvatar !== '/images/default-avatar.png' && userAvatar !== ''
+                ? `<img src="${userAvatar}" alt="${data.UserName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                   <span style="display:none;">${userInitial}</span>`
+                : `<span>${userInitial}</span>`;
+
+            document.getElementById('detailUserAvatar').innerHTML = avatarHtml;
+            document.getElementById('detailUserName').textContent = data.UserName;
+            document.getElementById('detailDepartment').textContent = data.Department;
+
+            // Work Date
+            const workDate = new Date(data.WorkDate);
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('detailWorkDate').textContent = workDate.toLocaleDateString('vi-VN', dateOptions);
+
+            // Check-in Info
+            if (data.CheckInTime) {
+                const checkInDate = new Date(data.CheckInTime);
+                document.getElementById('detailCheckInTime').innerHTML = `
+                    ${checkInDate.toLocaleDateString('vi-VN')} - <span class="att-badge att-badge-completed">${checkInDate.toLocaleTimeString('vi-VN')}</span>
+                `;
+            } else {
+                document.getElementById('detailCheckInTime').innerHTML = '<span class="att-text-muted">Chưa check-in</span>';
+            }
+
+            // Check-in Address
+            if (data.CheckInAddress) {
+                document.getElementById('detailCheckInAddress').textContent = data.CheckInAddress;
+                document.getElementById('btnViewCheckInMap').style.display = 'inline-block';
+                document.getElementById('btnViewCheckInMap').onclick = () =>
+                    viewMap(data.CheckInLatitude, data.CheckInLongitude, data.CheckInAddress, 'Check-in');
+            } else {
+                document.getElementById('detailCheckInAddress').innerHTML = '<span class="att-text-muted">Không có thông tin</span>';
+                document.getElementById('btnViewCheckInMap').style.display = 'none';
+            }
+
+            // Check-in IP
+            document.getElementById('detailCheckInIP').textContent = data.CheckInIpaddress || '-';
+
+            // Check-in Notes
+            if (data.CheckInNotes) {
+                document.getElementById('checkInNotesGroup').style.display = 'block';
+                document.getElementById('detailCheckInNotes').textContent = data.CheckInNotes;
+            } else {
+                document.getElementById('checkInNotesGroup').style.display = 'none';
+            }
+
+            // Check-in Photo
+            if (data.CheckInPhotos) {
+                document.getElementById('checkInPhotoGroup').style.display = 'block';
+                document.getElementById('checkInPhotoContainer').innerHTML = `
+                    <img src="${data.CheckInPhotos}" alt="Check-in Photo" onclick="showPhoto('${data.CheckInPhotos}', 'Check-in')" style="width: 100%; cursor: pointer;">
+                `;
+            } else {
+                document.getElementById('checkInPhotoGroup').style.display = 'none';
+            }
+
+            // Check-out Info
+            if (data.CheckOutTime) {
+                const checkOutDate = new Date(data.CheckOutTime);
+                document.getElementById('detailCheckOutTime').innerHTML = `
+                    ${checkOutDate.toLocaleDateString('vi-VN')} - <span class="att-badge att-badge-late">${checkOutDate.toLocaleTimeString('vi-VN')}</span>
+                `;
+            } else {
+                document.getElementById('detailCheckOutTime').innerHTML = '<span class="att-badge att-badge-partial">Chưa check-out</span>';
+            }
+
+            // Total Hours
+            if (data.TotalHours && data.TotalHours > 0) {
+                document.getElementById('detailTotalHours').innerHTML = `
+                    <i class="fas fa-clock"></i> ${data.TotalHours.toFixed(2)} giờ
+                `;
+            } else {
+                document.getElementById('detailTotalHours').innerHTML = '<span class="att-text-muted">-</span>';
+            }
+
+            // Check-out Address
+            if (data.CheckOutAddress) {
+                document.getElementById('detailCheckOutAddress').textContent = data.CheckOutAddress;
+                document.getElementById('btnViewCheckOutMap').style.display = 'inline-block';
+                document.getElementById('btnViewCheckOutMap').onclick = () =>
+                    viewMap(data.CheckOutLatitude, data.CheckOutLongitude, data.CheckOutAddress, 'Check-out');
+            } else {
+                document.getElementById('detailCheckOutAddress').innerHTML = '<span class="att-text-muted">Không có thông tin</span>';
+                document.getElementById('btnViewCheckOutMap').style.display = 'none';
+            }
+
+            // Check-out IP
+            document.getElementById('detailCheckOutIP').textContent = data.CheckOutIpaddress || '-';
+
+            // Check-out Notes
+            if (data.CheckOutNotes) {
+                document.getElementById('checkOutNotesGroup').style.display = 'block';
+                document.getElementById('detailCheckOutNotes').textContent = data.CheckOutNotes;
+            } else {
+                document.getElementById('checkOutNotesGroup').style.display = 'none';
+            }
+
+            // Check-out Photo
+            if (data.CheckOutPhotos) {
+                document.getElementById('checkOutPhotoGroup').style.display = 'block';
+                document.getElementById('checkOutPhotoContainer').innerHTML = `
+                    <img src="${data.CheckOutPhotos}" alt="Check-out Photo" onclick="showPhoto('${data.CheckOutPhotos}', 'Check-out')" style="width: 100%; cursor: pointer;">
+                `;
+            } else {
+                document.getElementById('checkOutPhotoGroup').style.display = 'none';
+            }
+
+            // Status
+            let statusHTML = '';
+
+            // Check-in/Check-out status
+            if (data.CheckInTime && data.CheckOutTime) {
+                statusHTML += '<span class="att-status-badge completed"><i class="fas fa-check-circle"></i> Hoàn thành đủ</span>';
+            } else if (data.CheckInTime) {
+                statusHTML += '<span class="att-status-badge partial"><i class="fas fa-clock"></i> Chưa check-out</span>';
+            }
+
+            // Late status
+            if (data.IsLate === true) {
+                statusHTML += '<span class="att-status-badge late"><i class="fas fa-exclamation-triangle"></i> Đến muộn</span>';
+            } else if (data.IsLate === false) {
+                statusHTML += '<span class="att-status-badge ontime"><i class="fas fa-check"></i> Đúng giờ</span>';
+            }
+
+            // Geofence status
+            if (data.IsWithinGeofence === false) {
+                statusHTML += '<span class="att-status-badge outside"><i class="fas fa-map-marker-alt"></i> Ngoài khu vực</span>';
+            } else if (data.IsWithinGeofence === true) {
+                statusHTML += '<span class="att-status-badge inside"><i class="fas fa-map-marker-alt"></i> Trong khu vực</span>';
+            }
+
+            document.getElementById('detailStatus').innerHTML = statusHTML;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+            modal.show();
+        }
+
+        function viewMap(lat, lng, address, type) {
+            currentLat = parseFloat(lat);
+            currentLng = parseFloat(lng);
+            currentAddress = address;
+
+            document.getElementById('mapModalTitle').textContent = `Vị trí ${type}`;
+            document.getElementById('mapAddress').textContent = address;
+            document.getElementById('mapCoordinates').textContent = `${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
+
+            const modal = new bootstrap.Modal(document.getElementById('mapModal'));
+            modal.show();
+
+            setTimeout(() => {
+                initMap(currentLat, currentLng);
+            }, 300);
+        }
+
+        function initMap(lat, lng) {
+            if (currentMap) {
+                currentMap.remove();
+            }
+
+            currentMap = L.map('mapContainer').setView([lat, lng], 16);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(currentMap);
+
+            const marker = L.marker([lat, lng]).addTo(currentMap);
+            marker.bindPopup(`
+                <b>Vị trí chấm công</b><br>
+                ${currentAddress}<br>
+                <small>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small>
+            `).openPopup();
+
+            L.circle([lat, lng], {
+                color: '#5e72e4',
+                fillColor: '#5e72e4',
+                fillOpacity: 0.2,
+                radius: 50
+            }).addTo(currentMap);
+        }
+
+        document.getElementById('btnOpenGoogleMaps').addEventListener('click', function () {
+            const url = `https://www.google.com/maps?q=${currentLat},${currentLng}`;
+            window.open(url, '_blank');
+        });
+
+        document.getElementById('mapModal').addEventListener('hidden.bs.modal', function () {
+            if (currentMap) {
+                currentMap.remove();
+                currentMap = null;
+            }
+        });
+
+        function exportToExcel() {
+            // Get filter values
+            const userId = new URLSearchParams(window.location.search).get('userId') || '';
+            const departmentId = new URLSearchParams(window.location.search).get('departmentId') || '';
+            const fromDate = new URLSearchParams(window.location.search).get('fromDate') || '';
+            const toDate = new URLSearchParams(window.location.search).get('toDate') || '';
+
+            // Build export URL with filters
+            let exportUrl = '/Admin/ExportAttendanceHistory?';
+            if (userId) exportUrl += `userId=${userId}&`;
+            if (departmentId) exportUrl += `departmentId=${departmentId}&`;
+            if (fromDate) exportUrl += `fromDate=${fromDate}&`;
+            if (toDate) exportUrl += `toDate=${toDate}&`;
+
+            // For now, show alert
+            alert('Chức năng xuất Excel đang được phát triển.\n\nURL: ' + exportUrl);
+
+            // Uncomment when backend is ready:
+            // window.location.href = exportUrl;
+        }
+    </script>
+}

@@ -1,0 +1,359 @@
+﻿@model List<TMD.Models.LoginHistory>
+@{
+    ViewData["Title"] = "Lịch sử đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="login-history-container">
+    <!-- HEADER -->
+    <div class="login-history-header">
+        <h2 class="login-history-title">
+            <i class="fas fa-history"></i> Lịch sử đăng nhập của tôi
+        </h2>
+        <p class="text-muted mb-0">Theo dõi hoạt động đăng nhập của bạn</p>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-box stat-box--primary">
+                <div class="stat-box__icon">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="stat-box__content">
+                    <h3>@Model.Count</h3>
+                    <p>Tổng lượt đăng nhập</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box stat-box--success">
+                <div class="stat-box__icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-box__content">
+                    <h3>@Model.Count(l => l.IsSuccess == true)</h3>
+                    <p>Đăng nhập thành công</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box stat-box--danger">
+                <div class="stat-box__icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-box__content">
+                    <h3>@Model.Count(l => l.IsSuccess == false)</h3>
+                    <p>Đăng nhập thất bại</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN HISTORY TABLE -->
+    <div class="login-history-table">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>IP Address</th>
+                        <th>Trình duyệt</th>
+                        <th>Thiết bị</th>
+                        <th>Trạng thái</th>
+                        <th>Thời gian sử dụng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var login in Model)
+                    {
+                        <tr class="@(login.IsSuccess == false ? "table-row-failed" : "")">
+                            <td>
+                                <div class="timestamp">
+                                    <i class="far fa-clock"></i>
+                                    <div>
+                                        <div>@login.LoginTime?.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">@login.LoginTime?.ToString("HH:mm:ss")</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <code class="ip-badge">@login.Ipaddress</code>
+                            </td>
+                            <td>
+                                <span class="browser-badge">
+                                    <i class="fab fa-@(login.Browser?.ToLower() == "chrome" ? "chrome" : login.Browser?.ToLower() == "firefox" ? "firefox" : login.Browser?.ToLower() == "safari" ? "safari" : login.Browser?.ToLower() == "edge" ? "edge" : "question")"></i>
+                                    @login.Browser
+                                </span>
+                            </td>
+                            <td>
+                                <span class="device-badge device-badge--@login.Device?.ToLower()">
+                                    <i class="fas fa-@(login.Device == "Mobile" ? "mobile-alt" : login.Device == "Tablet" ? "tablet-alt" : "desktop")"></i>
+                                    @login.Device
+                                </span>
+                            </td>
+                            <td>
+                                @if (login.IsSuccess == true)
+                                {
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Thành công
+                                    </span>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <span class="badge badge-danger mb-1">
+                                            <i class="fas fa-times-circle"></i> Thất bại
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(login.FailReason))
+                                        {
+                                            <div><small class="text-danger">@login.FailReason</small></div>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                @if (login.LogoutTime.HasValue && login.LoginTime.HasValue)
+                                {
+                                    var duration = login.LogoutTime.Value - login.LoginTime.Value;
+                                    <span class="duration-badge">
+                                        <i class="fas fa-stopwatch"></i>
+                                        @duration.Hours giờ @duration.Minutes phút
+                                    </span>
+                                }
+                                else if (login.IsSuccess == true)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-hourglass-half"></i> Đang hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-history"></i>
+            <h4>Chưa có dữ liệu</h4>
+            <p>Chưa có lịch sử đăng nhập nào</p>
+        </div>
+    }
+</div>
+
+<style>
+    .login-history-container {
+        padding: 30px;
+    }
+
+    .login-history-header {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .login-history-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+
+    /* STAT BOXES */
+    .stat-box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .stat-box--primary::before { background: #4299e1; }
+    .stat-box--success::before { background: #48bb78; }
+    .stat-box--danger::before { background: #f56565; }
+
+    .stat-box__icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+    }
+
+    .stat-box--primary .stat-box__icon { background: linear-gradient(135deg, #4299e1, #3182ce); }
+    .stat-box--success .stat-box__icon { background: linear-gradient(135deg, #48bb78, #38a169); }
+    .stat-box--danger .stat-box__icon { background: linear-gradient(135deg, #f56565, #e53e3e); }
+
+    .stat-box__content h3 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .stat-box__content p {
+        color: #718096;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* TABLE */
+    .login-history-table {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .table {
+        margin: 0;
+    }
+
+    .table thead th {
+        background: #f7fafc;
+        color: #4a5568;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 15px;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background: #f7fafc;
+    }
+
+    .table-row-failed {
+        background: rgba(245, 101, 101, 0.05);
+    }
+
+    .table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-color: #e2e8f0;
+    }
+
+    .timestamp {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .timestamp i {
+        font-size: 18px;
+        color: #a0aec0;
+    }
+
+    .ip-badge {
+        background: #edf2f7;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #4a5568;
+    }
+
+    .browser-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        background: #f7fafc;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #4a5568;
+    }
+
+    .device-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .device-badge--desktop { background: #4299e1; color: white; }
+    .device-badge--mobile { background: #48bb78; color: white; }
+    .device-badge--tablet { background: #ed8936; color: white; }
+
+    .duration-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #4a5568;
+        font-size: 13px;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .badge-success {
+        background: #48bb78;
+        color: white;
+    }
+
+    .badge-danger {
+        background: #f56565;
+        color: white;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .empty-state i {
+        font-size: 80px;
+        color: #cbd5e0;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h4 {
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #718096;
+    }
+</style>

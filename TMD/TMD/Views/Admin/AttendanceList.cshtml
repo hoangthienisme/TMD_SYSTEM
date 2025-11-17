@@ -1,0 +1,912 @@
+﻿@model List<TMD.Models.Attendance>
+@{
+    ViewData["Title"] = "Lịch Sử Chấm Công";
+    Layout = "~/Views/Shared/_LayoutStaff.cshtml";
+}
+
+<div class="page-header">
+    <h1 class="page-title"><i class="fas fa-history"></i> Lịch Sử Chấm Công</h1>
+    <div class="page-breadcrumb">
+        <a href="/Staff/Dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <span>/</span>
+        <span>Lịch sử chấm công</span>
+    </div>
+</div>
+
+<!-- Thống kê tổng quan -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                <h5 class="mb-0">@Model.Count</h5>
+                <small class="text-muted">Tổng số ngày</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                <h5 class="mb-0">@Model.Where(a => a.IsLate == false).Count()</h5>
+                <small class="text-muted">Đúng giờ</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                <h5 class="mb-0">@Model.Where(a => a.IsLate == true).Count()</h5>
+                <small class="text-muted">Đi muộn</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="fas fa-hourglass-half fa-2x text-primary mb-2"></i>
+                <h5 class="mb-0">@Model.Sum(a => a.TotalHours ?? 0).ToString("F1")h</h5>
+                <small class="text-muted">Tổng giờ làm</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bảng lịch sử -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Chi Tiết Chấm Công
+        </h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ngày làm việc</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Tổng giờ</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.WorkDate.ToString("dd/MM/yyyy")</strong><br>
+                                    <small class="text-muted">@item.WorkDate.DayOfWeek</small>
+                                </td>
+                                <td>
+                                    @if (item.CheckInTime.HasValue)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-sign-in-alt"></i>
+                                            @item.CheckInTime.Value.ToString("HH:mm:ss")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.CheckOutTime.HasValue)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            @item.CheckOutTime.Value.ToString("HH:mm:ss")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Chưa checkout</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.TotalHours.HasValue)
+                                    {
+                                        <strong>@item.TotalHours.Value.ToString("F2") giờ</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsLate == true)
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock"></i> Đi muộn
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check"></i> Đúng giờ
+                                        </span>
+                                    }
+                                    @if (item.IsWithinGeofence == false)
+                                    {
+                                        <br>
+                                        <span class="badge bg-danger mt-1">
+                                            <i class="fas fa-map-marker-alt"></i> Ngoài khu vực
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary"
+                                            onclick="viewDetails({
+                                                WorkDate: '@item.WorkDate.ToString("yyyy-MM-dd")',
+                                                CheckInTime: '@(item.CheckInTime?.ToString("yyyy-MM-ddTHH:mm:ss"))',
+                                                CheckOutTime: '@(item.CheckOutTime?.ToString("yyyy-MM-ddTHH:mm:ss"))',
+                                                TotalHours: @(item.TotalHours ?? 0),
+                                                CheckInLatitude: @(item.CheckInLatitude ?? 0),
+                                                CheckInLongitude: @(item.CheckInLongitude ?? 0),
+                                                CheckInAddress: '@Html.Raw(item.CheckInAddress?.Replace("'", "\\'"))',
+                                                CheckInIpaddress: '@item.CheckInIpaddress',
+                                                CheckInNotes: '@Html.Raw(item.CheckInNotes?.Replace("'", "\\'"))',
+                                                CheckInPhotos: '@item.CheckInPhotos',
+                                                CheckOutLatitude: @(item.CheckOutLatitude ?? 0),
+                                                CheckOutLongitude: @(item.CheckOutLongitude ?? 0),
+                                                CheckOutAddress: '@Html.Raw(item.CheckOutAddress?.Replace("'", "\\'"))',
+                                                CheckOutIpaddress: '@item.CheckOutIpaddress',
+                                                CheckOutNotes: '@Html.Raw(item.CheckOutNotes?.Replace("'", "\\'"))',
+                                                CheckOutPhotos: '@item.CheckOutPhotos',
+                                                IsLate: @(item.IsLate?.ToString().ToLower() ?? "false"),
+                                                IsWithinGeofence: @(item.IsWithinGeofence?.ToString().ToLower() ?? "null")
+                                            })">
+                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có dữ liệu chấm công</h5>
+                <p class="text-muted">Hãy bắt đầu check-in để ghi nhận thời gian làm việc của bạn</p>
+                <a href="/Staff/Dashboard" class="btn btn-primary">
+                    <i class="fas fa-clock"></i> Đi check-in ngay
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal Chi Tiết -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle"></i> Chi Tiết Chấm Công
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- CHECK-IN INFO -->
+                    <div class="col-md-6">
+                        <div class="detail-section">
+                            <h6 class="section-title">
+                                <i class="fas fa-sign-in-alt text-success"></i> Thông tin Check-in
+                            </h6>
+
+                            <div class="info-group">
+                                <label><i class="far fa-calendar"></i> Ngày làm việc:</label>
+                                <p id="detailWorkDate">-</p>
+                            </div>
+
+                            <div class="info-group">
+                                <label><i class="far fa-clock"></i> Thời gian check-in:</label>
+                                <p id="detailCheckInTime">-</p>
+                            </div>
+
+                            <div class="info-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Vị trí check-in:</label>
+                                <p id="detailCheckInAddress" class="text-muted small">-</p>
+                                <button class="btn btn-sm btn-outline-primary mt-1" id="btnViewCheckInMap" style="display: none;">
+                                    <i class="fas fa-map"></i> Xem bản đồ
+                                </button>
+                            </div>
+
+                            <div class="info-group">
+                                <label><i class="fas fa-network-wired"></i> IP Address:</label>
+                                <p id="detailCheckInIP" class="font-monospace">-</p>
+                            </div>
+
+                            <div class="info-group" id="checkInNotesGroup" style="display: none;">
+                                <label><i class="fas fa-sticky-note"></i> Ghi chú:</label>
+                                <p id="detailCheckInNotes" class="text-info">-</p>
+                            </div>
+
+                            <div class="info-group" id="checkInPhotoGroup" style="display: none;">
+                                <label><i class="fas fa-image"></i> Hình ảnh check-in:</label>
+                                <div class="photo-preview" id="checkInPhotoContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHECK-OUT INFO -->
+                    <div class="col-md-6">
+                        <div class="detail-section">
+                            <h6 class="section-title">
+                                <i class="fas fa-sign-out-alt text-danger"></i> Thông tin Check-out
+                            </h6>
+
+                            <div class="info-group">
+                                <label><i class="far fa-clock"></i> Thời gian check-out:</label>
+                                <p id="detailCheckOutTime">-</p>
+                            </div>
+
+                            <div class="info-group">
+                                <label><i class="fas fa-hourglass-half"></i> Tổng giờ làm việc:</label>
+                                <p id="detailTotalHours" class="text-primary fw-bold">-</p>
+                            </div>
+
+                            <div class="info-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Vị trí check-out:</label>
+                                <p id="detailCheckOutAddress" class="text-muted small">-</p>
+                                <button class="btn btn-sm btn-outline-danger mt-1" id="btnViewCheckOutMap" style="display: none;">
+                                    <i class="fas fa-map"></i> Xem bản đồ
+                                </button>
+                            </div>
+
+                            <div class="info-group">
+                                <label><i class="fas fa-network-wired"></i> IP Address:</label>
+                                <p id="detailCheckOutIP" class="font-monospace">-</p>
+                            </div>
+
+                            <div class="info-group" id="checkOutNotesGroup" style="display: none;">
+                                <label><i class="fas fa-sticky-note"></i> Ghi chú:</label>
+                                <p id="detailCheckOutNotes" class="text-info">-</p>
+                            </div>
+
+                            <div class="info-group" id="checkOutPhotoGroup" style="display: none;">
+                                <label><i class="fas fa-image"></i> Hình ảnh check-out:</label>
+                                <div class="photo-preview" id="checkOutPhotoContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATUS INFO -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="detail-section">
+                            <h6 class="section-title">
+                                <i class="fas fa-info-circle text-info"></i> Trạng thái
+                            </h6>
+                            <div id="detailStatus"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem bản đồ -->
+<div class="modal fade" id="mapModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalTitle">Vị trí chấm công</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="mapContainer" style="height: 500px; width: 100%; border-radius: 10px;"></div>
+                <div class="mt-3">
+                    <p class="mb-1"><strong>Địa chỉ:</strong></p>
+                    <p class="mb-2" id="mapAddress"></p>
+                    <p class="mb-1"><strong>Tọa độ:</strong></p>
+                    <p class="mb-0 font-monospace" id="mapCoordinates"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="btnOpenGoogleMaps">
+                    <i class="fab fa-google"></i> Mở Google Maps
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #718096;
+    }
+
+    .page-breadcrumb a {
+        color: #4e73df;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .page-breadcrumb a:hover {
+        color: #2e59d9;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .stat-card:nth-child(1)::before { background: linear-gradient(to bottom, #48bb78, #38a169); }
+    .stat-card:nth-child(2)::before { background: linear-gradient(to bottom, #4299e1, #3182ce); }
+    .stat-card:nth-child(3)::before { background: linear-gradient(to bottom, #ed8936, #dd6b20); }
+    .stat-card:nth-child(4)::before { background: linear-gradient(to bottom, #667eea, #764ba2); }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .stat-card .card-body {
+        background: white;
+    }
+
+    /* Table Styles */
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px 15px 0 0 !important;
+        border: none;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .card-title {
+        color: white !important;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .table-responsive {
+        border-radius: 0 0 15px 15px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: linear-gradient(to right, #f8f9fc, #e3e6f0);
+        font-weight: 700;
+        color: #2d3748;
+        border-bottom: 3px solid #4e73df;
+        white-space: nowrap;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table tbody tr:hover {
+        background: linear-gradient(to right, #f7fafc, #edf2f7);
+        transform: scale(1.01);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 1rem;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, #48bb78, #38a169) !important;
+        box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+    }
+
+    .badge.bg-danger {
+        background: linear-gradient(135deg, #f56565, #e53e3e) !important;
+        box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
+    }
+
+    .badge.bg-warning {
+        background: linear-gradient(135deg, #ed8936, #dd6b20) !important;
+        box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3);
+    }
+
+    /* Button Styles */
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Pagination */
+    .pagination {
+        gap: 0.5rem;
+    }
+
+    .pagination .page-link {
+        color: #4e73df;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .page-link:hover {
+        background: #4e73df;
+        color: white;
+        border-color: #4e73df;
+        transform: translateY(-2px);
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-color: #667eea;
+        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: #cbd5e0;
+        margin-bottom: 1.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Detail Modal Styles */
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .detail-section {
+        background: linear-gradient(to bottom right, #f8f9fc, #edf2f7);
+        padding: 1.5rem;
+        border-radius: 15px;
+        height: 100%;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 3px solid #4e73df;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-group {
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .info-group label {
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-group label i {
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 8px;
+        color: #4e73df;
+    }
+
+    .info-group p {
+        margin: 0;
+        padding: 1rem;
+        background: white;
+        border-radius: 10px;
+        border-left: 4px solid #4e73df;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    .info-group p:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .photo-preview {
+        position: relative;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .photo-preview:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .photo-preview img {
+        width: 100%;
+        height: auto;
+        display: block;
+        cursor: pointer;
+        transition: transform 0.5s ease;
+    }
+
+    .photo-preview:hover img {
+        transform: scale(1.1);
+    }
+
+    .photo-preview .download-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        font-weight: 600;
+    }
+
+    .photo-preview .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    }
+
+    /* Map Styles */
+    #mapContainer {
+        background: #f0f0f0;
+        border: 3px solid #e2e8f0;
+    }
+
+    /* Loading Animation */
+    .spinner-border {
+        animation: spin 1s linear infinite;
+    }
+
+    keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+@section Scripts {
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        let currentMap = null;
+        let currentLat = 0;
+        let currentLng = 0;
+        let currentAddress = '';
+
+        function viewDetails(data) {
+            // Work Date
+            const workDate = new Date(data.WorkDate);
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('detailWorkDate').innerHTML = `
+                <strong>${workDate.toLocaleDateString('vi-VN', dateOptions)}</strong>
+            `;
+
+            // Check-in Info
+            if (data.CheckInTime) {
+                const checkInDate = new Date(data.CheckInTime);
+                document.getElementById('detailCheckInTime').innerHTML = `
+                    <strong>${checkInDate.toLocaleDateString('vi-VN')}</strong>
+                    <span class="badge bg-success">${checkInDate.toLocaleTimeString('vi-VN')}</span>
+                `;
+            } else {
+                document.getElementById('detailCheckInTime').innerHTML = '<span class="text-muted">Chưa check-in</span>';
+            }
+
+            // Check-in Address
+            if (data.CheckInAddress) {
+                document.getElementById('detailCheckInAddress').textContent = data.CheckInAddress;
+                document.getElementById('btnViewCheckInMap').style.display = 'inline-block';
+                document.getElementById('btnViewCheckInMap').onclick = () =>
+                    viewMap(data.CheckInLatitude, data.CheckInLongitude, data.CheckInAddress, 'Check-in');
+            } else {
+                document.getElementById('detailCheckInAddress').innerHTML = '<span class="text-muted">Không có thông tin</span>';
+                document.getElementById('btnViewCheckInMap').style.display = 'none';
+            }
+
+            // Check-in IP
+            document.getElementById('detailCheckInIP').textContent = data.CheckInIpaddress || '-';
+
+            // Check-in Notes
+            if (data.CheckInNotes) {
+                document.getElementById('checkInNotesGroup').style.display = 'block';
+                document.getElementById('detailCheckInNotes').textContent = data.CheckInNotes;
+            } else {
+                document.getElementById('checkInNotesGroup').style.display = 'none';
+            }
+
+            // Check-in Photo
+            if (data.CheckInPhotos) {
+                document.getElementById('checkInPhotoGroup').style.display = 'block';
+                document.getElementById('checkInPhotoContainer').innerHTML = `
+                    <img src="${data.CheckInPhotos}" alt="Check-in Photo" onclick="viewFullImage('${data.CheckInPhotos}')">
+                    <a href="${data.CheckInPhotos}" download class="download-btn">
+                        <i class="fas fa-download"></i> Tải xuống
+                    </a>
+                `;
+            } else {
+                document.getElementById('checkInPhotoGroup').style.display = 'none';
+            }
+
+            // Check-out Info
+            if (data.CheckOutTime) {
+                const checkOutDate = new Date(data.CheckOutTime);
+                document.getElementById('detailCheckOutTime').innerHTML = `
+                    <strong>${checkOutDate.toLocaleDateString('vi-VN')}</strong>
+                    <span class="badge bg-danger">${checkOutDate.toLocaleTimeString('vi-VN')}</span>
+                `;
+            } else {
+                document.getElementById('detailCheckOutTime').innerHTML = '<span class="badge bg-warning">Chưa check-out</span>';
+            }
+
+            // Total Hours
+            if (data.TotalHours) {
+                document.getElementById('detailTotalHours').innerHTML = `
+                    <i class="fas fa-clock"></i> ${data.TotalHours.toFixed(2)} giờ
+                `;
+            } else {
+                document.getElementById('detailTotalHours').innerHTML = '<span class="text-muted">-</span>';
+            }
+
+            // Check-out Address
+            if (data.CheckOutAddress) {
+                document.getElementById('detailCheckOutAddress').textContent = data.CheckOutAddress;
+                document.getElementById('btnViewCheckOutMap').style.display = 'inline-block';
+                document.getElementById('btnViewCheckOutMap').onclick = () =>
+                    viewMap(data.CheckOutLatitude, data.CheckOutLongitude, data.CheckOutAddress, 'Check-out');
+            } else {
+                document.getElementById('detailCheckOutAddress').innerHTML = '<span class="text-muted">Không có thông tin</span>';
+                document.getElementById('btnViewCheckOutMap').style.display = 'none';
+            }
+
+            // Check-out IP
+            document.getElementById('detailCheckOutIP').textContent = data.CheckOutIpaddress || '-';
+
+            // Check-out Notes
+            if (data.CheckOutNotes) {
+                document.getElementById('checkOutNotesGroup').style.display = 'block';
+                document.getElementById('detailCheckOutNotes').textContent = data.CheckOutNotes;
+            } else {
+                document.getElementById('checkOutNotesGroup').style.display = 'none';
+            }
+
+            // Check-out Photo
+            if (data.CheckOutPhotos) {
+                document.getElementById('checkOutPhotoGroup').style.display = 'block';
+                document.getElementById('checkOutPhotoContainer').innerHTML = `
+                    <img src="${data.CheckOutPhotos}" alt="Check-out Photo" onclick="viewFullImage('${data.CheckOutPhotos}')">
+                    <a href="${data.CheckOutPhotos}" download class="download-btn">
+                        <i class="fas fa-download"></i> Tải xuống
+                    </a>
+                `;
+            } else {
+                document.getElementById('checkOutPhotoGroup').style.display = 'none';
+            }
+
+            // Status
+            let statusHTML = '<div class="d-flex gap-2 flex-wrap">';
+
+            if (data.IsLate) {
+                statusHTML += '<span class="badge bg-warning"><i class="fas fa-clock"></i> Đến muộn</span>';
+            } else {
+                statusHTML += '<span class="badge bg-success"><i class="fas fa-check"></i> Đúng giờ</span>';
+            }
+
+            if (data.IsWithinGeofence === false) {
+                statusHTML += '<span class="badge bg-danger"><i class="fas fa-map-marker-alt"></i> Ngoài khu vực cho phép</span>';
+            } else if (data.IsWithinGeofence === true) {
+                statusHTML += '<span class="badge bg-success"><i class="fas fa-map-marker-alt"></i> Trong khu vực</span>';
+            }
+
+            statusHTML += '</div>';
+            document.getElementById('detailStatus').innerHTML = statusHTML;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+            modal.show();
+        }
+
+        function viewFullImage(imageSrc) {
+            window.open(imageSrc, '_blank');
+        }
+
+        function viewMap(lat, lng, address, type) {
+            currentLat = parseFloat(lat);
+            currentLng = parseFloat(lng);
+            currentAddress = address;
+
+            document.getElementById('mapModalTitle').textContent = `Vị trí ${type}`;
+            document.getElementById('mapAddress').textContent = address;
+            document.getElementById('mapCoordinates').textContent = `${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
+
+            const modal = new bootstrap.Modal(document.getElementById('mapModal'));
+            modal.show();
+
+            setTimeout(() => {
+                initMap(currentLat, currentLng);
+            }, 300);
+        }
+
+        function initMap(lat, lng) {
+            if (currentMap) {
+                currentMap.remove();
+            }
+
+            currentMap = L.map('mapContainer').setView([lat, lng], 16);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(currentMap);
+
+            const marker = L.marker([lat, lng]).addTo(currentMap);
+            marker.bindPopup(`
+                <b>Vị trí chấm công</b><br>
+                ${currentAddress}<br>
+                <small>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small>
+            `).openPopup();
+
+            L.circle([lat, lng], {
+                color: '#4e73df',
+                fillColor: '#4e73df',
+                fillOpacity: 0.2,
+                radius: 50
+            }).addTo(currentMap);
+        }
+
+        document.getElementById('btnOpenGoogleMaps').addEventListener('click', function() {
+            const url = `https://www.google.com/maps?q=${currentLat},${currentLng}`;
+            window.open(url, '_blank');
+        });
+
+        document.getElementById('mapModal').addEventListener('hidden.bs.modal', function () {
+            if (currentMap) {
+                currentMap.remove();
+                currentMap = null;
+            }
+        });
+    </script>
+}
+</document_content>

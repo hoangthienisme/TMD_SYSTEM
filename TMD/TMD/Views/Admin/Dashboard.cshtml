@@ -1,0 +1,439 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/dashboard-management.css" rel="stylesheet" />
+
+<div class="container-fluid px-4 py-4 dash-container">
+    <!-- HEADER -->
+    <div class="dash-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="dash-page-title">
+                    <i class="fas fa-chart-line me-2"></i> Admin Dashboard
+                </h2>
+                <p class="dash-page-subtitle">Tổng quan hệ thống quản lý và hiệu suất làm việc</p>
+            </div>
+            <div class="dash-date-badge">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="currentDate"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATISTICS CARDS -->
+    <div class="dash-stats-grid">
+        <div class="dash-stat-card dash-stat-primary">
+            <div class="dash-stat-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="dash-stat-content">
+                <div class="dash-stat-label">Tổng Task</div>
+                <div class="dash-stat-value">@ViewBag.TotalTasks</div>
+                <div class="dash-stat-change positive">
+                    <i class="fas fa-arrow-up"></i> Đang hoạt động
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-stat-card dash-stat-success">
+            <div class="dash-stat-icon">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <div class="dash-stat-content">
+                <div class="dash-stat-label">Task Hoàn Thành</div>
+                <div class="dash-stat-value">@ViewBag.CompletedTasks</div>
+                <div class="dash-stat-change positive">
+                    <i class="fas fa-percentage"></i> @ViewBag.TaskCompletionRate%
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-stat-card dash-stat-warning">
+            <div class="dash-stat-icon">
+                <i class="fas fa-spinner"></i>
+            </div>
+            <div class="dash-stat-content">
+                <div class="dash-stat-label">Đang Thực Hiện</div>
+                <div class="dash-stat-value">@ViewBag.InProgressTasks</div>
+                <div class="dash-stat-change">
+                    <i class="fas fa-clock"></i> Đang làm
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-stat-card dash-stat-danger">
+            <div class="dash-stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="dash-stat-content">
+                <div class="dash-stat-label">Task Quá Hạn</div>
+                <div class="dash-stat-value">@ViewBag.OverdueTasks</div>
+                <div class="dash-stat-change negative">
+                    <i class="fas fa-calendar-times"></i> Cần xử lý
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-stat-card dash-stat-info">
+            <div class="dash-stat-icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="dash-stat-content">
+                <div class="dash-stat-label">Chuyên Cần (Tháng)</div>
+                <div class="dash-stat-value">@ViewBag.OnTimeCount</div>
+                <div class="dash-stat-change positive">
+                    <i class="fas fa-percentage"></i> @ViewBag.OnTimeRate%
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-stat-card dash-stat-danger">
+            <div class="dash-stat-icon">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            <div class="dash-stat-content">
+                <div class="dash-stat-label">Đi Trễ (Tháng)</div>
+                <div class="dash-stat-value">@ViewBag.LateCount</div>
+                <div class="dash-stat-change negative">
+                    <i class="fas fa-exclamation-circle"></i> Cần cải thiện
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- TOP PERFORMERS -->
+        <div class="col-lg-6">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h5 class="dash-card-title">
+                        <i class="fas fa-trophy"></i> Top 5 Nhân Viên Xuất Sắc
+                    </h5>
+                    <a href="/Admin/UserList" class="dash-btn-link">
+                        Xem tất cả <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="dash-card-body">
+                    @if (ViewBag.TopPerformers != null && ViewBag.TopPerformers.Count > 0)
+                    {
+                        <div class="dash-leaderboard">
+                            @for (int i = 0; i < ViewBag.TopPerformers.Count; i++)
+                            {
+                                var performer = ViewBag.TopPerformers[i];
+                                var rankClass = i == 0 ? "rank-1" : i == 1 ? "rank-2" : i == 2 ? "rank-3" : "rank-other";
+
+                                <div class="dash-leaderboard-item">
+                                    <div class="dash-leaderboard-rank @rankClass">
+                                        @if (i < 3)
+                                        {
+                                            <i class="fas fa-@(i == 0 ? "crown" : i == 1 ? "medal" : "award")"></i>
+                                        }
+                                        else
+                                        {
+                                            <span>@(i + 1)</span>
+                                        }
+                                    </div>
+                                    <div class="dash-user-avatar">@performer.User.FullName?.Substring(0, 1)</div>
+                                    <div class="dash-leaderboard-info">
+                                        <div class="dash-leaderboard-name">@performer.User.FullName</div>
+                                        <div class="dash-leaderboard-dept">
+                                            <i class="fas fa-building me-1"></i>
+                                            @performer.User.Department?.DepartmentName
+                                        </div>
+                                    </div>
+                                    <div class="dash-leaderboard-stat">
+                                        <div class="dash-leaderboard-value">@performer.TotalCompleted</div>
+                                        <div class="dash-leaderboard-label">Task hoàn thành</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dash-empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <p>Chưa có dữ liệu thống kê</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- TASK PROGRESS BY PRIORITY -->
+        <div class="col-lg-6">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h5 class="dash-card-title">
+                        <i class="fas fa-chart-bar"></i> Tiến Độ Task Theo Mức Độ
+                    </h5>
+                    <a href="/Admin/TaskList" class="dash-btn-link">
+                        Xem tất cả <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="dash-card-body">
+                    @if (ViewBag.TasksByPriority != null && ViewBag.TasksByPriority.Count > 0)
+                    {
+                        <div class="dash-task-progress">
+                            @foreach (var priority in ViewBag.TasksByPriority)
+                            {
+                                var percentage = priority.Total > 0 ? Math.Round((double)priority.Completed / priority.Total * 100, 1) : 0;
+                                var priorityColor = priority.Priority == "High" ? "danger" : priority.Priority == "Medium" ? "warning" : "success";
+
+                                <div class="dash-task-item">
+                                    <div class="dash-task-header">
+                                        <div class="dash-task-name">
+                                            <span class="dash-badge dash-badge-@priorityColor me-2">
+                                                <i class="fas fa-@(priority.Priority == "High" ? "arrow-up" : priority.Priority == "Medium" ? "minus" : "arrow-down")"></i>
+                                                @priority.Priority
+                                            </span>
+                                        </div>
+                                        <div class="dash-task-percentage">@percentage%</div>
+                                    </div>
+                                    <div class="dash-progress dash-stat-@priorityColor">
+                                        <div class="dash-progress-bar" style="width: @percentage%"></div>
+                                    </div>
+                                    <div class="dash-task-meta">
+                                        <span>@priority.Completed hoàn thành</span>
+                                        <span>@priority.Total tổng task</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dash-empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <p>Chưa có task nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- PUNCTUAL STAFF -->
+        <div class="col-lg-6">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h5 class="dash-card-title">
+                        <i class="fas fa-user-check"></i> Top 5 Nhân Viên Chuyên Cần
+                    </h5>
+                    <a href="/Admin/AttendanceHistory" class="dash-btn-link">
+                        Xem chi tiết <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="dash-card-body">
+                    @if (ViewBag.PunctualStaff != null && ViewBag.PunctualStaff.Count > 0)
+                    {
+                        <div class="dash-attendance-grid">
+                            @foreach (var staff in ViewBag.PunctualStaff)
+                            {
+                                <div class="dash-attendance-item">
+                                    <div class="dash-attendance-icon ontime">
+                                        <i class="fas fa-user-check"></i>
+                                    </div>
+                                    <div class="dash-user-info justify-content-center">
+                                        <div class="dash-user-avatar">@staff.User.FullName?.Substring(0, 1)</div>
+                                        <div class="dash-user-details text-center">
+                                            <div class="dash-user-name">@staff.User.FullName</div>
+                                            <small class="dash-user-meta">@staff.User.Department?.DepartmentName</small>
+                                        </div>
+                                    </div>
+                                    <div class="dash-attendance-value">@staff.OnTimeCount</div>
+                                    <div class="dash-attendance-label">Ngày đúng giờ</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dash-empty-state">
+                            <i class="fas fa-calendar-check"></i>
+                            <p>Chưa có dữ liệu chấm công</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- LATE COMERS -->
+        <div class="col-lg-6">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h5 class="dash-card-title">
+                        <i class="fas fa-user-clock"></i> Top 5 Nhân Viên Đi Trễ Nhiều
+                    </h5>
+                    <a href="/Admin/AttendanceHistory" class="dash-btn-link">
+                        Xem chi tiết <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="dash-card-body">
+                    @if (ViewBag.LateComers != null && ViewBag.LateComers.Count > 0)
+                    {
+                        <div class="dash-attendance-grid">
+                            @foreach (var late in ViewBag.LateComers)
+                            {
+                                <div class="dash-attendance-item">
+                                    <div class="dash-attendance-icon late">
+                                        <i class="fas fa-user-clock"></i>
+                                    </div>
+                                    <div class="dash-user-info justify-content-center">
+                                        <div class="dash-user-avatar">@late.User.FullName?.Substring(0, 1)</div>
+                                        <div class="dash-user-details text-center">
+                                            <div class="dash-user-name">@late.User.FullName</div>
+                                            <small class="dash-user-meta">@late.User.Department?.DepartmentName</small>
+                                        </div>
+                                    </div>
+                                    <div class="dash-attendance-value dash-text-danger">@late.LateCount</div>
+                                    <div class="dash-attendance-label">Lần đi trễ</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dash-empty-state">
+                            <i class="fas fa-smile"></i>
+                            <p>Không có nhân viên nào đi trễ!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- UPCOMING TASKS -->
+        <div class="col-lg-8">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h5 class="dash-card-title">
+                        <i class="fas fa-calendar-alt"></i> Task Sắp Đến Deadline
+                    </h5>
+                    <a href="/Admin/TaskList" class="dash-btn-link">
+                        Xem tất cả <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="dash-card-body">
+                    @if (ViewBag.UpcomingTasks != null && ViewBag.UpcomingTasks.Count > 0)
+                    {
+                        <div class="dash-task-progress">
+                            @foreach (var task in ViewBag.UpcomingTasks)
+                            {
+                                DateTime deadline = task.Task.Deadline ?? DateTime.Now;
+                                var daysLeft = (deadline - DateTime.Now).Days;
+                                var isUrgent = daysLeft <= 3;
+
+                                <div class="dash-task-item">
+                                    <div class="dash-task-header">
+                                        <div class="dash-task-name">
+                                            <i class="fas fa-clipboard-list me-2"></i>
+                                            @task.Task.TaskName
+                                            @if (isUrgent && daysLeft >= 0)
+                                            {
+                                                <span class="dash-badge dash-badge-danger ms-2">
+                                                    <i class="fas fa-exclamation-triangle"></i> Gấp
+                                                </span>
+                                            }
+                                        </div>
+                                        <div class="dash-task-percentage">@task.ProgressPercent%</div>
+                                    </div>
+                                    <div class="dash-progress dash-stat-@(task.ProgressPercent >= 80 ? "success" : task.ProgressPercent >= 50 ? "warning" : "danger")">
+                                        <div class="dash-progress-bar" style="width: @task.ProgressPercent%"></div>
+                                    </div>
+                                    <div class="dash-task-meta">
+                                        <span>@task.CompletedCount/@task.AssignedCount người hoàn thành</span>
+                                        <span>
+                                            <i class="far fa-calendar me-1"></i>
+                                            @deadline.ToString("dd/MM/yyyy")
+                                            @if (daysLeft >= 0)
+                                            {
+                                                <span class="@(isUrgent ? "dash-text-danger" : "dash-text-success")">
+                                                    (Còn @daysLeft ngày)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="dash-text-danger">(Quá hạn @Math.Abs(daysLeft) ngày)</span>
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dash-empty-state">
+                            <i class="fas fa-calendar-check"></i>
+                            <p>Không có task nào sắp đến deadline</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITIES -->
+        <div class="col-lg-4">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h5 class="dash-card-title">
+                        <i class="fas fa-history"></i> Hoạt Động Gần Đây
+                    </h5>
+                    <a href="/Admin/AuditLogs" class="dash-btn-link">
+                        Xem tất cả <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="dash-card-body">
+                    @if (ViewBag.RecentAudits != null && ViewBag.RecentAudits.Count > 0)
+                    {
+                        <div class="dash-leaderboard">
+                            @foreach (var audit in ViewBag.RecentAudits)
+                            {
+                                var iconClass = audit.Action == "CREATE" ? "plus" : audit.Action == "UPDATE" ? "edit" : audit.Action == "DELETE" ? "trash" : "eye";
+                                var badgeClass = audit.Action == "CREATE" ? "success" : audit.Action == "UPDATE" ? "warning" : audit.Action == "DELETE" ? "danger" : "info";
+
+                                <div class="dash-leaderboard-item">
+                                    <div class="dash-user-avatar">@audit.User?.FullName?.Substring(0, 1)</div>
+                                    <div class="dash-leaderboard-info">
+                                        <div class="dash-leaderboard-name">@audit.User?.FullName</div>
+                                        <div class="dash-leaderboard-dept">@audit.Description</div>
+                                        <small class="dash-user-meta">
+                                            <i class="far fa-clock me-1"></i>
+                                            @audit.Timestamp?.ToString("HH:mm dd/MM")
+                                        </small>
+                                    </div>
+                                    <span class="dash-badge dash-badge-@badgeClass">
+                                        <i class="fas fa-@iconClass"></i>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dash-empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Chưa có hoạt động nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Display current date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date().toLocaleDateString('vi-VN', options);
+        document.getElementById('currentDate').textContent = today;
+
+        // Auto refresh every 5 minutes
+        setTimeout(() => {
+            location.reload();
+        }, 300000);
+    </script>
+}

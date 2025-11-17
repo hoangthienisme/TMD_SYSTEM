@@ -1,0 +1,476 @@
+﻿@model List<TMD.Models.AuditLog>
+@{
+    ViewData["Title"] = "Nhật ký hoạt động";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/tasklist-ad.css" rel="stylesheet" />
+<link href="~/css/audit-logs.css" rel="stylesheet" />
+<div class="audit-container">
+    <!-- HEADER -->
+    <div class="audit-header">
+        <h2 class="audit-title">
+            <i class="fas fa-clipboard-list"></i> Nhật ký hoạt động hệ thống
+        </h2>
+        <p class="text-muted mb-0">Theo dõi tất cả hoạt động trong hệ thống - Tổng: <strong>@Model.Count</strong> bản ghi</p>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="audit-filters">
+        <form method="get" action="/Admin/AuditLogs">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Loại hành động</label>
+                    <select name="action" class="form-select">
+                        <option value="">Tất cả</option>
+                        @foreach (var act in ViewBag.Actions as List<string>)
+                        {
+                            <option value="@act" selected="@(act == ViewBag.SelectedAction)">@act</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Đến ngày</label>
+                    <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="fas fa-filter"></i> Lọc
+                    </button>
+                    <a href="/Admin/AuditLogs" class="btn btn-outline-secondary">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- AUDIT TABLE -->
+    <div class="audit-table">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 160px;">Thời gian</th>
+                        <th style="width: 180px;">Người thực hiện</th>
+                        <th style="width: 110px;">Hành động</th>
+                        <th style="width: 140px;">Đối tượng</th>
+                        <th>Mô tả</th>
+                        <th style="width: 120px;">IP Address</th>
+                        <th style="width: 70px;">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="timestamp">
+                                    <i class="far fa-clock"></i>
+                                    <div>
+                                        <div class="fw-bold">@log.Timestamp?.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">@log.Timestamp?.ToString("HH:mm:ss")</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-info-small">
+                                    <div class="user-avatar-small">@(log.User?.FullName?.Substring(0, 1) ?? "?")</div>
+                                    <div>
+                                        <div class="user-name-small">@(log.User?.FullName ?? "System")</div>
+                                        <small class="text-muted">@(log.User?.Username ?? "-")</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="action-badge action-badge--@(log.Action?.ToLower().Replace("_", "-") ?? "unknown")">
+                                    <i class="fas fa-@(GetActionIcon(log.Action))"></i>
+                                    @log.Action
+                                </span>
+                            </td>
+                            <td>
+                                <div class="entity-info">
+                                    <strong>@log.EntityName</strong>
+                                    @if (log.EntityId.HasValue)
+                                    {
+                                        <small class="text-muted">ID: @log.EntityId</small>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <small class="text-break">@log.Description</small>
+                            </td>
+                            <td>
+                                <small class="text-muted font-monospace">@(log.Ipaddress ?? "-")</small>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(log.OldValue) || !string.IsNullOrEmpty(log.NewValue))
+                                {
+                                    <button class="btn btn-sm btn-icon btn-info"
+                                            onclick='viewDetails(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
+                                                id = log.AuditLogId,
+                                                oldValue = log.OldValue,
+                                                newValue = log.NewValue,
+                                                action = log.Action,
+                                                entity = log.EntityName,
+                                                timestamp = log.Timestamp?.ToString("dd/MM/yyyy HH:mm:ss"),
+                                                user = log.User?.FullName ?? "System"
+                                            })))'
+                                            title="Xem chi tiết">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-clipboard-list"></i>
+            <h4>Không có dữ liệu</h4>
+            <p>Không tìm thấy nhật ký hoạt động nào</p>
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetActionIcon(string action)
+    {
+        return action?.ToUpper() switch
+        {
+            "CREATE" => "plus",
+            "UPDATE" => "edit",
+            "DELETE" => "trash",
+            "LOGIN" => "sign-in-alt",
+            "LOGIN_FAILED" => "times-circle",
+            "LOGOUT" => "sign-out-alt",
+            "PASSWORD_RESET" => "key",
+            "PASSWORD_CHANGE" => "key",
+            "CHECK_IN" => "sign-in-alt",
+            "CHECK_OUT" => "sign-out-alt",
+            "TASK_REPORT" => "clipboard-check",
+            _ => "eye"
+        };
+    }
+}
+
+<style>
+    .audit-container {
+        padding: 30px;
+    }
+
+    .audit-header {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .audit-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+
+    .audit-filters {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #2d3748;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+
+    .audit-table {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .table {
+        margin: 0;
+        font-size: 13px;
+    }
+
+        .table thead th {
+            background: #f7fafc;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            padding: 15px 10px;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+            .table tbody tr:hover {
+                background: #f7fafc;
+            }
+
+        .table tbody td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-color: #e2e8f0;
+        }
+
+    .timestamp {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .timestamp i {
+            font-size: 16px;
+            color: #a0aec0;
+        }
+
+    .user-info-small {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-avatar-small {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .user-name-small {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 13px;
+    }
+
+    .action-badge {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .action-badge--create {
+        background: #48bb78;
+    }
+
+    .action-badge--update {
+        background: #ed8936;
+    }
+
+    .action-badge--delete {
+        background: #f56565;
+    }
+
+    .action-badge--login {
+        background: #4299e1;
+    }
+
+    .action-badge--login-failed {
+        background: #e53e3e;
+    }
+
+    .action-badge--logout {
+        background: #718096;
+    }
+
+    .action-badge--password-reset, .action-badge--password-change {
+        background: #9f7aea;
+    }
+
+    .action-badge--check-in {
+        background: #38b2ac;
+    }
+
+    .action-badge--check-out {
+        background: #ed64a6;
+    }
+
+    .action-badge--task-report {
+        background: #f6ad55;
+    }
+
+    .action-badge--unknown {
+        background: #a0aec0;
+    }
+
+    .entity-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+        .empty-state i {
+            font-size: 80px;
+            color: #cbd5e0;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #718096;
+        }
+
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+    }
+
+    .text-break {
+        word-break: break-word;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function viewDetails(data) {
+            try {
+                let oldValueHtml = '<p class="text-muted"><em>Không có dữ liệu cũ</em></p>';
+                let newValueHtml = '<p class="text-muted"><em>Không có dữ liệu mới</em></p>';
+
+                if (data.oldValue) {
+                    try {
+                        const oldObj = JSON.parse(data.oldValue);
+                        oldValueHtml = '<pre style="background:#f7fafc;padding:15px;border-radius:8px;font-size:12px;max-height:300px;overflow:auto;text-align:left;">' +
+                                      JSON.stringify(oldObj, null, 2) + '</pre>';
+                    } catch {
+                        oldValueHtml = '<pre style="background:#f7fafc;padding:15px;border-radius:8px;font-size:12px;text-align:left;">' + data.oldValue + '</pre>';
+                    }
+                }
+
+                if (data.newValue) {
+                    try {
+                        const newObj = JSON.parse(data.newValue);
+                        newValueHtml = '<pre style="background:#f7fafc;padding:15px;border-radius:8px;font-size:12px;max-height:300px;overflow:auto;text-align:left;">' +
+                                      JSON.stringify(newObj, null, 2) + '</pre>';
+                    } catch {
+                        newValueHtml = '<pre style="background:#f7fafc;padding:15px;border-radius:8px;font-size:12px;text-align:left;">' + data.newValue + '</pre>';
+                    }
+                }
+
+                Swal.fire({
+                    title: '<strong>Chi tiết Log #' + data.id + '</strong>',
+                    html: `
+                        <div style="text-align:left;">
+                            <div style="margin-bottom:20px;padding:15px;background:#f7fafc;border-radius:8px;">
+                                <p><strong>Hành động:</strong> <span class="badge bg-primary">${data.action}</span></p>
+                                <p><strong>Đối tượng:</strong> ${data.entity}</p>
+                                <p><strong>Người thực hiện:</strong> ${data.user}</p>
+                                <p><strong>Thời gian:</strong> ${data.timestamp}</p>
+                            </div>
+                            <div style="margin-bottom:15px;">
+                                <h6><i class="fas fa-arrow-left text-danger"></i> Giá trị cũ:</h6>
+                                ${oldValueHtml}
+                            </div>
+                            <div>
+                                <h6><i class="fas fa-arrow-right text-success"></i> Giá trị mới:</h6>
+                                ${newValueHtml}
+                            </div>
+                        </div>
+                    `,
+                    width: '800px',
+                    confirmButtonColor: '#667eea',
+                    confirmButtonText: '<i class="fas fa-times"></i> Đóng'
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể hiển thị chi tiết log',
+                    confirmButtonColor: '#667eea'
+                });
+            }
+        }
+    </script>
+}

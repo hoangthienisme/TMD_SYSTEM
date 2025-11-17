@@ -1,0 +1,348 @@
+﻿@model TMDSystem.Models.ViewModels.VerifyOtpViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Xác thực OTP - TMD System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .verify-container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .verify-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .verify-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .verify-header i {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .verify-body {
+            padding: 40px 30px;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: -1;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .step .step-number {
+            width: 40px;
+            height: 40px;
+            background: #e0e0e0;
+            color: #666;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .step.active .step-number,
+        .step.completed .step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .step.completed .step-number::before {
+            content: '✓';
+        }
+
+        .step-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .step.active .step-text {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .otp-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .otp-box {
+            width: 50px;
+            height: 60px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #e3e6f0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .otp-box:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-verify {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: bold;
+            color: white;
+            width: 100%;
+            transition: transform 0.3s;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .timer.expired {
+            color: #dc3545;
+        }
+
+        .resend-link {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="verify-card">
+            <div class="verify-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3 class="mb-0">Xác thực OTP</h3>
+                <p class="mb-0">Bước 2/3</p>
+            </div>
+            <div class="verify-body">
+                <!-- Progress Steps -->
+                <div class="steps">
+                    <div class="step completed">
+                        <div class="step-number"></div>
+                        <div class="step-text">Nhập Email</div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Xác thực OTP</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Đặt mật khẩu mới</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    Mã OTP <strong>6 số</strong> đã được gửi đến email: <strong>@Model.Email</strong>
+                </div>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> @TempData["Success"]
+                    </div>
+                }
+
+                <form asp-action="VerifyOtp" method="post" id="otpForm">
+                    <input type="hidden" asp-for="Email" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-center d-block">Nhập mã OTP</label>
+                        <div class="otp-input">
+                            <input type="text" class="otp-box" maxlength="1" data-index="0" />
+                            <input type="text" class="otp-box" maxlength="1" data-index="1" />
+                            <input type="text" class="otp-box" maxlength="1" data-index="2" />
+                            <input type="text" class="otp-box" maxlength="1" data-index="3" />
+                            <input type="text" class="otp-box" maxlength="1" data-index="4" />
+                            <input type="text" class="otp-box" maxlength="1" data-index="5" />
+                        </div>
+                        <input type="hidden" asp-for="OtpCode" id="otpCodeInput" />
+                        <span asp-validation-for="OtpCode" class="text-danger d-block text-center"></span>
+                    </div>
+
+                    <div class="timer" id="timer">
+                        <i class="fas fa-clock"></i> Mã hết hạn sau: <strong id="countdown">5:00</strong>
+                    </div>
+
+                    <button type="submit" class="btn btn-verify">
+                        <i class="fas fa-check"></i> Xác thực
+                    </button>
+
+                    <div class="text-center mt-3">
+                        <span>Chưa nhận được mã? </span>
+                        <a href="#" class="resend-link" id="resendBtn">Gửi lại mã OTP</a>
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <a href="/Account/ForgotPassword" class="text-decoration-none">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // OTP Input Handler
+        const otpBoxes = document.querySelectorAll('.otp-box');
+        const otpCodeInput = document.getElementById('otpCodeInput');
+
+        otpBoxes.forEach((box, index) => {
+            box.addEventListener('input', (e) => {
+                const value = e.target.value;
+                if (value.length === 1 && index < otpBoxes.length - 1) {
+                    otpBoxes[index + 1].focus();
+                }
+                updateOtpCode();
+            });
+
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpBoxes[index - 1].focus();
+                }
+            });
+
+            box.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text').slice(0, 6);
+                pasteData.split('').forEach((char, i) => {
+                    if (otpBoxes[i]) {
+                        otpBoxes[i].value = char;
+                    }
+                });
+                updateOtpCode();
+            });
+        });
+
+        function updateOtpCode() {
+            let code = '';
+            otpBoxes.forEach(box => code += box.value);
+            otpCodeInput.value = code;
+        }
+
+        // Countdown Timer
+        let timeLeft = 300; // 5 minutes
+        const countdownEl = document.getElementById('countdown');
+        const timerEl = document.getElementById('timer');
+
+        const countdown = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerEl.classList.add('expired');
+                countdownEl.textContent = 'Hết hạn';
+            }
+            timeLeft--;
+        }, 1000);
+
+        // Resend OTP
+        document.getElementById('resendBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = '@Model.Email';
+
+            try {
+                const response = await fetch('/Account/ResendOtp?email=' + encodeURIComponent(email), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Mã OTP mới đã được gửi!');
+                    timeLeft = 300;
+                    timerEl.classList.remove('expired');
+                    otpBoxes.forEach(box => box.value = '');
+                    otpCodeInput.value = '';
+                    otpBoxes[0].focus();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                alert('Có lỗi xảy ra!');
+            }
+        });
+
+        // Auto focus first box
+        otpBoxes[0].focus();
+    </script>
+</body>
+</html>

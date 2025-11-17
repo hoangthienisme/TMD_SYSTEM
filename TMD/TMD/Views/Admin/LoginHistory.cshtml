@@ -1,0 +1,253 @@
+﻿@model List<TMD.Models.LoginHistory>
+@{
+    ViewData["Title"] = "Lịch sử đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/loginhistory.css" rel="stylesheet" />
+<link href="~/css/tasklist-ad.css" rel="stylesheet" />
+<div class="tm-container">
+    <!-- PAGE HEADER -->
+    <div class="tm-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="tm-page-title">
+                    <i class="fas fa-history me-2"></i> Lịch sử đăng nhập
+                </h2>
+                <p class="tm-page-subtitle">Theo dõi tất cả hoạt động đăng nhập của hệ thống</p>
+            </div>
+            <a href="@Url.Action("Dashboard", "Admin")" class="tm-btn-back btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- STATISTICS CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="tm-stats-card tm-stats-primary">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Tổng lượt đăng nhập</div>
+                    <div class="tm-stats-value">@Model.Count</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="tm-stats-card tm-stats-success">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Thành công</div>
+                    <div class="tm-stats-value">@Model.Count(l => l.IsSuccess == true)</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="tm-stats-card tm-stats-danger">
+                <div class="tm-stats-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="tm-stats-content">
+                    <div class="tm-stats-label">Thất bại</div>
+                    <div class="tm-stats-value">@Model.Count(l => l.IsSuccess == false)</div>
+                </div>
+                <div class="tm-stats-trend">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="tm-card mb-4">
+        <div class="tm-login-filters-header">
+            <h6>
+                <i class="fas fa-filter me-2"></i> Bộ lọc
+            </h6>
+        </div>
+        <div class="tm-card-body">
+            <form method="get" action="/Admin/LoginHistory">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="tm-form-label">
+                            <i class="far fa-calendar-alt me-1"></i> Từ ngày
+                        </label>
+                        <input type="date" name="fromDate" class="tm-form-control" value="@ViewBag.FromDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="tm-form-label">
+                            <i class="far fa-calendar-alt me-1"></i> Đến ngày
+                        </label>
+                        <input type="date" name="toDate" class="tm-form-control" value="@ViewBag.ToDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="tm-form-label">
+                            <i class="fas fa-toggle-on me-1"></i> Trạng thái
+                        </label>
+                        <select name="isSuccess" class="tm-form-control">
+                            <option value="">Tất cả</option>
+                            <option value="true" selected="@(ViewBag.IsSuccess == true)">Thành công</option>
+                            <option value="false" selected="@(ViewBag.IsSuccess == false)">Thất bại</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="tm-btn-create btn btn-primary flex-fill">
+                            <i class="fas fa-search me-1"></i> Lọc
+                        </button>
+                        <a href="/Admin/LoginHistory" class="btn btn-outline-secondary" title="Reset bộ lọc">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOGIN HISTORY TABLE -->
+    <div class="tm-card">
+        <div class="tm-card-header">
+            <h5>
+                <i class="fas fa-table me-2"></i>
+                Danh sách lịch sử (@Model.Count)
+            </h5>
+        </div>
+        <div class="tm-card-body tm-card-body-table">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="tm-table table">
+                        <thead>
+                            <tr>
+                                <th><i class="far fa-clock me-1"></i> Thời gian</th>
+                                <th><i class="fas fa-user me-1"></i> Người dùng</th>
+                                <th><i class="fas fa-network-wired me-1"></i> IP Address</th>
+                                <th><i class="fas fa-browser me-1"></i> Trình duyệt</th>
+                                <th><i class="fas fa-mobile-alt me-1"></i> Thiết bị</th>
+                                <th><i class="fas fa-check-circle me-1"></i> Trạng thái</th>
+                                <th><i class="fas fa-stopwatch me-1"></i> Thời gian sử dụng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var login in Model)
+                            {
+                                <tr class="@(login.IsSuccess == false ? "tm-login-row-failed" : "")">
+                                    <td>
+                                        <div class="tm-login-timestamp">
+                                            <i class="far fa-calendar-check text-primary"></i>
+                                            <div>
+                                                <div class="fw-bold text-dark">@login.LoginTime?.ToString("dd/MM/yyyy")</div>
+                                                <small class="tm-text-muted">@login.LoginTime?.ToString("HH:mm:ss")</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (login.User != null)
+                                        {
+                                            <div class="tm-login-user-info">
+                                                <div class="tm-login-avatar">
+                                                    @login.User?.FullName?.Substring(0, 1)
+                                                </div>
+                                                <div>
+                                                    <div class="tm-login-user-name">@login.User?.FullName</div>
+                                                    <small class="tm-text-muted">@@@login.Username</small>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="tm-login-user-invalid">
+                                                <i class="fas fa-user-slash me-1"></i>
+                                                <div>
+                                                    <div class="text-danger fw-semibold">@login.Username</div>
+                                                    <small class="text-muted">Không tồn tại</small>
+                                                </div>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="tm-login-ip-badge">
+                                            <i class="fas fa-globe me-1"></i>
+                                            @login.Ipaddress
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="tm-login-browser-badge">
+                                            <i class="fab fa-@(login.Browser?.ToLower() == "chrome" ? "chrome" : login.Browser?.ToLower() == "firefox" ? "firefox" : login.Browser?.ToLower() == "safari" ? "safari" : login.Browser?.ToLower() == "edge" ? "edge" : "question")"></i>
+                                            @(login.Browser ?? "Unknown")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="tm-login-device-badge tm-login-device-badge--@(login.Device?.ToLower() ?? "unknown")">
+                                            <i class="fas fa-@(login.Device == "Mobile" ? "mobile-alt" : login.Device == "Tablet" ? "tablet-alt" : "desktop")"></i>
+                                            @(login.Device ?? "Unknown")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (login.IsSuccess == true)
+                                        {
+                                            <span class="tm-badge tm-badge-success">
+                                                <i class="fas fa-check-circle me-1"></i> Thành công
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <div class="tm-login-status-failed">
+                                                <span class="tm-badge tm-badge-danger mb-1">
+                                                    <i class="fas fa-times-circle me-1"></i> Thất bại
+                                                </span>
+                                                @if (!string.IsNullOrEmpty(login.FailReason))
+                                                {
+                                                    <div class="tm-login-fail-reason">
+                                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                                        <small>@login.FailReason</small>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (login.LogoutTime.HasValue && login.LoginTime.HasValue)
+                                        {
+                                            var duration = login.LogoutTime.Value - login.LoginTime.Value;
+                                            <span class="tm-login-duration-badge">
+                                                <i class="fas fa-hourglass-half me-1"></i>
+                                                @duration.Hours giờ @duration.Minutes phút
+                                            </span>
+                                        }
+                                        else if (login.IsSuccess == true)
+                                        {
+                                            <span class="tm-badge tm-badge-warning">
+                                                <i class="fas fa-spinner fa-pulse me-1"></i> Đang hoạt động
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="tm-text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="tm-empty-state">
+                    <i class="fas fa-history fa-5x"></i>
+                    <h4 class="mt-3">Không có dữ liệu</h4>
+                    <p class="tm-text-muted">Không tìm thấy lịch sử đăng nhập nào phù hợp với bộ lọc</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

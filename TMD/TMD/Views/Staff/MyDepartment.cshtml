@@ -1,0 +1,434 @@
+﻿@{
+    ViewData["Title"] = "Phòng ban của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var department = ViewBag.MyDepartment as TMD.Models.Department;
+    var currentUser = ViewBag.CurrentUser as TMD.Models.User;
+}
+
+<div class="department-container">
+    <!-- DEPARTMENT HEADER -->
+    <div class="department-header">
+        <div class="department-header__icon">
+            <i class="fas fa-building"></i>
+        </div>
+        <div class="department-header__content">
+            <h2>@department.DepartmentName</h2>
+            @if (!string.IsNullOrEmpty(department.Description))
+            {
+                <p class="text-muted mb-0">@department.Description</p>
+            }
+        </div>
+        <div class="department-header__badge">
+            @if (department.IsActive == true)
+            {
+                <span class="badge badge-success">
+                    <i class="fas fa-check-circle"></i> Hoạt động
+                </span>
+            }
+        </div>
+    </div>
+
+    <!-- DEPARTMENT STATS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card stat-card--primary">
+                <div class="stat-card__icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-card__content">
+                    <h3>@department.Users.Count</h3>
+                    <p>Tổng thành viên</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card stat-card--success">
+                <div class="stat-card__icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-card__content">
+                    <h3>@department.Users.Count(u => u.IsActive == true)</h3>
+                    <p>Đang hoạt động</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card stat-card--info">
+                <div class="stat-card__icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-card__content">
+                    <h3>@department.CreatedAt?.ToString("dd/MM/yyyy")</h3>
+                    <p>Ngày thành lập</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEMBERS LIST -->
+    <div class="members-section">
+        <div class="members-section__header">
+            <h5><i class="fas fa-users"></i> Danh sách thành viên</h5>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm thành viên...">
+            </div>
+        </div>
+
+        <div class="members-grid">
+            @foreach (var member in department.Users.OrderBy(u => u.FullName))
+            {
+                var isCurrentUser = member.UserId == currentUser.UserId;
+
+                <div class="member-card @(isCurrentUser ? "member-card--current" : "")">
+                    <div class="member-card__avatar">
+                        @member.FullName?.Substring(0, 1)
+                    </div>
+                    <div class="member-card__content">
+                        <h6>@member.FullName</h6>
+                        @if (isCurrentUser)
+                        {
+                            <span class="badge badge-primary mb-2">
+                                <i class="fas fa-star"></i> Bạn
+                            </span>
+                        }
+                        <p class="member-card__username">@@@member.Username</p>
+                        <div class="member-card__info">
+                            <span class="info-badge">
+                                <i class="fas fa-user-tag"></i>
+                                @member.Role?.RoleName
+                            </span>
+                            @if (member.IsActive == true)
+                            {
+                                <span class="info-badge info-badge--success">
+                                    <i class="fas fa-circle"></i> Hoạt động
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="info-badge info-badge--inactive">
+                                    <i class="fas fa-circle"></i> Không hoạt động
+                                </span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(member.Email))
+                        {
+                            <div class="member-card__contact">
+                                <i class="fas fa-envelope"></i>
+                                <a href="mailto:@member.Email">@member.Email</a>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(member.PhoneNumber))
+                        {
+                            <div class="member-card__contact">
+                                <i class="fas fa-phone"></i>
+                                <a href="tel:@member.PhoneNumber">@member.PhoneNumber</a>
+                            </div>
+                        }
+                        @if (member.LastLoginAt.HasValue)
+                        {
+                            <div class="member-card__last-login">
+                                <i class="far fa-clock"></i>
+                                <span>Đăng nhập: @member.LastLoginAt.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .department-container {
+        padding: 30px;
+    }
+
+    /* DEPARTMENT HEADER */
+    .department-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .department-header__icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        flex-shrink: 0;
+    }
+
+    .department-header__content {
+        flex: 1;
+    }
+
+    .department-header__content h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .department-header__badge .badge {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    /* STAT CARDS */
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .stat-card--primary::before { background: #667eea; }
+    .stat-card--success::before { background: #48bb78; }
+    .stat-card--info::before { background: #4299e1; }
+
+    .stat-card__icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+    }
+
+    .stat-card--primary .stat-card__icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .stat-card--success .stat-card__icon { background: linear-gradient(135deg, #48bb78, #38a169); }
+    .stat-card--info .stat-card__icon { background: linear-gradient(135deg, #4299e1, #3182ce); }
+
+    .stat-card__content h3 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .stat-card__content p {
+        color: #718096;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* MEMBERS SECTION */
+    .members-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .members-section__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .members-section__header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+    }
+
+    .search-box input {
+        padding-left: 45px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    /* MEMBERS GRID */
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .member-card {
+        background: #f7fafc;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .member-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .member-card--current {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-color: #667eea;
+    }
+
+    .member-card__avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .member-card__content h6 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+
+    .member-card__username {
+        color: #718096;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .member-card__info {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .info-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        background: white;
+        color: #4a5568;
+    }
+
+    .info-badge--success {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .info-badge--inactive {
+        background: #e2e8f0;
+        color: #718096;
+    }
+
+    .member-card__contact {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #718096;
+        margin-bottom: 8px;
+    }
+
+    .member-card__contact i {
+        color: #a0aec0;
+    }
+
+    .member-card__contact a {
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    .member-card__contact a:hover {
+        text-decoration: underline;
+    }
+
+    .member-card__last-login {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: #a0aec0;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .badge-success {
+        background: #48bb78;
+        color: white;
+    }
+
+    .badge-primary {
+        background: #667eea;
+        color: white;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Search members
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const memberCards = document.querySelectorAll('.member-card');
+
+            memberCards.forEach(card => {
+                const name = card.querySelector('h6')?.textContent.toLowerCase() || '';
+                const username = card.querySelector('.member-card__username')?.textContent.toLowerCase() || '';
+
+                if (name.includes(searchTerm) || username.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}
