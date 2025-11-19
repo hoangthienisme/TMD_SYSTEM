@@ -18,4 +18,6 @@ public partial class Department
     public DateTime? UpdatedAt { get; set; }
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+    public virtual ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = new List<WorkScheduleException>();
 }

@@ -1,0 +1,400 @@
+﻿@model List<TMD.Models.WorkScheduleException>
+@{
+    ViewData["Title"] = "Lịch Làm Việc Đặc Biệt";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .schedule-container {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .main-card {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 25px;
+        border: none;
+    }
+
+    .schedule-card {
+        border-left: 4px solid #f5576c;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+    }
+
+        .schedule-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+    .multiplier-badge {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        border-radius: 50px;
+    }
+
+    .btn-create-schedule {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        color: white;
+    }
+</style>
+
+<div class="schedule-container">
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="main-card card border-0">
+                    <div class="card-header-custom">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="mb-0">
+                                    <i class="fas fa-calendar-alt"></i> Lịch Làm Việc Đặc Biệt
+                                </h2>
+                                <p class="mb-0 opacity-75 mt-2">
+                                    <i class="fas fa-info-circle"></i>
+                                    Thiết lập giờ làm và hệ số lương khác biệt cho từng ngày cụ thể
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-create-schedule btn-lg" onclick="showCreateModal()">
+                                    <i class="fas fa-plus-circle"></i> Tạo Lịch Đặc Biệt
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách -->
+        <div class="row">
+            @if (Model.Any())
+            {
+                @foreach (var exception in Model)
+                {
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card schedule-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-1">
+                                            <i class="fas fa-calendar-day"></i>
+                                            @exception.WorkDate.ToString("dd/MM/yyyy (dddd)", new System.Globalization.CultureInfo("vi-VN"))
+                                        </h5>
+                                        <small class="text-muted">@exception.Description</small>
+                                    </div>
+                                    <span class="badge multiplier-badge"
+                                          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                                        x@exception.SalaryMultiplier
+                                    </span>
+                                </div>
+
+                                <hr>
+
+                                <div class="row g-2 mb-3">
+                                    @if (exception.CheckInStartTime.HasValue)
+                                    {
+                                        <div class="col-6">
+                                            <small class="text-muted">Bắt đầu checkin</small>
+                                            <h6 class="mb-0">@exception.CheckInStartTime?.ToString("HH:mm")</h6>
+                                        </div>
+                                    }
+                                    @if (exception.CheckInStandardTime.HasValue)
+                                    {
+                                        <div class="col-6">
+                                            <small class="text-muted">Giờ chuẩn</small>
+                                            <h6 class="mb-0">@exception.CheckInStandardTime?.ToString("HH:mm")</h6>
+                                        </div>
+                                    }
+                                    @if (exception.CheckOutMinTime.HasValue)
+                                    {
+                                        <div class="col-6">
+                                            <small class="text-muted">Checkout tối thiểu</small>
+                                            <h6 class="mb-0">@exception.CheckOutMinTime?.ToString("HH:mm")</h6>
+                                        </div>
+                                    }
+                                    @if (exception.StandardHours.HasValue)
+                                    {
+                                        <div class="col-6">
+                                            <small class="text-muted">Số giờ chuẩn</small>
+                                            <h6 class="mb-0">@exception.StandardHours giờ</h6>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="mb-3">
+                                    <span class="badge bg-info">
+                                        @if (exception.UserId.HasValue)
+                                        {
+                                            <i class="fas fa-user"></i> @exception.User.FullName
+                                        }
+                                        else if (exception.DepartmentId.HasValue)
+                                        {
+                                            <i class="fas fa-building"></i> @exception.Department.DepartmentName
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-users"></i> <text>Tất cả nhân viên</text>
+                                        }
+                                    </span>
+                                    <span class="badge bg-secondary ms-2">@exception.ExceptionType</span>
+                                </div>
+
+                                <button class="btn btn-outline-danger btn-sm w-100"
+                                        onclick="deleteSchedule(@exception.ExceptionId, '@exception.WorkDate.ToString("dd/MM/yyyy")')">
+                                    <i class="fas fa-trash"></i> Xóa Lịch
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                        <h5>Chưa có lịch đặc biệt nào</h5>
+                        <p>Tạo lịch mới để thiết lập giờ làm và hệ số lương khác biệt</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tạo Lịch -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-plus"></i> Tạo Lịch Làm Việc Đặc Biệt
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <div class="row g-3">
+                        <!-- Ngày và áp dụng -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar-day"></i> Ngày <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="workDate" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user"></i> Áp dụng cho User
+                            </label>
+                            <select class="form-select" id="userId">
+                                <option value="">-- Tất cả --</option>
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <option value="@user.UserId">@user.FullName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-building"></i> Áp dụng cho Phòng Ban
+                            </label>
+                            <select class="form-select" id="departmentId">
+                                <option value="">-- Tất cả --</option>
+                                @foreach (var dept in ViewBag.Departments)
+                                {
+                                    <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Giờ làm việc -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock"></i> Giờ bắt đầu checkin
+                            </label>
+                            <input type="time" class="form-control" id="checkInStartTime">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock"></i> Giờ chuẩn
+                            </label>
+                            <input type="time" class="form-control" id="checkInStandardTime">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock"></i> Giờ checkout tối thiểu
+                            </label>
+                            <input type="time" class="form-control" id="checkOutMinTime">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-hourglass-half"></i> Số giờ chuẩn
+                            </label>
+                            <input type="number" class="form-control" id="standardHours" step="0.5" min="0" placeholder="8">
+                        </div>
+
+                        <!-- Hệ số -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-percentage"></i> Hệ số lương <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="salaryMultiplier" step="0.1" min="0.1" value="1.0" required>
+                            <small class="text-muted">x1 = bình thường, x2 = gấp đôi, x3 = gấp ba...</small>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-bolt"></i> Hệ số tăng ca
+                            </label>
+                            <input type="number" class="form-control" id="overtimeMultiplier" step="0.1" min="0">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-tag"></i> Loại
+                            </label>
+                            <select class="form-select" id="exceptionType">
+                                <option value="Normal">Bình thường</option>
+                                <option value="Holiday">Ngày lễ</option>
+                                <option value="Weekend">Cuối tuần</option>
+                                <option value="Special">Đặc biệt</option>
+                            </select>
+                        </div>
+
+                        <!-- Mô tả -->
+                        <div class="col-12">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-comment"></i> Mô tả
+                            </label>
+                            <textarea class="form-control" id="description" rows="2"
+                                      placeholder="VD: Chủ nhật làm việc, lương x2"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="createSchedule()">
+                    <i class="fas fa-save"></i> Tạo Lịch
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function showCreateModal() {
+            document.getElementById('scheduleForm').reset();
+            document.getElementById('salaryMultiplier').value = '1.0';
+            new bootstrap.Modal(document.getElementById('scheduleModal')).show();
+        }
+
+        async function createSchedule() {
+            const data = {
+                workDate: document.getElementById('workDate').value,
+                userId: document.getElementById('userId').value || null,
+                departmentId: document.getElementById('departmentId').value || null,
+                checkInStartTime: document.getElementById('checkInStartTime').value || null,
+                checkInStandardTime: document.getElementById('checkInStandardTime').value || null,
+                checkOutMinTime: document.getElementById('checkOutMinTime').value || null,
+                standardHours: document.getElementById('standardHours').value ? parseFloat(document.getElementById('standardHours').value) : null,
+                salaryMultiplier: parseFloat(document.getElementById('salaryMultiplier').value),
+                overtimeMultiplier: document.getElementById('overtimeMultiplier').value ? parseFloat(document.getElementById('overtimeMultiplier').value) : null,
+                description: document.getElementById('description').value,
+                exceptionType: document.getElementById('exceptionType').value
+            };
+
+            if (!data.workDate) {
+                Swal.fire('Cảnh báo', 'Vui lòng chọn ngày!', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/WorkSchedule/Create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: result.message,
+                        timer: 2000
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Lỗi', result.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Lỗi', 'Có lỗi xảy ra khi tạo lịch!', 'error');
+            }
+        }
+
+        async function deleteSchedule(exceptionId, workDate) {
+            const result = await Swal.fire({
+                title: 'Xác nhận xóa?',
+                html: `Bạn có chắc muốn xóa lịch đặc biệt ngày <strong>${workDate}</strong>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '<i class="fas fa-trash"></i> Xóa',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch('/WorkSchedule/Delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ exceptionId: exceptionId })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã xóa!',
+                            text: data.message,
+                            timer: 2000
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Lỗi', data.message, 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Lỗi', 'Có lỗi xảy ra khi xóa!', 'error');
+                }
+            }
+        }
+    </script>
+}

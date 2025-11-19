@@ -1,0 +1,364 @@
+﻿@model List<TMD.Models.UserSalarySetting>
+@{
+    ViewData["Title"] = "Cấu Hình Lương Nhân Viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .salary-settings-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .main-card {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border: none;
+    }
+
+    .salary-card {
+        border-left: 4px solid #667eea;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+    }
+
+        .salary-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .salary-badge {
+        font-size: 1.1rem;
+        padding: 8px 15px;
+    }
+
+    .btn-edit-salary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-create-salary {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="salary-settings-container">
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="main-card card border-0">
+                    <div class="card-header-custom">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="mb-0">
+                                    <i class="fas fa-money-bill-wave"></i> Cấu Hình Lương Nhân Viên
+                                </h2>
+                                <p class="mb-0 opacity-75 mt-2">
+                                    <i class="fas fa-info-circle"></i>
+                                    Quản lý lương cá nhân cho từng nhân viên, ghi đè lương mặc định từ Settings
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-create-salary btn-lg text-white" onclick="showCreateModal()">
+                                    <i class="fas fa-plus-circle"></i> Tạo Cấu Hình Mới
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách -->
+        <div class="row">
+            @if (Model.Any())
+            {
+                @foreach (var setting in Model)
+                {
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card salary-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-1">@setting.User.FullName</h5>
+                                        <small class="text-muted">
+                                            <i class="fas fa-building"></i> @(setting.User.Department?.DepartmentName ?? "N/A")
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-primary salary-badge">@setting.SalaryType</span>
+                                </div>
+
+                                <hr>
+
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <small class="text-muted">Lương Cơ Bản</small>
+                                        <h6 class="text-success mb-0">@String.Format("{0:N0}", setting.BaseSalary) ₫</h6>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Hệ Số TC</small>
+                                        <h6 class="text-info mb-0">x@(setting.DefaultOvertimeRate ?? 1.5m)</h6>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Phụ Cấp</small>
+                                        <h6 class="text-warning mb-0">@String.Format("{0:N0}", setting.AllowanceAmount ?? 0) ₫</h6>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Hiệu Lực</small>
+                                        <h6 class="text-primary mb-0">@setting.EffectiveFrom.ToString("dd/MM/yyyy")</h6>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-edit-salary btn-sm flex-fill"
+                                            onclick="editSalary(@setting.UserId)">
+                                        <i class="fas fa-edit"></i> Chỉnh Sửa
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            onclick="deleteSalary(@setting.UserSalaryId, '@setting.User.FullName')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <h5>Chưa có cấu hình lương nào</h5>
+                        <p>Nhấn nút "Tạo Cấu Hình Mới" để bắt đầu</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tạo/Sửa Lương -->
+<div class="modal fade" id="salaryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title" id="salaryModalTitle">
+                    <i class="fas fa-money-bill-wave"></i> Cấu Hình Lương
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="salaryForm">
+                    <input type="hidden" id="userId">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user"></i> Nhân Viên <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="userIdSelect" required>
+                                <option value="">-- Chọn nhân viên --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-tags"></i> Loại Lương
+                            </label>
+                            <select class="form-select" id="salaryType">
+                                <option value="Monthly">Tháng</option>
+                                <option value="Daily">Ngày</option>
+                                <option value="Hourly">Giờ</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-dollar-sign"></i> Lương Cơ Bản <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="baseSalary" step="100000" min="0" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock"></i> Lương Theo Giờ
+                            </label>
+                            <input type="number" class="form-control" id="hourlyRate" step="10000" min="0">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-bolt"></i> Hệ Số Tăng Ca
+                            </label>
+                            <input type="number" class="form-control" id="defaultOvertimeRate" step="0.1" min="1" value="1.5">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-gift"></i> Phụ Cấp
+                            </label>
+                            <input type="number" class="form-control" id="allowanceAmount" step="100000" min="0" value="0">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar-check"></i> Hiệu Lực Từ <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="effectiveFrom" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar-times"></i> Hiệu Lực Đến
+                            </label>
+                            <input type="date" class="form-control" id="effectiveTo">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveSalary()">
+                    <i class="fas fa-save"></i> Lưu Lại
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let allUsers = [];
+
+        window.onload = async function() {
+            await loadUsers();
+            document.getElementById('effectiveFrom').value = new Date().toISOString().split('T')[0];
+        };
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/Admin/GetAllUsers');
+                const data = await response.json();
+                if (data.success) {
+                    allUsers = data.users;
+                    updateUserSelect();
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function updateUserSelect() {
+            const select = document.getElementById('userIdSelect');
+            select.innerHTML = '<option value="">-- Chọn nhân viên --</option>';
+
+            allUsers.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.userId;
+                option.textContent = `${user.fullName} - ${user.departmentName || 'N/A'}`;
+                select.appendChild(option);
+            });
+        }
+
+        function showCreateModal() {
+            document.getElementById('salaryModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Tạo Cấu Hình Lương Mới';
+            document.getElementById('salaryForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('userIdSelect').disabled = false;
+            document.getElementById('effectiveFrom').value = new Date().toISOString().split('T')[0];
+
+            new bootstrap.Modal(document.getElementById('salaryModal')).show();
+        }
+
+        async function editSalary(userId) {
+            try {
+                const response = await fetch(`/UserSalary/GetUserSalary?userId=${userId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('salaryModalTitle').innerHTML = '<i class="fas fa-edit"></i> Chỉnh Sửa Lương';
+                    document.getElementById('userId').value = userId;
+                    document.getElementById('userIdSelect').value = userId;
+                    document.getElementById('userIdSelect').disabled = true;
+                    document.getElementById('salaryType').value = data.salaryType;
+                    document.getElementById('baseSalary').value = data.baseSalary;
+                    document.getElementById('hourlyRate').value = data.hourlyRate || '';
+                    document.getElementById('defaultOvertimeRate').value = data.defaultOvertimeRate;
+                    document.getElementById('allowanceAmount').value = data.allowanceAmount;
+                    document.getElementById('effectiveFrom').value = data.effectiveFrom.split('T')[0];
+                    document.getElementById('effectiveTo').value = data.effectiveTo ? data.effectiveTo.split('T')[0] : '';
+
+                    new bootstrap.Modal(document.getElementById('salaryModal')).show();
+                } else {
+                    Swal.fire('Lỗi', data.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Lỗi', 'Không thể tải thông tin lương', 'error');
+            }
+        }
+
+        async function saveSalary() {
+            const userId = document.getElementById('userId').value || document.getElementById('userIdSelect').value;
+
+            if (!userId) {
+                Swal.fire('Cảnh báo', 'Vui lòng chọn nhân viên!', 'warning');
+                return;
+            }
+
+            const data = {
+                userId: parseInt(userId),
+                salaryType: document.getElementById('salaryType').value,
+                baseSalary: parseFloat(document.getElementById('baseSalary').value),
+                hourlyRate: document.getElementById('hourlyRate').value ? parseFloat(document.getElementById('hourlyRate').value) : null,
+                defaultOvertimeRate: parseFloat(document.getElementById('defaultOvertimeRate').value),
+                allowanceAmount: parseFloat(document.getElementById('allowanceAmount').value),
+                effectiveFrom: document.getElementById('effectiveFrom').value,
+                effectiveTo: document.getElementById('effectiveTo').value || null
+            };
+
+            try {
+                const response = await fetch('/UserSalary/CreateOrUpdate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: result.message,
+                        timer: 2000
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Lỗi', result.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Lỗi', 'Có lỗi xảy ra khi lưu!', 'error');
+            }
+        }
+    </script>
+}

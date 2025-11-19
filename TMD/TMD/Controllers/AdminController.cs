@@ -1755,7 +1755,32 @@ namespace TMDSystem.Controllers
 
 			return View(history);
 		}
+		// Thêm vào AdminController.cs
+		[HttpGet]
+		public async Task<IActionResult> GetAllUsers()
+		{
+			try
+			{
+				var users = await _context.Users
+					.Include(u => u.Department)
+					.Where(u => u.IsActive == true)
+					.OrderBy(u => u.FullName)
+					.Select(u => new
+					{
+						userId = u.UserId,
+						fullName = u.FullName,
+						email = u.Email,
+						departmentName = u.Department != null ? u.Department.DepartmentName : "N/A"
+					})
+					.ToListAsync();
 
+				return Json(new { success = true, users = users });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { success = false, message = ex.Message });
+			}
+		}
 		// ============================================
 		// PASSWORD RESET HISTORY
 		// ============================================

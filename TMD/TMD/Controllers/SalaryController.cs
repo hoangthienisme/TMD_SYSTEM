@@ -69,9 +69,9 @@ namespace TMDSystem.Controllers
 				var fromDate = DateOnly.FromDateTime(request.FromDate);
 				var toDate = DateOnly.FromDateTime(request.ToDate);
 
-				// Lấy cấu hình
-				var baseSalary = decimal.Parse(await GetSettingValue("BASE_SALARY", "5000000"));
-				var overtimeRate = decimal.Parse(await GetSettingValue("OVERTIME_RATE", "1.5"));
+				// Lấy cấu hình mặc định
+				var defaultBaseSalary = decimal.Parse(await GetSettingValue("BASE_SALARY", "5000000"));
+				var defaultOvertimeRate = decimal.Parse(await GetSettingValue("OVERTIME_RATE", "1.5"));
 				var standardHoursPerDay = decimal.Parse(await GetSettingValue("STANDARD_HOURS_PER_DAY", "8"));
 				var workDaysPerMonth = decimal.Parse(await GetSettingValue("WORK_DAYS_PER_MONTH", "26"));
 
@@ -80,6 +80,7 @@ namespace TMDSystem.Controllers
 						.ThenInclude(u => u.Department)
 					.Include(a => a.LateRequest)
 					.Include(a => a.OvertimeRequest)
+					.Include(a => a.ScheduleException)
 					.Where(a => a.WorkDate >= fromDate && a.WorkDate <= toDate);
 
 				if (request.UserId.HasValue && request.UserId.Value > 0)
@@ -99,31 +100,63 @@ namespace TMDSystem.Controllers
 					return Json(new { success = false, message = "Không có dữ liệu trong khoảng thời gian này!" });
 				}
 
+				// Lấy cấu hình lương cá nhân
+				var userIds = attendances.Select(a => a.UserId).Distinct().ToList();
+				var userSalarySettings = await _context.UserSalarySettings
+					.Where(s => userIds.Contains(s.UserId) && s.IsActive == true)
+					.ToDictionaryAsync(s => s.UserId);
+
+				// Lấy điều chỉnh thủ công
+				var adjustments = await _context.SalaryAdjustments
+					.Where(a => userIds.Contains(a.UserId)
+						&& a.WorkDate >= fromDate
+						&& a.WorkDate <= toDate
+						&& a.IsApproved == true)
+					.ToListAsync();
+
 				// Nhóm theo user và tính lương
 				var salaryData = attendances
 					.GroupBy(a => a.UserId)
 					.Select(g => {
 						var user = g.First().User;
+
+						// Lấy lương cá nhân hoặc dùng default
+						var userSalary = userSalarySettings.ContainsKey(user.UserId)
+							? userSalarySettings[user.UserId]
+							: null;
+
+						var baseSalary = userSalary?.BaseSalary ?? defaultBaseSalary;
+						var overtimeRate = userSalary?.DefaultOvertimeRate ?? defaultOvertimeRate;
+						var allowance = userSalary?.AllowanceAmount ?? 0;
+
 						var workedDays = g.Count(a => a.CheckInTime != null && a.CheckOutTime != null);
 						var lateDays = g.Count(a => a.IsLate == true);
 						var totalHours = g.Sum(a => a.TotalHours ?? 0);
 
-						// ✅ Tính deduction hours (đã được calculate trong CheckIn)
+						// Tính deduction hours
 						var deductionHours = g.Sum(a => a.DeductionHours);
 
-						// ✅ Tính overtime hours đã được approve
+						// Tính overtime hours đã được approve
 						var overtimeHours = g.Where(a => a.IsOvertimeApproved == true)
 							.Sum(a => a.ApprovedOvertimeHours);
 
-						// Tính lương
+						// Tính lương với SALARY MULTIPLIER
 						var dailySalary = baseSalary / workDaysPerMonth;
 						var hourlySalary = dailySalary / standardHoursPerDay;
 
-						var actualSalary = dailySalary * workedDays;
+						// Lương thực tế = Tổng (lương ngày * hệ số) - ✅ FIX
+						var actualSalary = g.Sum(a => (dailySalary * (a.SalaryMultiplier ?? 1.0m)));
+
 						var overtimeSalary = hourlySalary * overtimeRate * overtimeHours;
 						var deduction = hourlySalary * deductionHours;
 
-						var totalSalary = actualSalary + overtimeSalary - deduction;
+						// ĐIỀU CHỈNH THỦ CÔNG - ✅ FIX
+						var userAdjustments = adjustments.Where(a => a.UserId == user.UserId).ToList();
+						var bonusAmount = userAdjustments.Where(a => (a.Amount ?? 0) > 0).Sum(a => a.Amount ?? 0);
+						var penaltyAmount = userAdjustments.Where(a => (a.Amount ?? 0) < 0).Sum(a => a.Amount ?? 0);
+						var adjustmentHours = userAdjustments.Sum(a => a.Hours ?? 0);
+
+						var totalSalary = actualSalary + overtimeSalary - deduction + allowance + bonusAmount + penaltyAmount;
 
 						return new
 						{
@@ -138,7 +171,12 @@ namespace TMDSystem.Controllers
 							baseSalary = actualSalary,
 							overtimeSalary = overtimeSalary,
 							deduction = deduction,
-							totalSalary = totalSalary
+							allowance = allowance,
+							bonusAmount = bonusAmount,
+							penaltyAmount = Math.Abs(penaltyAmount),
+							totalSalary = totalSalary,
+							hasCustomSalary = userSalary != null,
+							adjustmentCount = userAdjustments.Count
 						};
 					})
 					.OrderBy(x => x.fullName)
@@ -189,8 +227,8 @@ namespace TMDSystem.Controllers
 				var toDate = DateOnly.FromDateTime(request.ToDate);
 
 				// Lấy cấu hình
-				var baseSalary = decimal.Parse(await GetSettingValue("BASE_SALARY", "5000000"));
-				var overtimeRate = decimal.Parse(await GetSettingValue("OVERTIME_RATE", "1.5"));
+				var defaultBaseSalary = decimal.Parse(await GetSettingValue("BASE_SALARY", "5000000"));
+				var defaultOvertimeRate = decimal.Parse(await GetSettingValue("OVERTIME_RATE", "1.5"));
 				var standardHoursPerDay = decimal.Parse(await GetSettingValue("STANDARD_HOURS_PER_DAY", "8"));
 				var workDaysPerMonth = decimal.Parse(await GetSettingValue("WORK_DAYS_PER_MONTH", "26"));
 
@@ -201,6 +239,7 @@ namespace TMDSystem.Controllers
 						.ThenInclude(u => u.Role)
 					.Include(a => a.LateRequest)
 					.Include(a => a.OvertimeRequest)
+					.Include(a => a.ScheduleException)
 					.Where(a => a.WorkDate >= fromDate && a.WorkDate <= toDate);
 
 				if (request.UserId.HasValue && request.UserId.Value > 0)
@@ -223,19 +262,51 @@ namespace TMDSystem.Controllers
 					return Json(new { success = false, message = "Không có dữ liệu trong khoảng thời gian này!" });
 				}
 
+				// Lấy cấu hình lương cá nhân
+				var userIds = attendances.Select(a => a.UserId).Distinct().ToList();
+				var userSalarySettings = await _context.UserSalarySettings
+					.Where(s => userIds.Contains(s.UserId) && s.IsActive == true)
+					.ToDictionaryAsync(s => s.UserId);
+
+				// Lấy điều chỉnh thủ công
+				var adjustments = await _context.SalaryAdjustments
+					.Include(a => a.AdjustedByNavigation)
+					.Where(a => userIds.Contains(a.UserId)
+						&& a.WorkDate >= fromDate
+						&& a.WorkDate <= toDate
+						&& a.IsApproved == true)
+					.ToListAsync();
+
 				// Tính lương theo từng người
 				var salaryData = attendances
 					.GroupBy(a => a.UserId)
-					.Select(g => new
-					{
-						User = g.First().User,
-						TotalDays = g.Count(),
-						WorkedDays = g.Count(a => a.CheckInTime != null && a.CheckOutTime != null),
-						LateDays = g.Count(a => a.IsLate == true),
-						TotalHours = g.Sum(a => a.TotalHours ?? 0),
-						DeductionHours = g.Sum(a => a.DeductionHours),
-						OvertimeHours = g.Where(a => a.IsOvertimeApproved == true).Sum(a => a.ApprovedOvertimeHours),
-						Details = g.OrderBy(a => a.WorkDate).ToList()
+					.Select(g => {
+						var user = g.First().User;
+						var userSalary = userSalarySettings.ContainsKey(user.UserId)
+							? userSalarySettings[user.UserId]
+							: null;
+
+						var baseSalary = userSalary?.BaseSalary ?? defaultBaseSalary;
+						var overtimeRate = userSalary?.DefaultOvertimeRate ?? defaultOvertimeRate;
+						var allowance = userSalary?.AllowanceAmount ?? 0;
+
+						return new
+						{
+							User = user,
+							UserSalary = userSalary,
+							BaseSalary = baseSalary,
+							OvertimeRate = overtimeRate,
+							Allowance = allowance,
+							TotalDays = g.Count(),
+							WorkedDays = g.Count(a => a.CheckInTime != null && a.CheckOutTime != null),
+							LateDays = g.Count(a => a.IsLate == true),
+							TotalHours = g.Sum(a => a.TotalHours ?? 0),
+							DeductionHours = g.Sum(a => a.DeductionHours),
+							OvertimeHours = g.Where(a => a.IsOvertimeApproved == true).Sum(a => a.ApprovedOvertimeHours),
+							ActualSalary = g.Sum(a => (baseSalary / workDaysPerMonth) * (a.SalaryMultiplier ?? 1.0m)), // ✅ FIX
+							Adjustments = adjustments.Where(a => a.UserId == user.UserId).ToList(),
+							Details = g.OrderBy(a => a.WorkDate).ToList()
+						};
 					})
 					.ToList();
 
@@ -248,17 +319,17 @@ namespace TMDSystem.Controllers
 					summarySheet.Cell(1, 1).Value = "BẢNG TỔNG HỢP LƯƠNG NHÂN VIÊN";
 					summarySheet.Cell(1, 1).Style.Font.Bold = true;
 					summarySheet.Cell(1, 1).Style.Font.FontSize = 16;
-					summarySheet.Range(1, 1, 1, 12).Merge();
-					summarySheet.Range(1, 1, 1, 12).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+					summarySheet.Range(1, 1, 1, 15).Merge();
+					summarySheet.Range(1, 1, 1, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
 					summarySheet.Cell(2, 1).Value = $"Từ ngày: {request.FromDate:dd/MM/yyyy} - Đến ngày: {request.ToDate:dd/MM/yyyy}";
-					summarySheet.Range(2, 1, 2, 12).Merge();
-					summarySheet.Range(2, 1, 2, 12).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+					summarySheet.Range(2, 1, 2, 15).Merge();
+					summarySheet.Range(2, 1, 2, 15).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
 					// Headers
 					int summaryRow = 4;
 					var headers = new[] { "STT", "Mã NV", "Họ Tên", "Phòng Ban", "Số Ngày Công", "Đi Muộn",
-						"Tổng Giờ", "Giờ Tăng Ca", "Giờ Bị Trừ", "Lương CB", "Lương TC", "Tổng Lương" };
+						"Tổng Giờ", "Giờ TC", "Giờ Trừ", "Lương CB", "Lương TC", "Phụ Cấp", "Thưởng", "Phạt", "Tổng Lương" };
 
 					for (int i = 0; i < headers.Length; i++)
 					{
@@ -278,13 +349,17 @@ namespace TMDSystem.Controllers
 
 					foreach (var item in salaryData)
 					{
-						var dailySalary = baseSalary / workDaysPerMonth;
+						var dailySalary = item.BaseSalary / workDaysPerMonth;
 						var hourlySalary = dailySalary / standardHoursPerDay;
 
-						var actualSalary = dailySalary * item.WorkedDays;
-						var overtimeSalary = hourlySalary * overtimeRate * item.OvertimeHours;
+						var overtimeSalary = hourlySalary * item.OvertimeRate * item.OvertimeHours;
 						var deduction = hourlySalary * item.DeductionHours;
-						var totalSalary = actualSalary + overtimeSalary - deduction;
+
+						// ✅ FIX
+						var bonusAmount = item.Adjustments.Where(a => (a.Amount ?? 0) > 0).Sum(a => a.Amount ?? 0);
+						var penaltyAmount = Math.Abs(item.Adjustments.Where(a => (a.Amount ?? 0) < 0).Sum(a => a.Amount ?? 0));
+
+						var totalSalary = item.ActualSalary + overtimeSalary - deduction + item.Allowance + bonusAmount - penaltyAmount;
 
 						grandTotal += totalSalary;
 
@@ -297,11 +372,14 @@ namespace TMDSystem.Controllers
 						summarySheet.Cell(currentRow, 7).Value = item.TotalHours;
 						summarySheet.Cell(currentRow, 8).Value = item.OvertimeHours;
 						summarySheet.Cell(currentRow, 9).Value = item.DeductionHours;
-						summarySheet.Cell(currentRow, 10).Value = actualSalary;
+						summarySheet.Cell(currentRow, 10).Value = item.ActualSalary;
 						summarySheet.Cell(currentRow, 11).Value = overtimeSalary;
-						summarySheet.Cell(currentRow, 12).Value = totalSalary;
+						summarySheet.Cell(currentRow, 12).Value = item.Allowance;
+						summarySheet.Cell(currentRow, 13).Value = bonusAmount;
+						summarySheet.Cell(currentRow, 14).Value = penaltyAmount;
+						summarySheet.Cell(currentRow, 15).Value = totalSalary;
 
-						for (int col = 10; col <= 12; col++)
+						for (int col = 10; col <= 15; col++)
 						{
 							summarySheet.Cell(currentRow, col).Style.NumberFormat.Format = "#,##0";
 						}
@@ -311,11 +389,11 @@ namespace TMDSystem.Controllers
 
 					// Total row
 					summarySheet.Cell(currentRow, 1).Value = "TỔNG CỘNG";
-					summarySheet.Range(currentRow, 1, currentRow, 11).Merge();
-					summarySheet.Cell(currentRow, 12).Value = grandTotal;
-					summarySheet.Cell(currentRow, 12).Style.NumberFormat.Format = "#,##0";
+					summarySheet.Range(currentRow, 1, currentRow, 14).Merge();
+					summarySheet.Cell(currentRow, 15).Value = grandTotal;
+					summarySheet.Cell(currentRow, 15).Style.NumberFormat.Format = "#,##0";
 
-					var totalRange = summarySheet.Range(currentRow, 1, currentRow, 12);
+					var totalRange = summarySheet.Range(currentRow, 1, currentRow, 15);
 					totalRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#E7E6E6");
 					totalRange.Style.Font.Bold = true;
 

@@ -63,7 +63,23 @@ public partial class User
 
     public virtual Role Role { get; set; } = null!;
 
+    public virtual ICollection<SalaryAdjustment> SalaryAdjustmentAdjustedByNavigations { get; set; } = new List<SalaryAdjustment>();
+
+    public virtual ICollection<SalaryAdjustment> SalaryAdjustmentApprovedByNavigations { get; set; } = new List<SalaryAdjustment>();
+
+    public virtual ICollection<SalaryAdjustment> SalaryAdjustmentUsers { get; set; } = new List<SalaryAdjustment>();
+
     public virtual ICollection<SystemSetting> SystemSettings { get; set; } = new List<SystemSetting>();
 
+    public virtual ICollection<UserSalarySetting> UserSalarySettingCreatedByNavigations { get; set; } = new List<UserSalarySetting>();
+
+    public virtual ICollection<UserSalarySetting> UserSalarySettingUpdatedByNavigations { get; set; } = new List<UserSalarySetting>();
+
+    public virtual UserSalarySetting? UserSalarySettingUser { get; set; }
+
     public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
+
+    public virtual ICollection<WorkScheduleException> WorkScheduleExceptionCreatedByNavigations { get; set; } = new List<WorkScheduleException>();
+
+    public virtual ICollection<WorkScheduleException> WorkScheduleExceptionUsers { get; set; } = new List<WorkScheduleException>();
 }

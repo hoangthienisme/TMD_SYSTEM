@@ -1,7 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Hồ sơ cá nhân";
-    Layout = "~/Views/Shared/_Layout.cshtml";
     var user = ViewBag.User as TMD.Models.User;
+
+    // Tự động chọn Layout dựa trên Role
+    Layout = user?.Role?.RoleName?.ToLower() == "admin"
+        ? "~/Views/Shared/_Layout.cshtml"
+        : "~/Views/Shared/_LayoutStaff.cshtml";
 }
 
 <div class="profile-container">
@@ -217,36 +221,36 @@
         border-bottom: 1px solid #e2e8f0;
     }
 
-    .profile-info-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
+        .profile-info-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
 
-    .profile-info-item i {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: #f7fafc;
-        color: #667eea;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        flex-shrink: 0;
-    }
+        .profile-info-item i {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f7fafc;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
 
-    .profile-info-item .label {
-        display: block;
-        font-size: 12px;
-        color: #a0aec0;
-        margin-bottom: 3px;
-    }
+        .profile-info-item .label {
+            display: block;
+            font-size: 12px;
+            color: #a0aec0;
+            margin-bottom: 3px;
+        }
 
-    .profile-info-item .value {
-        display: block;
-        font-weight: 600;
-        color: #2d3748;
-    }
+        .profile-info-item .value {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+        }
 
     /* CONTENT CARDS */
     .content-card {
@@ -262,11 +266,11 @@
         background: #f7fafc;
     }
 
-    .content-card__header h5 {
-        margin: 0;
-        font-weight: 600;
-        color: #2d3748;
-    }
+        .content-card__header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: #2d3748;
+        }
 
     .content-card__body {
         padding: 25px;
@@ -285,10 +289,10 @@
         transition: all 0.3s ease;
     }
 
-    .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-    }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
 
     .btn {
         padding: 10px 25px;
@@ -302,20 +306,20 @@
         border: none;
     }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
 
     .btn-danger {
         background: linear-gradient(135deg, #f56565, #e53e3e);
         border: none;
     }
 
-    .btn-danger:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
-    }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
 
     .alert {
         border-radius: 8px;

@@ -67,9 +67,21 @@ public partial class Attendance
 
     public decimal DeductionAmount { get; set; }
 
+    public decimal? SalaryMultiplier { get; set; }
+
+    public int? ScheduleExceptionId { get; set; }
+
+    public decimal? ActualWorkHours { get; set; }
+
+    public decimal? StandardWorkHours { get; set; }
+
     public virtual LateRequest? LateRequest { get; set; }
 
     public virtual OvertimeRequest? OvertimeRequest { get; set; }
+
+    public virtual ICollection<SalaryAdjustment> SalaryAdjustments { get; set; } = new List<SalaryAdjustment>();
+
+    public virtual WorkScheduleException? ScheduleException { get; set; }
 
     public virtual User User { get; set; } = null!;
 }

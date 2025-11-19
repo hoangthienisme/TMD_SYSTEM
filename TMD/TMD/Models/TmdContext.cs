@@ -37,15 +37,21 @@ public partial class TmdContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<SalaryAdjustment> SalaryAdjustments { get; set; }
+
     public virtual DbSet<SystemSetting> SystemSettings { get; set; }
 
     public virtual DbSet<Task> Tasks { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserSalarySetting> UserSalarySettings { get; set; }
+
     public virtual DbSet<UserTask> UserTasks { get; set; }
 
     public virtual DbSet<VwPendingRequestsSummary> VwPendingRequestsSummaries { get; set; }
+
+    public virtual DbSet<VwSalaryCalculation> VwSalaryCalculations { get; set; }
 
     public virtual DbSet<VwTaskPerformance> VwTaskPerformances { get; set; }
 
@@ -54,6 +60,8 @@ public partial class TmdContext : DbContext
     public virtual DbSet<VwTodayAttendance> VwTodayAttendances { get; set; }
 
     public virtual DbSet<VwUserDetail> VwUserDetails { get; set; }
+
+    public virtual DbSet<WorkScheduleException> WorkScheduleExceptions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -67,6 +75,7 @@ public partial class TmdContext : DbContext
 
             entity.HasIndex(e => new { e.UserId, e.WorkDate }, "IX_Attendances_UserId_WorkDate");
 
+            entity.Property(e => e.ActualWorkHours).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.ApprovedOvertimeHours).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.CheckInAddress).HasMaxLength(500);
             entity.Property(e => e.CheckInIpaddress)
@@ -87,6 +96,12 @@ public partial class TmdContext : DbContext
             entity.Property(e => e.DeductionHours).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.IsLate).HasDefaultValue(false);
             entity.Property(e => e.IsWithinGeofence).HasDefaultValue(true);
+            entity.Property(e => e.SalaryMultiplier)
+                .HasDefaultValue(1.0m)
+                .HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.StandardWorkHours)
+                .HasDefaultValue(8m)
+                .HasColumnType("decimal(5, 2)");
             entity.Property(e => e.TotalHours).HasColumnType("decimal(5, 2)");
 
             entity.HasOne(d => d.LateRequest).WithMany(p => p.Attendances)
@@ -96,6 +111,10 @@ public partial class TmdContext : DbContext
             entity.HasOne(d => d.OvertimeRequest).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.OvertimeRequestId)
                 .HasConstraintName("FK_Attendances_OvertimeRequest");
+
+            entity.HasOne(d => d.ScheduleException).WithMany(p => p.Attendances)
+                .HasForeignKey(d => d.ScheduleExceptionId)
+                .HasConstraintName("FK_Attendances_ScheduleException");
 
             entity.HasOne(d => d.User).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.UserId)
@@ -318,6 +337,45 @@ public partial class TmdContext : DbContext
             entity.Property(e => e.RoleName).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<SalaryAdjustment>(entity =>
+        {
+            entity.HasKey(e => e.AdjustmentId).HasName("PK__SalaryAd__E60DB893E5A43735");
+
+            entity.HasIndex(e => e.AdjustmentType, "IX_SalaryAdjustments_AdjustmentType");
+
+            entity.HasIndex(e => new { e.UserId, e.WorkDate }, "IX_SalaryAdjustments_UserId_WorkDate");
+
+            entity.Property(e => e.AdjustedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.AdjustmentType).HasMaxLength(50);
+            entity.Property(e => e.Amount)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Category).HasMaxLength(100);
+            entity.Property(e => e.Hours)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.IsApproved).HasDefaultValue(true);
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+            entity.Property(e => e.Reason).HasMaxLength(1000);
+
+            entity.HasOne(d => d.AdjustedByNavigation).WithMany(p => p.SalaryAdjustmentAdjustedByNavigations)
+                .HasForeignKey(d => d.AdjustedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__SalaryAdj__Adjus__42E1EEFE");
+
+            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.SalaryAdjustmentApprovedByNavigations)
+                .HasForeignKey(d => d.ApprovedBy)
+                .HasConstraintName("FK__SalaryAdj__Appro__43D61337");
+
+            entity.HasOne(d => d.Attendance).WithMany(p => p.SalaryAdjustments)
+                .HasForeignKey(d => d.AttendanceId)
+                .HasConstraintName("FK__SalaryAdj__Atten__41EDCAC5");
+
+            entity.HasOne(d => d.User).WithMany(p => p.SalaryAdjustmentUsers)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__SalaryAdj__UserI__40F9A68C");
+        });
+
         modelBuilder.Entity<SystemSetting>(entity =>
         {
             entity.HasKey(e => e.SettingId).HasName("PK__SystemSe__54372B1DEA688F4D");
@@ -396,6 +454,41 @@ public partial class TmdContext : DbContext
                 .HasConstraintName("FK__Users__RoleId__4316F928");
         });
 
+        modelBuilder.Entity<UserSalarySetting>(entity =>
+        {
+            entity.HasKey(e => e.UserSalaryId).HasName("PK__UserSala__528D2F424FA45E81");
+
+            entity.HasIndex(e => e.UserId, "UQ__UserSala__1788CC4D6A1C46E6").IsUnique();
+
+            entity.Property(e => e.AllowanceAmount)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.BaseSalary)
+                .HasDefaultValue(5000000m)
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.DefaultOvertimeRate)
+                .HasDefaultValue(1.5m)
+                .HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.HourlyRate).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.SalaryType)
+                .HasMaxLength(20)
+                .HasDefaultValue("Monthly");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.UserSalarySettingCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK__UserSalar__Creat__30C33EC3");
+
+            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.UserSalarySettingUpdatedByNavigations)
+                .HasForeignKey(d => d.UpdatedBy)
+                .HasConstraintName("FK__UserSalar__Updat__31B762FC");
+
+            entity.HasOne(d => d.User).WithOne(p => p.UserSalarySettingUser)
+                .HasForeignKey<UserSalarySetting>(d => d.UserId)
+                .HasConstraintName("FK__UserSalar__UserI__2FCF1A8A");
+        });
+
         modelBuilder.Entity<UserTask>(entity =>
         {
             entity.HasKey(e => e.UserTaskId).HasName("PK__UserTask__4EF5961FD9ECDA05");
@@ -422,6 +515,25 @@ public partial class TmdContext : DbContext
             entity.Property(e => e.RequestType)
                 .HasMaxLength(15)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VwSalaryCalculation>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_SalaryCalculation");
+
+            entity.Property(e => e.AutoDeduction).HasColumnType("decimal(38, 2)");
+            entity.Property(e => e.BaseSalary).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.DailySalaryTotal).HasColumnType("numeric(38, 8)");
+            entity.Property(e => e.DepartmentName).HasMaxLength(100);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.MonthlyAllowance).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.OvertimeSalary).HasColumnType("numeric(38, 12)");
+            entity.Property(e => e.SalaryType).HasMaxLength(20);
+            entity.Property(e => e.TotalOvertimeHours).HasColumnType("decimal(38, 2)");
+            entity.Property(e => e.TotalWorkHours).HasColumnType("decimal(38, 2)");
         });
 
         modelBuilder.Entity<VwTaskPerformance>(entity =>
@@ -481,6 +593,39 @@ public partial class TmdContext : DbContext
             entity.Property(e => e.PhoneNumber).HasMaxLength(20);
             entity.Property(e => e.RoleName).HasMaxLength(50);
             entity.Property(e => e.Username).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<WorkScheduleException>(entity =>
+        {
+            entity.HasKey(e => e.ExceptionId).HasName("PK__WorkSche__26981D8847CF3126");
+
+            entity.HasIndex(e => e.UserId, "IX_WorkScheduleExceptions_UserId");
+
+            entity.HasIndex(e => e.WorkDate, "IX_WorkScheduleExceptions_WorkDate");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.ExceptionType)
+                .HasMaxLength(50)
+                .HasDefaultValue("Normal");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.OvertimeMultiplier).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.SalaryMultiplier)
+                .HasDefaultValue(1.0m)
+                .HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.StandardHours).HasColumnType("decimal(5, 2)");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.WorkScheduleExceptionCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK__WorkSched__Creat__3A4CA8FD");
+
+            entity.HasOne(d => d.Department).WithMany(p => p.WorkScheduleExceptions)
+                .HasForeignKey(d => d.DepartmentId)
+                .HasConstraintName("FK__WorkSched__Depar__395884C4");
+
+            entity.HasOne(d => d.User).WithMany(p => p.WorkScheduleExceptionUsers)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__WorkSched__UserI__3864608B");
         });
 
         OnModelCreatingPartial(modelBuilder);
