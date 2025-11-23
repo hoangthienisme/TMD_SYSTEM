@@ -75,6 +75,8 @@ public partial class Attendance
 
     public decimal? StandardWorkHours { get; set; }
 
+    public DateTime? UpdatedAt { get; set; }
+
     public virtual LateRequest? LateRequest { get; set; }
 
     public virtual OvertimeRequest? OvertimeRequest { get; set; }

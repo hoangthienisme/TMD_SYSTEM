@@ -325,12 +325,48 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
     },
     {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.mp3",
+      "PackagePath": "staticwebassets\\sounds\\notification.mp3"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.wav",
+      "PackagePath": "staticwebassets\\sounds\\notification.wav"
+    },
+    {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251117_121108_checkin.jpg",
       "PackagePath": "staticwebassets\\uploads\\attendance\\12_20251117_121108_checkin.jpg"
     },
     {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251118_142904_checkin.jpg",
       "PackagePath": "staticwebassets\\uploads\\attendance\\12_20251118_142904_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_193700_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\12_20251121_193700_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_194138_checkout.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\12_20251121_194138_checkout.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_020538_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\12_20251123_020538_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_234053_checkout.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\12_20251123_234053_checkout.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\14_20251121_202839_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\14_20251121_202839_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_210659_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\15_20251121_210659_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_213522_checkout.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\15_20251121_213522_checkout.jpg"
     },
     {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251116_015000_checkin.jpg",
@@ -371,6 +407,38 @@
     {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251121_003641_checkin.jpg",
       "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251121_003641_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251121_193629_checkout.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251121_193629_checkout.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013310_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251123_013310_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013319_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251123_013319_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013332_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251123_013332_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013405_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251123_013405_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_021821_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251123_021821_checkin.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_222326_checkout.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251123_222326_checkout.jpg"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251124_014027_checkin.jpg",
+      "PackagePath": "staticwebassets\\uploads\\attendance\\9_20251124_014027_checkin.jpg"
     },
     {
       "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.TMD.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

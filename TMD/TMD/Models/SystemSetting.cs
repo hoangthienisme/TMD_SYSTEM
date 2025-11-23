@@ -25,5 +25,21 @@ public partial class SystemSetting
 
     public int? UpdatedBy { get; set; }
 
+    public bool IsEnabled { get; set; }
+
+    public string? DisplayName { get; set; }
+
+    public bool IsSystemDefault { get; set; }
+
+    public string? ApplyMethod { get; set; }
+
+    public int? Priority { get; set; }
+
+    public string? Unit { get; set; }
+
+    public decimal? MinValue { get; set; }
+
+    public decimal? MaxValue { get; set; }
+
     public virtual User? UpdatedByNavigation { get; set; }
 }

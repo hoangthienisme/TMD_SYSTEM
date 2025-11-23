@@ -33,21 +33,20 @@
                     <small class="sd-text-muted">Thời gian server</small>
                 </div>
 
-                <!-- Quick Requests (integrated) -->
+                <!-- Quick Requests -->
                 <div class="sd-quick-requests ms-3">
                     <div class="btn-group">
-                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#overtimeModal">
-                            <i class="fas fa-clock me-1"></i> Tạo tăng ca
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#overtimeModal">
+                            <i class="fas fa-clock me-1"></i> Tăng ca
                         </button>
-                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#leaveModal">
-                            <i class="fas fa-umbrella-beach me-1"></i> Tạo nghỉ phép
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#leaveModal">
+                            <i class="fas fa-umbrella-beach me-1"></i> Nghỉ phép
                         </button>
-                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#lateModal">
-                            <i class="fas fa-user-clock me-1"></i> Tạo đi trễ
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#lateModal">
+                            <i class="fas fa-user-clock me-1"></i> Đi trễ
                         </button>
                     </div>
                 </div>
-                <!-- End Quick Requests -->
             </div>
         </div>
     </div>
@@ -298,146 +297,203 @@
     </div>
 </div>
 
-<!-- ====== MODALS (Overtime / Leave / Late) ====== -->
-<!-- OVERTIME MODAL -->
+<!-- ====== IMPROVED OVERTIME MODAL ====== -->
 <div class="modal fade" id="overtimeModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-warning text-white">
-                <h5 class="modal-title"><i class="fas fa-clock me-2"></i>Đề xuất tăng ca</h5>
+                <h5 class="modal-title">
+                    <i class="fas fa-clock me-2"></i>Đề xuất tăng ca
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Lưu ý:</strong> Hệ thống sẽ tự động tính số giờ tăng ca dựa trên bản ghi chấm công của bạn.
+                </div>
                 <form id="overtimeForm">
                     <div class="mb-3">
-                        <label class="form-label">Ngày tăng ca *</label>
+                        <label class="form-label">
+                            <i class="fas fa-calendar-day me-1"></i>Ngày tăng ca *
+                        </label>
                         <input type="date" class="form-control" id="overtimeWorkDate" required>
+                        <small class="text-muted">Chọn ngày đã check-out có giờ tăng ca</small>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Giờ check-out thực tế *</label>
-                        <input type="time" class="form-control" id="overtimeCheckOut" required>
+                        <label class="form-label">
+                            <i class="fas fa-comment-dots me-1"></i>Lý do *
+                        </label>
+                        <textarea class="form-control" id="overtimeReason" rows="3"
+                                  placeholder="Ví dụ: Hoàn thành dự án X, xử lý công việc khẩn cấp..."
+                                  required></textarea>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Số giờ tăng ca *</label>
-                        <input type="number" class="form-control" id="overtimeHours" min="0.5" step="0.5" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Lý do *</label>
-                        <textarea class="form-control" id="overtimeReason" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả công việc</label>
-                        <textarea class="form-control" id="overtimeTaskDesc" rows="2"></textarea>
+                        <label class="form-label">
+                            <i class="fas fa-tasks me-1"></i>Mô tả công việc (tùy chọn)
+                        </label>
+                        <textarea class="form-control" id="overtimeTaskDesc" rows="2"
+                                  placeholder="Mô tả chi tiết công việc đã làm..."></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Đóng
+                </button>
                 <button type="button" class="btn btn-warning" onclick="submitOvertimeRequest()">
-                    <i class="fas fa-paper-plane me-1"></i> Gửi đề xuất
+                    <i class="fas fa-paper-plane me-1"></i>Gửi đề xuất
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- LEAVE MODAL -->
+<!-- ====== IMPROVED LEAVE MODAL ====== -->
 <div class="modal fade" id="leaveModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title"><i class="fas fa-umbrella-beach me-2"></i>Đề xuất nghỉ phép</h5>
+                <h5 class="modal-title">
+                    <i class="fas fa-umbrella-beach me-2"></i>Đề xuất nghỉ phép
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Lưu ý:</strong> Số ngày sẽ được tự động tính dựa trên khoảng thời gian bạn chọn.
+                </div>
                 <form id="leaveForm">
                     <div class="mb-3">
-                        <label class="form-label">Loại nghỉ *</label>
+                        <label class="form-label">
+                            <i class="fas fa-tag me-1"></i>Loại nghỉ *
+                        </label>
                         <select class="form-select" id="leaveType" required>
-                            <option value="">-- Chọn loại --</option>
+                            <option value="">-- Chọn loại nghỉ --</option>
                             <option value="Nghỉ phép năm">Nghỉ phép năm</option>
                             <option value="Nghỉ ốm">Nghỉ ốm</option>
                             <option value="Nghỉ việc riêng">Nghỉ việc riêng</option>
                             <option value="Nghỉ không lương">Nghỉ không lương</option>
                         </select>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Từ ngày *</label>
+                            <label class="form-label">
+                                <i class="fas fa-calendar-check me-1"></i>Từ ngày *
+                            </label>
                             <input type="date" class="form-control" id="leaveStartDate" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Đến ngày *</label>
+                            <label class="form-label">
+                                <i class="fas fa-calendar-times me-1"></i>Đến ngày *
+                            </label>
                             <input type="date" class="form-control" id="leaveEndDate" required>
                         </div>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Số ngày *</label>
-                        <input type="number" class="form-control" id="leaveTotalDays" min="1" required>
+                        <label class="form-label">
+                            <i class="fas fa-comment-dots me-1"></i>Lý do *
+                        </label>
+                        <textarea class="form-control" id="leaveReason" rows="3"
+                                  placeholder="Lý do nghỉ phép..."
+                                  required></textarea>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Lý do *</label>
-                        <textarea class="form-control" id="leaveReason" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tài liệu đính kèm (URL)</label>
-                        <input type="url" class="form-control" id="leaveProof" placeholder="https://...">
-                        <small class="text-muted">Nếu có giấy khám/chứng từ, upload và nhập link tại đây</small>
+                        <label class="form-label">
+                            <i class="fas fa-paperclip me-1"></i>Tài liệu đính kèm (URL)
+                        </label>
+                        <input type="url" class="form-control" id="leaveProof"
+                               placeholder="https://drive.google.com/...">
+                        <small class="text-muted">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Nếu có giấy khám/chứng từ, upload lên Drive và dán link tại đây
+                        </small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Đóng
+                </button>
                 <button type="button" class="btn btn-info" onclick="submitLeaveRequest()">
-                    <i class="fas fa-paper-plane me-1"></i> Gửi đề xuất
+                    <i class="fas fa-paper-plane me-1"></i>Gửi đề xuất
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- LATE MODAL -->
+<!-- ====== IMPROVED LATE MODAL ====== -->
 <div class="modal fade" id="lateModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-user-clock me-2"></i>Đề xuất đi trễ</h5>
+                <h5 class="modal-title">
+                    <i class="fas fa-user-clock me-2"></i>Đề xuất đi trễ
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Lưu ý:</strong> Nên gửi đề xuất trước khi đến công ty để quản lý biết và sắp xếp công việc.
+                </div>
                 <form id="lateForm">
                     <div class="mb-3">
-                        <label class="form-label">Ngày *</label>
+                        <label class="form-label">
+                            <i class="fas fa-calendar-day me-1"></i>Ngày *
+                        </label>
                         <input type="date" class="form-control" id="lateRequestDate" required>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Dự kiến đến lúc *</label>
+                        <label class="form-label">
+                            <i class="fas fa-clock me-1"></i>Dự kiến đến lúc *
+                        </label>
                         <input type="time" class="form-control" id="lateExpectedTime" required>
+                        <small class="text-muted">Chọn giờ:phút dự kiến bạn sẽ đến</small>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Lý do *</label>
-                        <textarea class="form-control" id="lateReason" rows="3" required></textarea>
+                        <label class="form-label">
+                            <i class="fas fa-comment-dots me-1"></i>Lý do *
+                        </label>
+                        <textarea class="form-control" id="lateReason" rows="3"
+                                  placeholder="Ví dụ: Tắc đường, việc gia đình khẩn cấp..."
+                                  required></textarea>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Tài liệu đính kèm (URL)</label>
-                        <input type="url" class="form-control" id="lateProof" placeholder="https://...">
+                        <label class="form-label">
+                            <i class="fas fa-paperclip me-1"></i>Tài liệu đính kèm (URL)
+                        </label>
+                        <input type="url" class="form-control" id="lateProof"
+                               placeholder="https://...">
+                        <small class="text-muted">Tùy chọn: Link ảnh/file minh chứng</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Đóng
+                </button>
                 <button type="button" class="btn btn-danger" onclick="submitLateRequest()">
-                    <i class="fas fa-paper-plane me-1"></i> Gửi đề xuất
+                    <i class="fas fa-paper-plane me-1"></i>Gửi đề xuất
                 </button>
             </div>
         </div>
     </div>
 </div>
-<!-- ====== END MODALS ====== -->
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* giữ nguyên CSS từ dashboard và requests (rút gọn không làm thay đổi) */
         .sd-card-header {
             display: flex;
             justify-content: space-between;
@@ -458,7 +514,13 @@
             border: 1px solid #e9ecef;
             border-left-width: 3px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
+
+            .sd-task-item:hover {
+                transform: translateX(5px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
 
             .sd-task-item.priority-high {
                 border-left-color: #E74C3C;
@@ -472,14 +534,117 @@
                 border-left-color: #27AE60;
             }
 
-        .stat-card {
+        .sd-task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sd-task-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .sd-task-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .badge-high {
+            background: #E74C3C;
+            color: white;
+        }
+
+        .badge-medium {
+            background: #F39C12;
+            color: white;
+        }
+
+        .badge-low {
+            background: #27AE60;
+            color: white;
+        }
+
+        .sd-task-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .sd-task-meta-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.25rem;
+        }
+
+        /* Enhanced Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            border-radius: 12px 12px 0 0;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .modal-body {
             padding: 1.5rem;
-            border-radius: 10px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .request-detail-grid .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+            gap: 1rem;
+        }
+
+            .request-detail-grid .detail-row:last-child {
+                border-bottom: none;
+            }
+
+        .request-detail-grid code {
+            background: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #e74c3c;
+        }
+
+        .time-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
     </style>
 
@@ -500,9 +665,6 @@
         let allTasks = [];
         let displayedTasksCount = 0;
         const TASKS_PER_PAGE = 5;
-
-        // Requests store (for quick requests summary if needed)
-        let allRequests = { overtime: [], leave: [], late: [] };
 
         // ========== TIME UPDATE ==========
         function updateTime() {
@@ -809,24 +971,37 @@
 
         function updateWorkingHours() {
             if (!checkInTimeValue) return;
+
             const updateHours = () => {
                 const now = new Date();
                 const checkIn = new Date(`${now.toDateString()} ${checkInTimeValue}`);
                 const diff = now - checkIn;
+
                 const hours = Math.floor(diff / 3600000);
                 const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+
                 const el = document.querySelector('.sd-check-info');
                 if (el) {
                     el.innerHTML = `
                         <div class="alert alert-info">
-                            <strong>Đã check-in: ${checkInTimeValue}</strong>
-                            <br>Đã làm việc: <strong>${hours}h ${minutes}m</strong>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    <strong>Đã check-in:</strong> <code>${checkInTimeValue}</code>
+                                </div>
+                                <div class="badge bg-primary fs-6">
+                                    <i class="fas fa-clock me-1"></i>
+                                    ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}
+                                </div>
+                            </div>
                         </div>
                     `;
                 }
             };
+
             updateHours();
-            setInterval(updateHours, 60000);
+            setInterval(updateHours, 1000);
         }
 
         // ========== CHECK-IN ==========
@@ -850,7 +1025,12 @@
                 const response = await fetch('/Staff/CheckIn', { method: 'POST', body: formData });
                 const data = await response.json();
                 if (data.success) {
-                    Swal.fire('Thành công!', data.message, 'success').then(() => location.reload());
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        html: data.message.replace(/\n/g, '<br>'),
+                        confirmButtonText: 'Đóng'
+                    }).then(() => location.reload());
                 } else {
                     Swal.fire('Lỗi', data.message, 'error');
                 }
@@ -867,7 +1047,15 @@
                 return;
             }
 
-            const result = await Swal.fire({ title: 'Xác nhận Check-out', text: 'Bạn có chắc muốn check-out?', icon: 'question', showCancelButton: true, confirmButtonText: 'Check-out', cancelButtonText: 'Hủy' });
+            const result = await Swal.fire({
+                title: 'Xác nhận Check-out',
+                text: 'Bạn có chắc muốn check-out?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Check-out',
+                cancelButtonText: 'Hủy'
+            });
+
             if (!result.isConfirmed) return;
 
             const formData = new FormData();
@@ -883,7 +1071,12 @@
                 const response = await fetch('/Staff/CheckOut', { method: 'POST', body: formData });
                 const data = await response.json();
                 if (data.success) {
-                    Swal.fire('Thành công!', data.message, 'success').then(() => location.reload());
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        html: data.message.replace(/\n/g, '<br>'),
+                        confirmButtonText: 'Đóng'
+                    }).then(() => location.reload());
                 } else {
                     Swal.fire('Lỗi', data.message, 'error');
                 }
@@ -977,48 +1170,38 @@
         function loadMoreTasks() { renderTasks(); }
         function viewTaskDetail(taskId) { window.location.href = `/Staff/MyTasks`; }
 
-        // ========== REQUESTS: load, submit, view, cancel ==========
-        async function loadMyRequests() {
-            try {
-                const response = await fetch('/Staff/GetMyRequests');
-                const data = await response.json();
-                if (data.success) {
-                    allRequests.overtime = data.overtime || [];
-                    allRequests.leave = data.leave || [];
-                    allRequests.late = data.late || [];
-                    // optionally update small summary on dashboard if you add elements
-                }
-            } catch (error) {
-                console.error('Error loading requests:', error);
-            }
-        }
-
+        // ========== REQUEST FUNCTIONS ==========
         async function submitOvertimeRequest() {
-            const data = {
-                WorkDate: document.getElementById('overtimeWorkDate').value,
-                ActualCheckOutTime: document.getElementById('overtimeCheckOut').value,
-                OvertimeHours: parseFloat(document.getElementById('overtimeHours').value),
-                Reason: document.getElementById('overtimeReason').value,
-                TaskDescription: document.getElementById('overtimeTaskDesc').value
-            };
+            const workDate = document.getElementById('overtimeWorkDate').value;
+            const reason = document.getElementById('overtimeReason').value;
+            const taskDesc = document.getElementById('overtimeTaskDesc').value;
 
-            if (!data.WorkDate || !data.ActualCheckOutTime || !data.OvertimeHours || !data.Reason) {
-                Swal.fire('Cảnh báo', 'Vui lòng điền đầy đủ thông tin bắt buộc', 'warning');
+            if (!workDate || !reason) {
+                Swal.fire('Cảnh báo', 'Vui lòng chọn ngày và nhập lý do', 'warning');
                 return;
             }
 
+            const data = { WorkDate: workDate, Reason: reason, TaskDescription: taskDesc };
+
             try {
+                Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                 const response = await fetch('/Staff/CreateOvertimeRequest', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 const result = await response.json();
+
                 if (result.success) {
-                    Swal.fire('Thành công!', result.message, 'success');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        html: result.message.replace(/\n/g, '<br>'),
+                        confirmButtonText: 'Đóng'
+                    });
                     bootstrap.Modal.getInstance(document.getElementById('overtimeModal')).hide();
                     document.getElementById('overtimeForm').reset();
-                    await loadMyRequests();
                 } else {
                     Swal.fire('Lỗi', result.message, 'error');
                 }
@@ -1028,34 +1211,68 @@
         }
 
         async function submitLeaveRequest() {
-            const data = {
-                LeaveType: document.getElementById('leaveType').value,
-                StartDate: document.getElementById('leaveStartDate').value,
-                EndDate: document.getElementById('leaveEndDate').value,
-                TotalDays: parseInt(document.getElementById('leaveTotalDays').value),
-                Reason: document.getElementById('leaveReason').value,
-                ProofDocument: document.getElementById('leaveProof').value
-            };
+            const leaveType = document.getElementById('leaveType').value;
+            const startDate = document.getElementById('leaveStartDate').value;
+            const endDate = document.getElementById('leaveEndDate').value;
+            const reason = document.getElementById('leaveReason').value;
+            const proof = document.getElementById('leaveProof').value;
 
-            if (!data.LeaveType || !data.StartDate || !data.EndDate || !data.TotalDays || !data.Reason) {
-                Swal.fire('Cảnh báo', 'Vui lòng điền đầy đủ thông tin bắt buộc', 'warning');
+            if (!leaveType || !startDate || !endDate || !reason) {
+                Swal.fire('Cảnh báo', 'Vui lòng điền đầy đủ: Loại nghỉ, Từ ngày, Đến ngày, Lý do', 'warning');
                 return;
             }
 
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (end < start) {
+                Swal.fire('Cảnh báo', 'Ngày kết thúc phải sau ngày bắt đầu', 'warning');
+                return;
+            }
+
+            const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+            const result = await Swal.fire({
+                title: 'Xác nhận gửi đề xuất',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Loại nghỉ:</strong> ${leaveType}</p>
+                        <p><strong>Từ ngày:</strong> ${new Date(startDate).toLocaleDateString('vi-VN')}</p>
+                        <p><strong>Đến ngày:</strong> ${new Date(endDate).toLocaleDateString('vi-VN')}</p>
+                        <p><strong>Tổng số ngày:</strong> ${totalDays} ngày</p>
+                        <p><strong>Lý do:</strong> ${reason}</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Gửi đề xuất',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (!result.isConfirmed) return;
+
+            const data = { LeaveType: leaveType, StartDate: startDate, EndDate: endDate, Reason: reason, ProofDocument: proof };
+
             try {
+                Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                 const response = await fetch('/Staff/CreateLeaveRequest', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                const result = await response.json();
-                if (result.success) {
-                    Swal.fire('Thành công!', result.message, 'success');
+                const res = await response.json();
+
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        html: res.message.replace(/\n/g, '<br>'),
+                        confirmButtonText: 'Đóng'
+                    });
                     bootstrap.Modal.getInstance(document.getElementById('leaveModal')).hide();
                     document.getElementById('leaveForm').reset();
-                    await loadMyRequests();
                 } else {
-                    Swal.fire('Lỗi', result.message, 'error');
+                    Swal.fire('Lỗi', res.message, 'error');
                 }
             } catch (error) {
                 Swal.fire('Lỗi', error.message, 'error');
@@ -1065,77 +1282,49 @@
         async function submitLateRequest() {
             const requestDate = document.getElementById('lateRequestDate').value;
             const expectedTime = document.getElementById('lateExpectedTime').value;
-            const timeSpan = expectedTime + ':00';
-            const data = {
-                RequestDate: requestDate,
-                ExpectedArrivalTime: timeSpan,
-                Reason: document.getElementById('lateReason').value,
-                ProofDocument: document.getElementById('lateProof').value
-            };
+            const reason = document.getElementById('lateReason').value;
+            const proof = document.getElementById('lateProof').value;
 
-            if (!data.RequestDate || !data.ExpectedArrivalTime || !data.Reason) {
-                Swal.fire('Cảnh báo', 'Vui lòng điền đầy đủ thông tin bắt buộc', 'warning');
+            if (!requestDate || !expectedTime || !reason) {
+                Swal.fire('Cảnh báo', 'Vui lòng điền đầy đủ: Ngày, Giờ dự kiến đến, Lý do', 'warning');
                 return;
             }
 
+            const result = await Swal.fire({
+                title: 'Xác nhận gửi đề xuất đi trễ',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Ngày:</strong> ${new Date(requestDate).toLocaleDateString('vi-VN')}</p>
+                        <p><strong>Dự kiến đến lúc:</strong> ${expectedTime}</p>
+                        <p><strong>Lý do:</strong> ${reason}</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Gửi đề xuất',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (!result.isConfirmed) return;
+
+            const data = { RequestDate: requestDate, ExpectedArrivalTime: expectedTime + ':00', Reason: reason, ProofDocument: proof };
+
             try {
+                Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                 const response = await fetch('/Staff/CreateLateRequest', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                const result = await response.json();
-                if (result.success) {
-                    Swal.fire('Thành công!', result.message, 'success');
+                const res = await response.json();
+
+                if (res.success) {
+                    Swal.fire('Thành công!', res.message, 'success');
                     bootstrap.Modal.getInstance(document.getElementById('lateModal')).hide();
                     document.getElementById('lateForm').reset();
-                    await loadMyRequests();
                 } else {
-                    Swal.fire('Lỗi', result.message, 'error');
-                }
-            } catch (error) {
-                Swal.fire('Lỗi', error.message, 'error');
-            }
-        }
-
-        async function cancelRequest(type, id) {
-            const result = await Swal.fire({
-                title: 'Xác nhận hủy?',
-                text: 'Bạn có chắc muốn hủy đề xuất này?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Hủy đề xuất',
-                cancelButtonText: 'Không'
-            });
-            if (!result.isConfirmed) return;
-
-            try {
-                const response = await fetch('/Staff/CancelRequest', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ RequestId: id, RequestType: type })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    Swal.fire('Thành công!', data.message, 'success');
-                    await loadMyRequests();
-                } else {
-                    Swal.fire('Lỗi', data.message, 'error');
-                }
-            } catch (error) {
-                Swal.fire('Lỗi', error.message, 'error');
-            }
-        }
-
-        async function viewRequestDetail(type, id) {
-            try {
-                const response = await fetch(`/Staff/GetRequestDetail?type=${type}&id=${id}`);
-                const data = await response.json();
-                if (data.success) {
-                    let html = '<div class="request-detail">';
-                    html += JSON.stringify(data.request, null, 2);
-                    html += '</div>';
-                    Swal.fire({ title: 'Chi tiết đề xuất', html: `<pre>${html}</pre>`, width: 600 });
+                    Swal.fire('Lỗi', res.message, 'error');
                 }
             } catch (error) {
                 Swal.fire('Lỗi', error.message, 'error');
@@ -1149,7 +1338,6 @@
             await getLocation();
             await checkAttendanceStatus();
             await loadMyTasks();
-            await loadMyRequests(); // load quick requests in background
             console.log('✅ Dashboard initialized');
         };
 

@@ -7,63 +7,494 @@
     <title>@ViewData["Title"] - TMD Staff</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-	<link href="~/css/layoutstaff.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #E74C3C;
+            --secondary: #F39C12;
+            --success: #27AE60;
+            --danger: #E74C3C;
+            --warning: #F39C12;
+            --info: #3498DB;
+            --dark: #2C3E50;
+            --light: #F8F9FA;
+            --white: #FFFFFF;
+            --gray-100: #F8F9FA;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-600: #6C757D;
+        }
 
-    <!-- ✅ CUSTOM CSS FROM DATABASE -->
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gray-100);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* NAVBAR */
+        .navbar-custom {
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-brand:hover {
+                color: var(--secondary);
+                transform: scale(1.05);
+            }
+
+            .navbar-brand i {
+                color: var(--primary);
+                font-size: 28px;
+            }
+
+        .nav-link {
+            color: var(--dark) !important;
+            font-weight: 600;
+            padding: 10px 18px !important;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+            .nav-link:hover {
+                background: rgba(231, 76, 60, 0.1);
+                color: var(--primary) !important;
+                transform: translateY(-2px);
+            }
+
+            .nav-link.active {
+                background: var(--primary);
+                color: white !important;
+                box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+            }
+
+            .nav-link i {
+                font-size: 18px;
+            }
+
+        /* USER DROPDOWN */
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 15px;
+            border-radius: 50px;
+            background: var(--gray-100);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid var(--gray-200);
+        }
+
+            .user-dropdown:hover {
+                background: rgba(231, 76, 60, 0.1);
+                border-color: var(--primary);
+                transform: scale(1.05);
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--gray-600);
+        }
+
+        .dropdown-menu {
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            border: 1px solid var(--gray-200);
+            padding: 10px;
+            min-width: 250px;
+            margin-top: 10px;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+            .dropdown-item i {
+                width: 20px;
+                text-align: center;
+                color: var(--primary);
+            }
+
+            .dropdown-item:hover {
+                background: rgba(231, 76, 60, 0.1);
+                color: var(--primary);
+                transform: translateX(5px);
+            }
+
+            .dropdown-item.text-danger i {
+                color: var(--danger);
+            }
+
+            .dropdown-item.text-danger:hover {
+                background: rgba(231, 76, 60, 0.15);
+                color: var(--danger);
+            }
+
+        .dropdown-divider {
+            margin: 10px 0;
+            border-top: 2px solid var(--gray-200);
+        }
+
+        /* NOTIFICATION STYLES */
+        .notification-btn {
+            position: relative;
+            cursor: pointer;
+            margin-right: 15px;
+            color: var(--dark);
+        }
+
+            .notification-btn:hover {
+                color: var(--primary);
+            }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: none;
+        }
+
+        .notif-dropdown {
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            right: 0;
+            left: auto;
+        }
+
+        .notif-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+            .notif-item:hover {
+                background: #f8f9fa;
+            }
+
+            .notif-item.unread {
+                background: #fff3cd;
+                border-left: 3px solid #F39C12;
+            }
+
+            .notif-item.read {
+                background: #fff;
+                opacity: 0.7;
+            }
+
+        .notif-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #2c3e50;
+        }
+
+        .notif-msg {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .notif-time {
+            font-size: 10px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .notif-clear-all {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+            .notif-clear-all button {
+                font-size: 0.8rem;
+                color: #666;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+
+                .notif-clear-all button:hover {
+                    color: #E74C3C;
+                }
+
+        /* TOAST NOTIFICATION */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .custom-toast {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 300px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: slideInRight 0.3s ease-out;
+            border-left: 5px solid var(--primary);
+        }
+
+        keyframes slideInRight {
+            from
+
+        {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        }
+
+        /* MAIN CONTENT */
+        .container-custom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 15px;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 18px 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+            .alert i {
+                font-size: 24px;
+            }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid var(--success);
+        }
+
+            .alert-success i {
+                color: var(--success);
+            }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid var(--danger);
+        }
+
+            .alert-danger i {
+                color: var(--danger);
+            }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid var(--warning);
+        }
+
+            .alert-warning i {
+                color: var(--warning);
+            }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid var(--info);
+        }
+
+            .alert-info i {
+                color: var(--info);
+            }
+
+        .btn-close {
+            background: transparent;
+            opacity: 0.7;
+        }
+
+        /* MOBILE & LOADING */
+        media (max-width: 991px) {
+            .navbar-collapse
+
+        {
+            background: white;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            margin: 5px 0;
+        }
+
+        .user-dropdown {
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+            .scroll-to-top:hover {
+                background: var(--secondary);
+                transform: translateY(-5px);
+            }
+
+            .scroll-to-top.show {
+                display: flex;
+            }
+
+        .navbar-toggler {
+            border: 2px solid var(--primary);
+            padding: 8px 12px;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23E74C3C' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+    </style>
+
     @{
         var customCss = "";
-        try
-        {
-            customCss = TMDSystem.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_CSS");
-        }
-        catch { }
+        try { customCss = TMD.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_CSS"); } catch { }
     }
-
     @if (!string.IsNullOrWhiteSpace(customCss))
     {
-        <style id="staff-custom-css">
-            /* CUSTOM CSS - Áp dụng cho Staff */
-            @Html.Raw(customCss)
-        </style>
+        <style id="staff-custom-css">@Html.Raw(customCss)</style>
     }
 </head>
 <body>
-    <!-- NAVBAR -->
+    <audio id="notifSound" src="~/sounds/notification.wav" preload="auto"></audio>
+    <div id="toast-container"></div>
+
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="/Staff/Dashboard">
-                <i class="fas fa-briefcase"></i>
-                <span>TMD System</span>
+                <i class="fas fa-briefcase"></i><span>TMD System v1</span>
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Staff/Dashboard">
-                            <i class="fas fa-home"></i>
-                            <span>Dashboard</span>
+                    <li class="nav-item"><a class="nav-link" href="/Staff/Dashboard"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Staff/MyTasks"><i class="fas fa-clipboard-list"></i><span>Công việc</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Staff/AttendanceHistory"><i class="fas fa-history"></i><span>Lịch sử chấm công</span></a></li>
+
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link notification-btn" href="#" id="notifDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell fa-lg"></i>
+                            <span class="notification-badge" id="notifBadge">0</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Staff/MyTasks">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Công việc</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Staff/AttendanceHistory">
-                            <i class="fas fa-history"></i>
-                            <span>Lịch sử chấm công</span>
-                        </a>
+                        <div class="dropdown-menu dropdown-menu-end notif-dropdown" aria-labelledby="notifDropdown">
+                            <div class="p-2 border-bottom fw-bold text-primary">Thông báo mới</div>
+                            <div id="notifList">
+                                <div class="p-3 text-center text-muted small">Không có thông báo nào</div>
+                            </div>
+                            <div class="notif-clear-all">
+                                <button onclick="clearAllNotifications()">
+                                    <i class="fas fa-check-double me-1"></i> Đánh dấu đã đọc tất cả
+                                </button>
+                            </div>
+                        </div>
                     </li>
 
-                    <!-- USER DROPDOWN -->
                     <li class="nav-item dropdown ms-3">
-                        <a class="user-dropdown dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="user-dropdown dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">
                             <img src="@Context.Session.GetString("Avatar")" alt="Avatar" class="user-avatar" />
                             <div class="user-info d-none d-lg-block">
                                 <div class="user-name">@Context.Session.GetString("FullName")</div>
@@ -71,26 +502,10 @@
                             </div>
                             <i class="fas fa-chevron-down"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li>
-                                <a class="dropdown-item" href="/Staff/Profile">
-                                    <i class="fas fa-user-circle"></i>
-                                    <span>Hồ sơ cá nhân</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/Staff/MyRequests">
-                                    <i class="fas fa-file-alt"></i>
-                                    <span>Đề xuất của tôi</span>
-                                </a>
-                            </li>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/Staff/Profile"><i class="fas fa-user-circle"></i><span>Hồ sơ cá nhân</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="/Account/Logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Đăng xuất</span>
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item text-danger" href="/Account/Logout"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -98,121 +513,173 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
     <div class="container-custom">
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="fas fa-check-circle"></i>
-                <div>
-                    <strong>Thành công!</strong>
-                    <p class="mb-0">@TempData["Success"]</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <div class="alert alert-success alert-dismissible fade show"><i class="fas fa-check-circle"></i><div><strong>Thành công!</strong><p class="mb-0">@TempData["Success"]</p></div><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         }
-
         @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fas fa-exclamation-circle"></i>
-                <div>
-                    <strong>Lỗi!</strong>
-                    <p class="mb-0">@TempData["Error"]</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <div class="alert alert-danger alert-dismissible fade show"><i class="fas fa-exclamation-circle"></i><div><strong>Lỗi!</strong><p class="mb-0">@TempData["Error"]</p></div><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         }
-
         @if (TempData["Warning"] != null)
         {
-            <div class="alert alert-warning alert-dismissible fade show">
-                <i class="fas fa-exclamation-triangle"></i>
-                <div>
-                    <strong>Cảnh báo!</strong>
-                    <p class="mb-0">@TempData["Warning"]</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <div class="alert alert-warning alert-dismissible fade show"><i class="fas fa-exclamation-triangle"></i><div><strong>Cảnh báo!</strong><p class="mb-0">@TempData["Warning"]</p></div><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         }
-
         @if (TempData["Info"] != null)
         {
-            <div class="alert alert-info alert-dismissible fade show">
-                <i class="fas fa-info-circle"></i>
-                <div>
-                    <strong>Thông tin!</strong>
-                    <p class="mb-0">@TempData["Info"]</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <div class="alert alert-info alert-dismissible fade show"><i class="fas fa-info-circle"></i><div><strong>Thông tin!</strong><p class="mb-0">@TempData["Info"]</p></div><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         }
-
         @RenderBody()
     </div>
 
-    <!-- SCROLL TO TOP BUTTON -->
-    <div class="scroll-to-top" id="scrollToTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
+    <div class="scroll-to-top" id="scrollToTop"><i class="fas fa-arrow-up"></i></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+
     <script>
-        // Active Navigation Link
+        // --- UI Scripts ---
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
             document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
-                }
+                if (link.getAttribute('href') === currentPath) link.classList.add('active');
             });
-
-            // Scroll to Top Button
             const scrollBtn = document.getElementById('scrollToTop');
-
             window.addEventListener('scroll', function() {
-                if (window.pageYOffset > 300) {
-                    scrollBtn.classList.add('show');
-                } else {
-                    scrollBtn.classList.remove('show');
-                }
+                if (window.pageYOffset > 300) scrollBtn.classList.add('show'); else scrollBtn.classList.remove('show');
             });
-
-            scrollBtn.addEventListener('click', function() {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            // Auto dismiss alerts after 5 seconds
-            setTimeout(() => {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
+            scrollBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+            setTimeout(() => { document.querySelectorAll('.alert').forEach(a => new bootstrap.Alert(a).close()); }, 5000);
         });
+
+        // --- ✅ SIGNALR NOTIFICATION LOGIC ---
+        var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+        var notifications = []; // Lưu trữ thông báo
+
+        connection.on("ReceiveMessage", function (title, message, type, link) {
+            // 1. Play Sound
+            var audio = document.getElementById("notifSound");
+            if(audio) audio.play().catch(e => console.log("Cần tương tác để phát âm thanh"));
+
+            // 2. Show Toast
+            showFloatingToast(title, message, type);
+
+            // 3. Lưu thông báo
+            var notif = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                type: type,
+                link: link || null,
+                time: new Date(),
+                read: false
+            };
+            notifications.unshift(notif);
+
+            // 4. Cập nhật badge
+            updateNotifBadge();
+
+            // 5. Render list
+            renderNotifList();
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        function updateNotifBadge() {
+            var unreadCount = notifications.filter(n => !n.read).length;
+            var badge = document.getElementById("notifBadge");
+            if (unreadCount > 0) {
+                badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        function renderNotifList() {
+            var list = document.getElementById("notifList");
+            if (notifications.length === 0) {
+                list.innerHTML = '<div class="p-3 text-center text-muted small">Không có thông báo nào</div>';
+                return;
+            }
+
+            var html = '';
+            notifications.slice(0, 20).forEach(function(notif) {
+                var timeStr = getTimeAgo(notif.time);
+                var readClass = notif.read ? 'read' : 'unread';
+                var linkAttr = notif.link ? `onclick="handleNotifClick(${notif.id}, '${notif.link}')"` : `onclick="markAsRead(${notif.id})"`;
+
+                html += `
+                    <div class="notif-item ${readClass}" ${linkAttr}>
+                        <div class="notif-title">${notif.title}</div>
+                        <div class="notif-msg">${notif.message}</div>
+                        <div class="notif-time">${timeStr}</div>
+                    </div>`;
+            });
+
+            list.innerHTML = html;
+        }
+
+        function handleNotifClick(id, link) {
+            markAsRead(id);
+            if (link) {
+                window.location.href = link;
+            }
+        }
+
+        function markAsRead(id) {
+            var notif = notifications.find(n => n.id === id);
+            if (notif && !notif.read) {
+                notif.read = true;
+                updateNotifBadge();
+                renderNotifList();
+            }
+        }
+
+        function clearAllNotifications() {
+            notifications.forEach(n => n.read = true);
+            updateNotifBadge();
+            renderNotifList();
+        }
+
+        function getTimeAgo(date) {
+            var seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'Vừa xong';
+            var minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + ' phút trước';
+            var hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + ' giờ trước';
+            var days = Math.floor(hours / 24);
+            return days + ' ngày trước';
+        }
+
+        function showFloatingToast(title, message, type) {
+            var container = document.getElementById("toast-container");
+            var color = type === 'success' ? '#27AE60' : (type === 'error' ? '#E74C3C' : '#3498DB');
+            var div = document.createElement('div');
+            div.className = "custom-toast";
+            div.style.borderLeftColor = color;
+            div.innerHTML = `
+                <div style="flex:1">
+                    <div style="font-weight:bold; margin-bottom:4px">${title}</div>
+                    <div style="font-size:13px; color:#555">${message}</div>
+                </div>
+            `;
+            container.appendChild(div);
+            setTimeout(() => div.remove(), 5000);
+        }
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
-    <!-- ✅ CUSTOM JAVASCRIPT FROM DATABASE -->
     @{
         var customJs = "";
-        try
-        {
-            customJs = TMDSystem.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_JS");
-        }
-        catch { }
+        try { customJs = TMD.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_JS"); } catch { }
     }
-
     @if (!string.IsNullOrWhiteSpace(customJs))
     {
-        <script id="staff-custom-js">
-            // CUSTOM JS - Áp dụng cho Staff
-            (function() {
-            @Html.Raw(customJs)
-            })();
-        </script>
+        <script id="staff-custom-js">(function() { @Html.Raw(customJs) })();</script>
     }
 </body>
 </html>

@@ -465,7 +465,7 @@
         var customStyles = "";
         try
         {
-            customStyles = TMDSystem.Controllers.SettingsController.GetCustomStyles(_dbContext);
+            customStyles = TMD.Controllers.SettingsController.GetCustomStyles(_dbContext);
         }
         catch (Exception ex)
         {
@@ -603,7 +603,7 @@
         var customScripts = "";
         try
         {
-            customScripts = TMDSystem.Controllers.SettingsController.GetCustomScripts(_dbContext);
+            customScripts = TMD.Controllers.SettingsController.GetCustomScripts(_dbContext);
         }
         catch (Exception ex)
         {

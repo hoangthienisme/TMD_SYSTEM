@@ -42,6 +42,7 @@ E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\lib\bootstrap\dist\js\bootst
 E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\css\audit-logs.css
 E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
 E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\css\attendance-management.css
+E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\sounds\notification.wav
 E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
 E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
 E:\AIHUB TASK\TMD_SYSTEM\TMD_SYSTEM\TMD\TMD\wwwroot\lib\bootstrap\dist\css\bootstrap.css
@@ -157,8 +158,17 @@ wwwroot\lib\jquery-validation\LICENSE.md
 wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
 wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
 wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+wwwroot\sounds\notification.mp3
+wwwroot\sounds\notification.wav
 wwwroot\uploads\attendance\12_20251117_121108_checkin.jpg
 wwwroot\uploads\attendance\12_20251118_142904_checkin.jpg
+wwwroot\uploads\attendance\12_20251121_193700_checkin.jpg
+wwwroot\uploads\attendance\12_20251121_194138_checkout.jpg
+wwwroot\uploads\attendance\12_20251123_020538_checkin.jpg
+wwwroot\uploads\attendance\12_20251123_234053_checkout.jpg
+wwwroot\uploads\attendance\14_20251121_202839_checkin.jpg
+wwwroot\uploads\attendance\15_20251121_210659_checkin.jpg
+wwwroot\uploads\attendance\15_20251121_213522_checkout.jpg
 wwwroot\uploads\attendance\9_20251116_015000_checkin.jpg
 wwwroot\uploads\attendance\9_20251116_015018_checkout.jpg
 wwwroot\uploads\attendance\9_20251117_133031_checkin.jpg
@@ -169,3 +179,11 @@ wwwroot\uploads\attendance\9_20251119_103323_checkin.jpg
 wwwroot\uploads\attendance\9_20251119_121212_checkout.jpg
 wwwroot\uploads\attendance\9_20251120_134508_checkin.jpg
 wwwroot\uploads\attendance\9_20251121_003641_checkin.jpg
+wwwroot\uploads\attendance\9_20251121_193629_checkout.jpg
+wwwroot\uploads\attendance\9_20251123_013310_checkin.jpg
+wwwroot\uploads\attendance\9_20251123_013319_checkin.jpg
+wwwroot\uploads\attendance\9_20251123_013332_checkin.jpg
+wwwroot\uploads\attendance\9_20251123_013405_checkin.jpg
+wwwroot\uploads\attendance\9_20251123_021821_checkin.jpg
+wwwroot\uploads\attendance\9_20251123_222326_checkout.jpg
+wwwroot\uploads\attendance\9_20251124_014027_checkin.jpg

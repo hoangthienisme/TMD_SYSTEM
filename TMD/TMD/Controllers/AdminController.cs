@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using TMDSystem.Helpers;
 using TMD.Models;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.SignalR;
+using TMDSystem.Hubs;
 
 namespace TMDSystem.Controllers
 {
@@ -10,13 +12,25 @@ namespace TMDSystem.Controllers
 	{
 		private readonly TmdContext _context;
 		private readonly AuditHelper _auditHelper;
+		private readonly IHubContext<NotificationHub> _hubContext;
 
-		public AdminController(TmdContext context, AuditHelper auditHelper)
+		public AdminController(TmdContext context, AuditHelper auditHelper, IHubContext<NotificationHub> hubContext)
 		{
 			_context = context;
 			_auditHelper = auditHelper;
-		}
+			_hubContext = hubContext;
 
+		}
+		// Hàm helper để lấy setting và convert sang số (decimal)
+		private decimal GetSettingValue(List<SystemSetting> settings, string key, decimal defaultValue = 0)
+		{
+			var setting = settings.FirstOrDefault(s => s.SettingKey == key);
+			if (setting != null && decimal.TryParse(setting.SettingValue, out decimal value))
+			{
+				return value;
+			}
+			return defaultValue; // Trả về giá trị mặc định nếu không tìm thấy hoặc lỗi
+		}
 		private bool IsAdmin()
 		{
 			return HttpContext.Session.GetString("RoleName") == "Admin";
@@ -250,7 +264,166 @@ namespace TMDSystem.Controllers
 				return Json(new { success = false, message = $"Có lỗi xảy ra: {ex.Message}" });
 			}
 		}
+		// ============================================
+		// GET USER DETAIL - Full info (FIXED)
+		// ============================================
+		[HttpGet]
+		public async Task<IActionResult> GetUserDetail(int userId)
+		{
+			if (!IsAdmin())
+				return Json(new { success = false, message = "Không có quyền truy cập" });
 
+			try
+			{
+				var user = await _context.Users
+					.Include(u => u.Role)
+					.Include(u => u.Department)
+					.Include(u => u.UserTasks)
+						.ThenInclude(ut => ut.Task)
+					.FirstOrDefaultAsync(u => u.UserId == userId);
+
+				if (user == null)
+					return Json(new { success = false, message = "Không tìm thấy nhân viên" });
+
+				// 1. TASK STATISTICS
+				var tasks = user.UserTasks.Where(ut => ut.Task.IsActive == true).ToList();
+				var totalTasks = tasks.Count;
+				var completedTasks = tasks.Count(ut => ut.Status == "Completed");
+				var inProgressTasks = tasks.Count(ut => ut.Status == "InProgress");
+				var todoTasks = tasks.Count(ut => string.IsNullOrEmpty(ut.Status) || ut.Status == "TODO");
+				var overdueTasks = tasks.Count(ut =>
+					ut.Task.Deadline.HasValue &&
+					ut.Task.Deadline.Value < DateTime.Now &&
+					ut.Status != "Completed"
+				);
+
+				// 2. ATTENDANCE STATISTICS (Current Month)
+				var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+				var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+				var monthlyAttendances = await _context.Attendances
+					.Where(a => a.UserId == userId &&
+							   a.WorkDate >= DateOnly.FromDateTime(startOfMonth) &&
+							   a.WorkDate <= DateOnly.FromDateTime(endOfMonth))
+					.OrderByDescending(a => a.WorkDate)
+					.ToListAsync();
+
+				var totalWorkDays = monthlyAttendances.Count;
+				var onTimeDays = monthlyAttendances.Count(a => a.IsLate == false);
+				var lateDays = monthlyAttendances.Count(a => a.IsLate == true);
+
+				// ✅ FIX: Sử dụng GetValueOrDefault() cho nullable decimal
+				var totalWorkHours = monthlyAttendances.Sum(a => a.TotalHours.GetValueOrDefault());
+				var approvedOvertimeHours = monthlyAttendances.Sum(a => a.ApprovedOvertimeHours);
+				var totalDeduction = monthlyAttendances.Sum(a => a.DeductionAmount);
+
+				// 3. SALARY & BENEFITS (Current Month) - FIXED
+				var settings = await _context.SystemSettings
+					.Where(s => s.IsActive == true)
+					.ToListAsync();
+
+				var baseSalary = GetSettingValue(settings, "BASE_SALARY", 5000000m);
+				var hourlyRate = GetSettingValue(settings, "HOURLY_RATE", 50000m);
+				var overtimeMultiplier = GetSettingValue(settings, "OVERTIME_MULTIPLIER", 1.5m);
+
+				var workHoursSalary = totalWorkHours * hourlyRate;
+				var overtimeSalary = approvedOvertimeHours * hourlyRate * overtimeMultiplier;
+				var estimatedSalary = baseSalary + workHoursSalary + overtimeSalary - totalDeduction;
+
+				// 4. LEAVE & REQUESTS
+				var totalLeaveRequests = await _context.LeaveRequests
+					.CountAsync(lr => lr.UserId == userId);
+				var approvedLeaves = await _context.LeaveRequests
+					.CountAsync(lr => lr.UserId == userId && lr.Status == "Approved");
+				var pendingLeaves = await _context.LeaveRequests
+					.CountAsync(lr => lr.UserId == userId && lr.Status == "Pending");
+
+				var totalOvertimeRequests = await _context.OvertimeRequests
+					.CountAsync(or => or.UserId == userId);
+				var approvedOvertimes = await _context.OvertimeRequests
+					.CountAsync(or => or.UserId == userId && or.Status == "Approved");
+
+				// 5. RECENT ATTENDANCE (Last 7 days)
+				var recentAttendances = monthlyAttendances
+					.Take(7)
+					.Select(a => new
+					{
+						workDate = a.WorkDate.ToString("dd/MM/yyyy"),
+						checkInTime = a.CheckInTime.HasValue ? a.CheckInTime.Value.ToString("HH:mm:ss") : "N/A",
+						checkOutTime = a.CheckOutTime.HasValue ? a.CheckOutTime.Value.ToString("HH:mm:ss") : "N/A",
+						totalHours = Math.Round(a.TotalHours.GetValueOrDefault(), 2),
+						isLate = a.IsLate,
+						overtimeHours = Math.Round(a.ApprovedOvertimeHours, 2),
+						deductionAmount = Math.Round(a.DeductionAmount, 0)
+					})
+					.ToList();
+
+				await _auditHelper.LogViewAsync(
+					HttpContext.Session.GetInt32("UserId").Value,
+					"User",
+					userId,
+					$"Xem chi tiết nhân viên: {user.FullName}"
+				);
+
+				return Json(new
+				{
+					success = true,
+					user = new
+					{
+						userId = user.UserId,
+						username = user.Username,
+						fullName = user.FullName,
+						email = user.Email,
+						phoneNumber = user.PhoneNumber,
+						avatar = user.Avatar,
+						roleName = user.Role?.RoleName ?? "N/A",
+						departmentName = user.Department?.DepartmentName ?? "Chưa phân công",
+						isActive = user.IsActive,
+						createdAt = user.CreatedAt?.ToString("dd/MM/yyyy HH:mm"),
+						lastLoginAt = user.LastLoginAt?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa đăng nhập"
+					},
+					tasks = new
+					{
+						total = totalTasks,
+						completed = completedTasks,
+						inProgress = inProgressTasks,
+						todo = todoTasks,
+						overdue = overdueTasks,
+						completionRate = totalTasks > 0 ? Math.Round((double)completedTasks / totalTasks * 100, 1) : 0
+					},
+					attendance = new
+					{
+						totalWorkDays = totalWorkDays,
+						onTimeDays = onTimeDays,
+						lateDays = lateDays,
+						onTimeRate = totalWorkDays > 0 ? Math.Round((double)onTimeDays / totalWorkDays * 100, 1) : 0,
+						totalWorkHours = Math.Round(totalWorkHours, 2),
+						approvedOvertimeHours = Math.Round(approvedOvertimeHours, 2),
+						recentAttendances = recentAttendances
+					},
+					salary = new
+					{
+						baseSalary = Math.Round(baseSalary, 0),
+						workHoursSalary = Math.Round(workHoursSalary, 0),
+						overtimeSalary = Math.Round(overtimeSalary, 0),
+						totalDeduction = Math.Round(totalDeduction, 0),
+						estimatedSalary = Math.Round(estimatedSalary, 0)
+					},
+					requests = new
+					{
+						totalLeaveRequests = totalLeaveRequests,
+						approvedLeaves = approvedLeaves,
+						pendingLeaves = pendingLeaves,
+						totalOvertimeRequests = totalOvertimeRequests,
+						approvedOvertimes = approvedOvertimes
+					}
+				});
+			}
+			catch (Exception ex)
+			{
+				return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+			}
+		}
 		// ============================================
 		// RESET PASSWORD
 		// ============================================
@@ -780,7 +953,6 @@ namespace TMDSystem.Controllers
 				return Json(new { success = false, message = $"Có lỗi xảy ra: {ex.Message}" });
 			}
 		}
-
 		[HttpPost]
 		public async Task<IActionResult> UpdateDepartment([FromBody] UpdateDepartmentRequest request)
 		{
@@ -826,9 +998,7 @@ namespace TMDSystem.Controllers
 			}
 
 			var existingDept = await _context.Departments
-				.FirstOrDefaultAsync(d => d.DepartmentId != request.DepartmentId &&
-										  d.DepartmentName.ToLower() == request.DepartmentName.Trim().ToLower());
-
+				.FirstOrDefaultAsync(d => d.DepartmentId != request.DepartmentId && d.DepartmentName.ToLower() == request.DepartmentName.Trim().ToLower());
 			if (existingDept != null)
 			{
 				await _auditHelper.LogFailedAttemptAsync(
@@ -877,6 +1047,15 @@ namespace TMDSystem.Controllers
 					$"Cập nhật phòng ban: {department.DepartmentName}"
 				);
 
+				// ✅ GỬI THÔNG BÁO CHO TẤT CẢ THÀNH VIÊN PHÒNG BAN
+				await _hubContext.Clients.Group($"Dept_{department.DepartmentId}").SendAsync(
+					"ReceiveMessage",
+					"Cập nhật phòng ban",
+					$"Phòng ban {department.DepartmentName} vừa được cập nhật thông tin",
+					"info",
+					$"/Admin/DepartmentDetail/{department.DepartmentId}"
+				);
+
 				return Json(new
 				{
 					success = true,
@@ -896,6 +1075,9 @@ namespace TMDSystem.Controllers
 				return Json(new { success = false, message = $"Có lỗi xảy ra: {ex.Message}" });
 			}
 		}
+
+
+
 
 		[HttpPost]
 		public async Task<IActionResult> ToggleDepartmentStatus([FromBody] ToggleDepartmentRequest request)
@@ -1134,6 +1316,9 @@ namespace TMDSystem.Controllers
 		// ============================================
 		// TASK MANAGEMENT - CRUD
 		// ============================================
+		// ============================================
+		// TASK MANAGEMENT - CRUD
+		// ============================================
 		public async Task<IActionResult> TaskList()
 		{
 			if (!IsAdmin())
@@ -1145,10 +1330,33 @@ namespace TMDSystem.Controllers
 				.OrderByDescending(t => t.CreatedAt)
 				.ToListAsync();
 
+			// ✅ TÍNH TOÁN STATISTICS ĐƠN GIẢN DỰA TRÊN STATUS
 			ViewBag.TotalTasks = tasks.Count;
 			ViewBag.ActiveTasks = tasks.Count(t => t.IsActive == true);
 			ViewBag.InactiveTasks = tasks.Count(t => t.IsActive == false);
-			ViewBag.OverdueTasks = tasks.Count(t => t.Deadline.HasValue && t.Deadline.Value < DateTime.Now);
+
+			// ✅ THỐNG KÊ THEO STATUS CỦA USER TASKS
+			var allUserTasks = tasks.SelectMany(t => t.UserTasks).ToList();
+
+			ViewBag.TodoTasks = allUserTasks.Count(ut => string.IsNullOrEmpty(ut.Status) || ut.Status == "TODO");
+			ViewBag.InProgressTasks = allUserTasks.Count(ut => ut.Status == "InProgress");
+			ViewBag.CompletedTasks = allUserTasks.Count(ut => ut.Status == "Completed");
+
+			// ✅ TASKS QUÁ HẠN: Chỉ task ĐANG HOẠT ĐỘNG và CHƯA HOÀN THÀNH
+			ViewBag.OverdueTasks = tasks.Count(t =>
+				t.IsActive == true &&
+				t.Deadline.HasValue &&
+				t.Deadline.Value < DateTime.Now &&
+				t.UserTasks.Any(ut => ut.Status != "Completed")
+			);
+
+			// ✅ COMPLETION RATE (theo Completed status)
+			var totalAssignments = allUserTasks.Count;
+			var completedAssignments = allUserTasks.Count(ut => ut.Status == "Completed");
+
+			ViewBag.TaskCompletionRate = totalAssignments > 0
+				? Math.Round((double)completedAssignments / totalAssignments * 100, 1)
+				: 0;
 
 			return View(tasks);
 		}
@@ -1197,19 +1405,6 @@ namespace TMDSystem.Controllers
 				return Json(new { success = false, message = "Tên task không được để trống!" });
 			}
 
-			if (request.TargetPerWeek < 0)
-			{
-				await _auditHelper.LogFailedAttemptAsync(
-					HttpContext.Session.GetInt32("UserId"),
-					"CREATE",
-					"Task",
-					"Target không hợp lệ",
-					new { TaskName = request.TaskName, Target = request.TargetPerWeek }
-				);
-
-				return Json(new { success = false, message = "Target phải >= 0!" });
-			}
-
 			if (request.Deadline.HasValue && request.Deadline.Value < DateTime.Now)
 			{
 				await _auditHelper.LogFailedAttemptAsync(
@@ -1232,7 +1427,6 @@ namespace TMDSystem.Controllers
 					TaskName = request.TaskName.Trim(),
 					Description = request.Description?.Trim(),
 					Platform = request.Platform?.Trim(),
-					TargetPerWeek = request.TargetPerWeek,
 					Deadline = request.Deadline,
 					Priority = request.Priority ?? "Medium",
 					IsActive = true,
@@ -1243,6 +1437,7 @@ namespace TMDSystem.Controllers
 				_context.Tasks.Add(task);
 				await _context.SaveChangesAsync();
 
+				// ✅ TẠO USERTASK VỚI STATUS MẶC ĐỊNH = "TODO"
 				if (request.AssignedUserIds != null && request.AssignedUserIds.Count > 0)
 				{
 					foreach (var userId in request.AssignedUserIds)
@@ -1251,12 +1446,21 @@ namespace TMDSystem.Controllers
 						{
 							UserId = userId,
 							TaskId = task.TaskId,
-							CompletedThisWeek = 0,
-							WeekStartDate = DateOnly.FromDateTime(DateTime.Today),
+							Status = "TODO",
+							ReportLink = null,
 							CreatedAt = DateTime.Now,
 							UpdatedAt = DateTime.Now
 						};
 						_context.UserTasks.Add(userTask);
+
+						// ✅ GỬI THÔNG BÁO CHO TỪNG USER
+						await _hubContext.Clients.Group($"User_{userId}").SendAsync(
+							"ReceiveMessage",
+							"Nhiệm vụ mới",
+							$"Bạn vừa được giao task: {request.TaskName}",
+							"info",
+							"/Staff/MyTasks"
+						);
 					}
 					await _context.SaveChangesAsync();
 				}
@@ -1267,12 +1471,12 @@ namespace TMDSystem.Controllers
 					"Task",
 					task.TaskId,
 					null,
-					new { task.TaskName, task.Platform, task.Priority, task.TargetPerWeek },
+					new { task.TaskName, task.Platform, task.Priority, task.Deadline },
 					$"Tạo task mới: {task.TaskName}",
 					new Dictionary<string, object>
 					{
-						{ "AssignedUsers", request.AssignedUserIds?.Count ?? 0 },
-						{ "CreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
+				{ "AssignedUsers", request.AssignedUserIds?.Count ?? 0 },
+				{ "CreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
 					}
 				);
 
@@ -1352,19 +1556,6 @@ namespace TMDSystem.Controllers
 				return Json(new { success = false, message = "Tên task không được để trống!" });
 			}
 
-			if (request.TargetPerWeek < 0)
-			{
-				await _auditHelper.LogFailedAttemptAsync(
-					HttpContext.Session.GetInt32("UserId"),
-					"UPDATE",
-					"Task",
-					"Target không hợp lệ",
-					new { TaskId = request.TaskId, Target = request.TargetPerWeek }
-				);
-
-				return Json(new { success = false, message = "Target phải >= 0!" });
-			}
-
 			var task = await _context.Tasks
 				.Include(t => t.UserTasks)
 				.FirstOrDefaultAsync(t => t.TaskId == request.TaskId);
@@ -1391,7 +1582,6 @@ namespace TMDSystem.Controllers
 					task.TaskName,
 					task.Description,
 					task.Platform,
-					task.TargetPerWeek,
 					task.Deadline,
 					task.Priority
 				};
@@ -1399,29 +1589,52 @@ namespace TMDSystem.Controllers
 				task.TaskName = request.TaskName.Trim();
 				task.Description = request.Description?.Trim();
 				task.Platform = request.Platform?.Trim();
-				task.TargetPerWeek = request.TargetPerWeek;
 				task.Deadline = request.Deadline;
 				task.Priority = request.Priority ?? "Medium";
 				task.UpdatedAt = DateTime.Now;
 
+				// ✅ CẬP NHẬT ASSIGNMENTS
 				var oldAssignments = task.UserTasks.ToList();
-				_context.UserTasks.RemoveRange(oldAssignments);
+				var oldUserIds = oldAssignments.Select(ut => ut.UserId).ToList();
+				var newUserIds = request.AssignedUserIds ?? new List<int>();
 
-				if (request.AssignedUserIds != null && request.AssignedUserIds.Count > 0)
+				// Xóa user không còn được assign
+				var toRemove = oldAssignments.Where(ut => !newUserIds.Contains(ut.UserId)).ToList();
+				foreach (var ut in toRemove)
 				{
-					foreach (var userId in request.AssignedUserIds)
+					// ✅ THÔNG BÁO CHO USER BỊ XÓA
+					await _hubContext.Clients.Group($"User_{ut.UserId}").SendAsync(
+						"ReceiveMessage",
+						"Task đã bị gỡ",
+						$"Bạn không còn được giao task: {task.TaskName}",
+						"warning",
+						"/Staff/MyTasks"
+					);
+				}
+				_context.UserTasks.RemoveRange(toRemove);
+
+				// Thêm user mới
+				var toAdd = newUserIds.Where(uid => !oldUserIds.Contains(uid)).ToList();
+				foreach (var userId in toAdd)
+				{
+					var userTask = new UserTask
 					{
-						var userTask = new UserTask
-						{
-							UserId = userId,
-							TaskId = task.TaskId,
-							CompletedThisWeek = 0,
-							WeekStartDate = DateOnly.FromDateTime(DateTime.Today),
-							CreatedAt = DateTime.Now,
-							UpdatedAt = DateTime.Now
-						};
-						_context.UserTasks.Add(userTask);
-					}
+						UserId = userId,
+						TaskId = task.TaskId,
+						Status = "TODO",
+						CreatedAt = DateTime.Now,
+						UpdatedAt = DateTime.Now
+					};
+					_context.UserTasks.Add(userTask);
+
+					// ✅ THÔNG BÁO CHO USER MỚI
+					await _hubContext.Clients.Group($"User_{userId}").SendAsync(
+						"ReceiveMessage",
+						"Task mới được giao",
+						$"Bạn vừa được giao task: {request.TaskName}",
+						"info",
+						"/Staff/MyTasks"
+					);
 				}
 
 				await _context.SaveChangesAsync();
@@ -1431,7 +1644,6 @@ namespace TMDSystem.Controllers
 					task.TaskName,
 					task.Description,
 					task.Platform,
-					task.TargetPerWeek,
 					task.Deadline,
 					task.Priority
 				};
@@ -1607,56 +1819,115 @@ namespace TMDSystem.Controllers
 			}
 		}
 
+		// ============================================
+		// ✅ FIX HOÀN CHỈNH - GET TASK DETAILS
+		// ============================================
+		// ============================================
+		// ✅ GET TASK DETAILS - ĐƠNGIẢN & ĐẦY ĐỦ
+		// ============================================
 		[HttpGet]
 		public async Task<IActionResult> GetTaskDetails(int id)
 		{
 			if (!IsAdmin())
 				return Json(new { success = false, message = "Không có quyền truy cập!" });
 
-			await _auditHelper.LogViewAsync(
-				HttpContext.Session.GetInt32("UserId").Value,
-				"Task",
-				id,
-				"Xem chi tiết task"
-			);
-
-			var task = await _context.Tasks
-				.Include(t => t.UserTasks)
-					.ThenInclude(ut => ut.User)
-						.ThenInclude(u => u.Department)
-				.FirstOrDefaultAsync(t => t.TaskId == id);
-
-			if (task == null)
-				return Json(new { success = false, message = "Không tìm thấy task!" });
-
-			var result = new
+			try
 			{
-				success = true,
-				task = new
-				{
-					task.TaskId,
-					task.TaskName,
-					task.Description,
-					task.Platform,
-					task.TargetPerWeek,
-					task.Deadline,
-					task.Priority,
-					task.IsActive,
-					task.CreatedAt,
-					task.UpdatedAt,
-					AssignedUsers = task.UserTasks.Select(ut => new
-					{
-						ut.User.UserId,
-						ut.User.FullName,
-						ut.User.Avatar,
-						DepartmentName = ut.User.Department?.DepartmentName,
-						ut.CompletedThisWeek,
-						ut.ReportLink
-					}).ToList()
-				}
-			};
+				var task = await _context.Tasks
+					.Include(t => t.UserTasks)
+						.ThenInclude(ut => ut.User)
+							.ThenInclude(u => u.Department)
+					.FirstOrDefaultAsync(t => t.TaskId == id);
 
-			return Json(result);
+				if (task == null)
+					return Json(new { success = false, message = "Không tìm thấy task!" });
+
+				// ✅ MAP USER TASKS ĐẦY ĐỦ THÔNG TIN
+				var assignedUsers = task.UserTasks
+					.Select(ut => new
+					{
+						ut.UserTaskId,
+						ut.UserId,
+						ut.TaskId,
+						ut.CompletedThisWeek,
+						ut.ReportLink,
+						ut.WeekStartDate,
+						ut.Status,
+						ut.CreatedAt,
+						ut.UpdatedAt,
+						FullName = ut.User?.FullName ?? "N/A",
+						Avatar = ut.User?.Avatar ?? "",
+						DepartmentName = ut.User?.Department?.DepartmentName ?? "N/A",
+						StatusText = string.IsNullOrEmpty(ut.Status) || ut.Status == "TODO" ? "Chưa bắt đầu" :
+									 ut.Status == "InProgress" ? "Đang làm" : "Hoàn thành",
+						StatusClass = ut.Status == "Completed" ? "success" :
+									  ut.Status == "InProgress" ? "warning" : "secondary",
+						CreatedAtStr = ut.CreatedAt.HasValue ? ut.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "N/A",
+						UpdatedAtStr = ut.UpdatedAt.HasValue ? ut.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "N/A"
+					})
+					.OrderBy(u => u.FullName)
+					.ToList();
+
+				// ✅ BUILD RESPONSE ĐƠN GIẢN NHƯNG ĐẦY ĐỦ
+				return Json(new
+				{
+					success = true,
+					task = new
+					{
+						task.TaskId,
+						task.TaskName,
+						task.Description,
+						task.Platform,
+						task.TargetPerWeek,
+						task.Priority,
+						task.IsActive,
+						DeadlineStr = task.Deadline.HasValue ? task.Deadline.Value.ToString("dd/MM/yyyy HH:mm") : null,
+						CreatedAtStr = task.CreatedAt.HasValue ? task.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "N/A",
+						UpdatedAtStr = task.UpdatedAt.HasValue ? task.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "N/A",
+						AssignedUsers = assignedUsers
+					}
+				});
+			}
+			catch (Exception ex)
+			{
+				return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+			}
+		}
+		// ============================================
+		// GET PENDING REQUEST COUNT (FOR NOTIFICATION)
+		// ============================================
+		[HttpGet]
+		public async Task<IActionResult> GetPendingCount()
+		{
+			if (!IsAdmin())
+				return Json(new { success = false, count = 0 });
+
+			try
+			{
+				var overtimePending = await _context.OvertimeRequests
+					.CountAsync(r => r.Status == "Pending");
+
+				var leavePending = await _context.LeaveRequests
+					.CountAsync(r => r.Status == "Pending");
+
+				var latePending = await _context.LateRequests
+					.CountAsync(r => r.Status == "Pending");
+
+				var totalPending = overtimePending + leavePending + latePending;
+
+				return Json(new
+				{
+					success = true,
+					count = totalPending,
+					overtime = overtimePending,
+					leave = leavePending,
+					late = latePending
+				});
+			}
+			catch (Exception ex)
+			{
+				return Json(new { success = false, count = 0, error = ex.Message });
+			}
 		}
 		// Thêm method này vào AdminController.cs
 		// Thay thế cả 2 method này
@@ -2031,6 +2302,8 @@ namespace TMDSystem.Controllers
 		}
 
 
+		// ✅ THÊM/THAY THẾ METHOD NÀY VÀO AdminController.cs
+
 		[HttpPost]
 		public async Task<IActionResult> ReviewRequest([FromBody] ReviewRequestViewModel model)
 		{
@@ -2038,28 +2311,46 @@ namespace TMDSystem.Controllers
 				return Json(new { success = false, message = "Không có quyền" });
 
 			var adminId = HttpContext.Session.GetInt32("UserId");
+
 			try
 			{
 				if (model.RequestType == "Overtime")
 				{
-					var r = await _context.OvertimeRequests.FindAsync(model.RequestId);
+					var r = await _context.OvertimeRequests
+						.Include(x => x.User)
+						.FirstOrDefaultAsync(x => x.OvertimeRequestId == model.RequestId);
+
 					if (r == null) return Json(new { success = false, message = "Không tìm thấy" });
 
 					var old = new { r.Status, r.ReviewedBy, r.ReviewedAt, r.ReviewNote };
+
 					if (model.Action == "Approve")
 					{
 						r.Status = "Approved";
 						r.ReviewedBy = adminId;
 						r.ReviewedAt = DateTime.Now;
 						r.ReviewNote = model.Note;
-						// update attendance approved overtime
-						var att = await _context.Attendances.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.WorkDate);
+
+						var att = await _context.Attendances
+							.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.WorkDate);
+
 						if (att != null)
 						{
 							att.IsOvertimeApproved = true;
 							att.ApprovedOvertimeHours = r.OvertimeHours;
-							await _context.SaveChangesAsync();
+							att.HasOvertimeRequest = true;
+							att.OvertimeRequestId = r.OvertimeRequestId;
+							att.UpdatedAt = DateTime.Now;
 						}
+
+						// GỬI THÔNG BÁO CHO USER
+						await _hubContext.Clients.Group($"User_{r.UserId}").SendAsync(
+							"ReceiveMessage",
+							"Tăng ca được duyệt",
+							$"Yêu cầu tăng ca {r.OvertimeHours:F2}h ngày {r.WorkDate:dd/MM/yyyy} đã được phê duyệt",
+							"success",
+							"/Staff/AttendanceHistory"
+						);
 					}
 					else if (model.Action == "Reject")
 					{
@@ -2067,19 +2358,59 @@ namespace TMDSystem.Controllers
 						r.ReviewedBy = adminId;
 						r.ReviewedAt = DateTime.Now;
 						r.ReviewNote = model.Note;
+
+						var att = await _context.Attendances
+							.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.WorkDate);
+
+						if (att != null)
+						{
+							att.IsOvertimeApproved = false;
+							att.ApprovedOvertimeHours = 0;
+							att.HasOvertimeRequest = true;
+							att.OvertimeRequestId = r.OvertimeRequestId;
+							att.UpdatedAt = DateTime.Now;
+						}
+
+						// GỬI THÔNG BÁO CHO USER
+						await _hubContext.Clients.Group($"User_{r.UserId}").SendAsync(
+							"ReceiveMessage",
+							"Tăng ca bị từ chối",
+							$"Yêu cầu tăng ca bị từ chối. Lý do: {model.Note}",
+							"error",
+							"/Staff/MyRequests"
+						);
 					}
 
 					r.UpdatedAt = DateTime.Now;
 					await _context.SaveChangesAsync();
 
-					await _auditHelper.LogDetailedAsync(adminId, "REVIEW", "OvertimeRequest", r.OvertimeRequestId, old, r, $"Admin {model.Action} overtime request #{r.OvertimeRequestId}", new Dictionary<string, object> { { "Note", model.Note } });
-					return Json(new { success = true, message = "Đã xử lý request" });
+					await _auditHelper.LogAsync(
+						adminId,
+						"REVIEW",
+						"OvertimeRequest",
+						r.OvertimeRequestId,
+						old,
+						new { r.Status, r.ReviewedBy, r.ReviewedAt, r.ReviewNote },
+						$"Admin {(model.Action == "Approve" ? "DUYỆT" : "TỪ CHỐI")} overtime request #{r.OvertimeRequestId}"
+					);
+
+					return Json(new
+					{
+						success = true,
+						message = model.Action == "Approve"
+							? $"Đã duyệt tăng ca {r.OvertimeHours:F2}h"
+							: "Đã từ chối yêu cầu tăng ca"
+					});
 				}
 
 				if (model.RequestType == "Leave")
 				{
-					var r = await _context.LeaveRequests.FindAsync(model.RequestId);
+					var r = await _context.LeaveRequests
+						.Include(x => x.User)
+						.FirstOrDefaultAsync(x => x.LeaveRequestId == model.RequestId);
+
 					if (r == null) return Json(new { success = false, message = "Không tìm thấy" });
+
 					var old = new { r.Status, r.ReviewedBy, r.ReviewedAt, r.ReviewNote };
 
 					if (model.Action == "Approve")
@@ -2089,8 +2420,50 @@ namespace TMDSystem.Controllers
 						r.ReviewedAt = DateTime.Now;
 						r.ReviewNote = model.Note;
 
-						// optionally apply to attendance: mark days as approved leave (business logic)
-						// not forcing DB changes here; admin can adjust attendance if required.
+						var leaveMultiplierConfig = await _context.SystemSettings
+							.FirstOrDefaultAsync(c => c.SettingKey == "LEAVE_ANNUAL_MULTIPLIER" && c.IsActive == true);
+
+						var leaveMultiplier = leaveMultiplierConfig != null
+							? decimal.Parse(leaveMultiplierConfig.SettingValue) / 100m
+							: 1.0m;
+
+						for (var date = r.StartDate; date <= r.EndDate; date = date.AddDays(1))
+						{
+							var att = await _context.Attendances
+								.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == date);
+
+							if (att == null)
+							{
+								att = new Attendance
+								{
+									UserId = r.UserId,
+									WorkDate = date,
+									CheckInTime = null,
+									CheckOutTime = null,
+									IsLate = false,
+									TotalHours = 0,
+									SalaryMultiplier = leaveMultiplier,
+									StandardWorkHours = 8,
+									ActualWorkHours = 0,
+									CreatedAt = DateTime.Now
+								};
+								_context.Attendances.Add(att);
+							}
+							else
+							{
+								att.SalaryMultiplier = leaveMultiplier;
+								att.UpdatedAt = DateTime.Now;
+							}
+						}
+
+						// GỬI THÔNG BÁO CHO USER
+						await _hubContext.Clients.Group($"User_{r.UserId}").SendAsync(
+							"ReceiveMessage",
+							"Nghỉ phép được duyệt",
+							$"Yêu cầu nghỉ phép {r.TotalDays} ngày từ {r.StartDate:dd/MM/yyyy} đến {r.EndDate:dd/MM/yyyy} đã được duyệt",
+							"success",
+							"/Staff/AttendanceHistory"
+						);
 					}
 					else if (model.Action == "Reject")
 					{
@@ -2098,19 +2471,66 @@ namespace TMDSystem.Controllers
 						r.ReviewedBy = adminId;
 						r.ReviewedAt = DateTime.Now;
 						r.ReviewNote = model.Note;
+
+						var unpaidMultiplierConfig = await _context.SystemSettings
+							.FirstOrDefaultAsync(c => c.SettingKey == "LEAVE_UNPAID_MULTIPLIER" && c.IsActive == true);
+
+						var unpaidMultiplier = unpaidMultiplierConfig != null
+							? decimal.Parse(unpaidMultiplierConfig.SettingValue) / 100m
+							: 0m;
+
+						for (var date = r.StartDate; date <= r.EndDate; date = date.AddDays(1))
+						{
+							var att = await _context.Attendances
+								.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == date);
+
+							if (att != null)
+							{
+								att.SalaryMultiplier = unpaidMultiplier;
+								att.UpdatedAt = DateTime.Now;
+							}
+						}
+
+						// GỬI THÔNG BÁO CHO USER
+						await _hubContext.Clients.Group($"User_{r.UserId}").SendAsync(
+							"ReceiveMessage",
+							"Nghỉ phép bị từ chối",
+							$"Yêu cầu nghỉ phép bị từ chối. Lý do: {model.Note}",
+							"error",
+							"/Staff/MyRequests"
+						);
 					}
 
 					r.UpdatedAt = DateTime.Now;
 					await _context.SaveChangesAsync();
 
-					await _auditHelper.LogDetailedAsync(adminId, "REVIEW", "LeaveRequest", r.LeaveRequestId, old, r, $"Admin {model.Action} leave request #{r.LeaveRequestId}", new Dictionary<string, object> { { "Note", model.Note } });
-					return Json(new { success = true, message = "Đã xử lý request" });
+					await _auditHelper.LogAsync(
+						adminId,
+						"REVIEW",
+						"LeaveRequest",
+						r.LeaveRequestId,
+						old,
+						new { r.Status, r.ReviewedBy, r.ReviewedAt, r.ReviewNote },
+						$"Admin {(model.Action == "Approve" ? "DUYỆT" : "TỪ CHỐI")} leave request #{r.LeaveRequestId}"
+					);
+
+					return Json(new
+					{
+						success = true,
+						message = model.Action == "Approve"
+							? $"Đã duyệt nghỉ phép {r.TotalDays} ngày"
+							: "Đã từ chối yêu cầu nghỉ phép"
+					});
 				}
 
 				if (model.RequestType == "Late")
 				{
-					var r = await _context.LateRequests.FindAsync(model.RequestId);
+					var r = await _context.LateRequests
+						.Include(x => x.User)
+						.FirstOrDefaultAsync(x => x.LateRequestId == model.RequestId);
+
 					if (r == null) return Json(new { success = false, message = "Không tìm thấy" });
+
 					var old = new { r.Status, r.ReviewedBy, r.ReviewedAt, r.ReviewNote };
 
 					if (model.Action == "Approve")
@@ -2120,15 +2540,43 @@ namespace TMDSystem.Controllers
 						r.ReviewedAt = DateTime.Now;
 						r.ReviewNote = model.Note;
 
-						// update attendance if exists: clear late flag or mark reviewed
-						var att = await _context.Attendances.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.RequestDate);
+						var att = await _context.Attendances
+							.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.RequestDate);
+
 						if (att != null)
 						{
 							att.HasLateRequest = true;
 							att.LateRequestId = r.LateRequestId;
-							// possibly set DeductionHours = 0 or adjust
-							await _context.SaveChangesAsync();
+
+							var lateApprovedDeductionConfig = await _context.SystemSettings
+								.FirstOrDefaultAsync(c => c.SettingKey.Contains("LATE_APPROVED") && c.IsActive == true);
+
+							var approvedDeductionPercent = lateApprovedDeductionConfig != null
+								? decimal.Parse(lateApprovedDeductionConfig.SettingValue) / 100m
+								: 0m;
+
+							if (approvedDeductionPercent == 0)
+							{
+								att.DeductionHours = 0;
+								att.DeductionAmount = 0;
+							}
+							else
+							{
+								att.DeductionHours = att.DeductionHours * approvedDeductionPercent;
+								att.DeductionAmount = att.DeductionAmount * approvedDeductionPercent;
+							}
+
+							att.UpdatedAt = DateTime.Now;
 						}
+
+						// GỬI THÔNG BÁO CHO USER
+						await _hubContext.Clients.Group($"User_{r.UserId}").SendAsync(
+							"ReceiveMessage",
+							"Đi trễ được duyệt",
+							$"Yêu cầu đi trễ ngày {r.RequestDate:dd/MM/yyyy} đã được phê duyệt",
+							"success",
+							"/Staff/AttendanceHistory"
+						);
 					}
 					else if (model.Action == "Reject")
 					{
@@ -2136,25 +2584,270 @@ namespace TMDSystem.Controllers
 						r.ReviewedBy = adminId;
 						r.ReviewedAt = DateTime.Now;
 						r.ReviewNote = model.Note;
+
+						var att = await _context.Attendances
+							.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.RequestDate);
+
+						if (att != null)
+						{
+							att.HasLateRequest = true;
+							att.LateRequestId = r.LateRequestId;
+							att.UpdatedAt = DateTime.Now;
+						}
+
+						// GỬI THÔNG BÁO CHO USER
+						await _hubContext.Clients.Group($"User_{r.UserId}").SendAsync(
+							"ReceiveMessage",
+							"Đi trễ bị từ chối",
+							$"Yêu cầu đi trễ bị từ chối. Lý do: {model.Note}",
+							"error",
+							"/Staff/MyRequests"
+						);
 					}
 
 					r.UpdatedAt = DateTime.Now;
 					await _context.SaveChangesAsync();
 
-					await _auditHelper.LogDetailedAsync(adminId, "REVIEW", "LateRequest", r.LateRequestId, old, r, $"Admin {model.Action} late request #{r.LateRequestId}", new Dictionary<string, object> { { "Note", model.Note } });
-					return Json(new { success = true, message = "Đã xử lý request" });
+					await _auditHelper.LogAsync(
+						adminId,
+						"REVIEW",
+						"LateRequest",
+						r.LateRequestId,
+						old,
+						new { r.Status, r.ReviewedBy, r.ReviewedAt, r.ReviewNote },
+						$"Admin {(model.Action == "Approve" ? "DUYỆT" : "TỪ CHỐI")} late request #{r.LateRequestId}"
+					);
+
+					return Json(new
+					{
+						success = true,
+						message = model.Action == "Approve"
+							? "Đã duyệt yêu cầu đi trễ"
+							: "Đã từ chối yêu cầu đi trễ"
+					});
 				}
 
 				return Json(new { success = false, message = "Loại request không hợp lệ" });
 			}
 			catch (Exception ex)
 			{
-				await _auditHelper.LogFailedAttemptAsync(adminId, "REVIEW", "Request", $"Exception: {ex.Message}", new { Error = ex.ToString(), model });
+				await _auditHelper.LogFailedAttemptAsync(adminId, "REVIEW", "Request",
+					$"Exception: {ex.Message}", new { Error = ex.ToString(), model });
 				return Json(new { success = false, message = $"Có lỗi: {ex.Message}" });
 			}
 		}
+		// ============================================
+		// THÊM VÀO AdminController.cs
+		// ============================================
 
+		/// <summary>
+		/// Tự động từ chối các đề xuất quá 3 ngày chưa được duyệt
+		/// </summary>
+		[HttpPost]
+		public async Task<IActionResult> AutoRejectExpiredRequests()
+		{
+			if (!IsAdmin())
+				return Json(new { success = false, message = "Không có quyền thực hiện!" });
 
+			const int MAX_PENDING_DAYS = 3;
+			var cutoffDate = DateTime.Now.AddDays(-MAX_PENDING_DAYS);
+			int totalRejected = 0;
+
+			try
+			{
+				var adminId = HttpContext.Session.GetInt32("UserId");
+
+				// Helper: safe parse config percent -> decimal (0..1)
+				async Task<decimal> GetPercentSettingAsync(string key, decimal defaultPercent)
+				{
+					var cfg = await _context.SystemSettings
+						.FirstOrDefaultAsync(c => c.SettingKey == key && c.IsActive == true);
+					if (cfg == null) return defaultPercent;
+					if (decimal.TryParse(cfg.SettingValue, out var v))
+						return v / 100m;
+					return defaultPercent;
+				}
+
+				// ---------------------------
+				// OVERTIME: auto-reject
+				// ---------------------------
+				var expiredOvertime = await _context.OvertimeRequests
+					.Where(r => r.Status == "Pending" &&
+								r.CreatedAt.HasValue &&
+								r.CreatedAt.Value <= cutoffDate)
+					.ToListAsync();
+
+				foreach (var r in expiredOvertime)
+				{
+					var oldStatus = r.Status;
+					r.Status = "Rejected";
+					r.ReviewedBy = adminId;
+					r.ReviewedAt = DateTime.Now;
+					r.ReviewNote = $"Tự động từ chối do quá {MAX_PENDING_DAYS} ngày không được xử lý";
+					r.UpdatedAt = DateTime.Now;
+
+					var att = await _context.Attendances
+						.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.WorkDate);
+
+					if (att != null)
+					{
+						att.IsOvertimeApproved = false;
+						att.ApprovedOvertimeHours = 0;
+						att.HasOvertimeRequest = true;
+						att.OvertimeRequestId = r.OvertimeRequestId;
+						att.UpdatedAt = DateTime.Now;
+					}
+
+					await _auditHelper.LogDetailedAsync(
+						adminId,
+						"AUTO_REJECT",
+						"OvertimeRequest",
+						r.OvertimeRequestId,
+						new { Status = oldStatus },
+						new { Status = "Rejected" },
+						$"Tự động từ chối overtime request #{r.OvertimeRequestId} - Quá {MAX_PENDING_DAYS} ngày",
+						new Dictionary<string, object>
+						{
+					{ "UserId", r.UserId },
+					{ "WorkDate", r.WorkDate.ToString("dd/MM/yyyy") },
+					{ "OvertimeHours", r.OvertimeHours },
+					{ "DaysExpired", (DateTime.Now - r.CreatedAt.Value).Days }
+						}
+					);
+
+					totalRejected++;
+				}
+
+				// ---------------------------
+				// LEAVE: auto-reject and apply unpaid multiplier
+				// ---------------------------
+				var expiredLeaves = await _context.LeaveRequests
+					.Where(r => r.Status == "Pending" &&
+								r.CreatedAt.HasValue &&
+								r.CreatedAt.Value <= cutoffDate)
+					.ToListAsync();
+
+				var unpaidMultiplier = await GetPercentSettingAsync("LEAVE_UNPAID_MULTIPLIER", 0m);
+
+				foreach (var r in expiredLeaves)
+				{
+					var oldStatus = r.Status;
+					r.Status = "Rejected";
+					r.ReviewedBy = adminId;
+					r.ReviewedAt = DateTime.Now;
+					r.ReviewNote = $"Tự động từ chối do quá {MAX_PENDING_DAYS} ngày không được xử lý";
+					r.UpdatedAt = DateTime.Now;
+
+					for (var date = r.StartDate; date <= r.EndDate; date = date.AddDays(1))
+					{
+						var att = await _context.Attendances
+							.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == date);
+
+						if (att != null)
+						{
+							att.SalaryMultiplier = unpaidMultiplier;
+							att.UpdatedAt = DateTime.Now;
+						}
+					}
+
+					await _auditHelper.LogDetailedAsync(
+						adminId,
+						"AUTO_REJECT",
+						"LeaveRequest",
+						r.LeaveRequestId,
+						new { Status = oldStatus },
+						new { Status = "Rejected" },
+						$"Tự động từ chối leave request #{r.LeaveRequestId} - Quá {MAX_PENDING_DAYS} ngày",
+						new Dictionary<string, object>
+						{
+					{ "UserId", r.UserId },
+					{ "LeaveType", r.LeaveType ?? "N/A" },
+					{ "TotalDays", r.TotalDays },
+					{ "DaysExpired", (DateTime.Now - r.CreatedAt.Value).Days }
+						}
+					);
+
+					totalRejected++;
+				}
+
+				// ---------------------------
+				// LATE: auto-reject and mark attendance
+				// ---------------------------
+				var expiredLate = await _context.LateRequests
+					.Where(r => r.Status == "Pending" &&
+								r.CreatedAt.HasValue &&
+								r.CreatedAt.Value <= cutoffDate)
+					.ToListAsync();
+
+				foreach (var r in expiredLate)
+				{
+					var oldStatus = r.Status;
+					r.Status = "Rejected";
+					r.ReviewedBy = adminId;
+					r.ReviewedAt = DateTime.Now;
+					r.ReviewNote = $"Tự động từ chối do quá {MAX_PENDING_DAYS} ngày không được xử lý";
+					r.UpdatedAt = DateTime.Now;
+
+					var att = await _context.Attendances
+						.FirstOrDefaultAsync(a => a.UserId == r.UserId && a.WorkDate == r.RequestDate);
+
+					if (att != null)
+					{
+						att.HasLateRequest = true;
+						att.LateRequestId = r.LateRequestId;
+						att.UpdatedAt = DateTime.Now;
+					}
+
+					await _auditHelper.LogDetailedAsync(
+						adminId,
+						"AUTO_REJECT",
+						"LateRequest",
+						r.LateRequestId,
+						new { Status = oldStatus },
+						new { Status = "Rejected" },
+						$"Tự động từ chối late request #{r.LateRequestId} - Quá {MAX_PENDING_DAYS} ngày",
+						new Dictionary<string, object>
+						{
+					{ "UserId", r.UserId },
+					{ "RequestDate", r.RequestDate.ToString("dd/MM/yyyy") },
+					{ "ExpectedArrivalTime", r.ExpectedArrivalTime.ToString("HH:mm") },
+					{ "DaysExpired", (DateTime.Now - r.CreatedAt.Value).Days }
+						}
+					);
+
+					totalRejected++;
+				}
+
+				await _context.SaveChangesAsync();
+
+				return Json(new
+				{
+					success = true,
+					message = $"Đã tự động từ chối {totalRejected} đề xuất quá hạn",
+					totalRejected
+				});
+			}
+			catch (Exception ex)
+			{
+				await _auditHelper.LogFailedAttemptAsync(
+					HttpContext.Session.GetInt32("UserId"),
+					"AUTO_REJECT",
+					"Request",
+					$"Exception: {ex.Message}",
+					new { Error = ex.ToString() }
+				);
+
+				return Json(new { success = false, message = $"Có lỗi xảy ra: {ex.Message}" });
+			}
+		}
+
+		public class ReviewRequestViewModel
+		{
+			public string RequestType { get; set; } = string.Empty;
+			public int RequestId { get; set; }
+			public string Action { get; set; } = string.Empty;
+			public string? Note { get; set; }
+		}
 		// ============================================
 		// REQUEST MODELS
 		// ============================================

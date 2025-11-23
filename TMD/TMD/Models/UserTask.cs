@@ -21,6 +21,8 @@ public partial class UserTask
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Task Task { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;

@@ -39,7 +39,15 @@ public partial class TmdContext : DbContext
 
     public virtual DbSet<SalaryAdjustment> SalaryAdjustments { get; set; }
 
+    public virtual DbSet<SalaryConfigCategory> SalaryConfigCategories { get; set; }
+
+    public virtual DbSet<SalaryConfigHistory> SalaryConfigHistories { get; set; }
+
+    public virtual DbSet<SalaryConfiguration> SalaryConfigurations { get; set; }
+
     public virtual DbSet<SystemSetting> SystemSettings { get; set; }
+
+    public virtual DbSet<SystemSettingsBackup20251123> SystemSettingsBackup20251123s { get; set; }
 
     public virtual DbSet<Task> Tasks { get; set; }
 
@@ -48,6 +56,8 @@ public partial class TmdContext : DbContext
     public virtual DbSet<UserSalarySetting> UserSalarySettings { get; set; }
 
     public virtual DbSet<UserTask> UserTasks { get; set; }
+
+    public virtual DbSet<VwActiveSalarySetting> VwActiveSalarySettings { get; set; }
 
     public virtual DbSet<VwPendingRequestsSummary> VwPendingRequestsSummaries { get; set; }
 
@@ -103,6 +113,7 @@ public partial class TmdContext : DbContext
                 .HasDefaultValue(8m)
                 .HasColumnType("decimal(5, 2)");
             entity.Property(e => e.TotalHours).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.LateRequest).WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.LateRequestId)
@@ -376,27 +387,137 @@ public partial class TmdContext : DbContext
                 .HasConstraintName("FK__SalaryAdj__UserI__40F9A68C");
         });
 
+        modelBuilder.Entity<SalaryConfigCategory>(entity =>
+        {
+            entity.HasKey(e => e.CategoryId).HasName("PK__SalaryCo__19093A0BE0B88366");
+
+            entity.HasIndex(e => e.CategoryCode, "UQ__SalaryCo__371BA955E866D9B3").IsUnique();
+
+            entity.Property(e => e.CategoryCode).HasMaxLength(50);
+            entity.Property(e => e.CategoryName).HasMaxLength(100);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+        });
+
+        modelBuilder.Entity<SalaryConfigHistory>(entity =>
+        {
+            entity.HasKey(e => e.HistoryId).HasName("PK__SalaryCo__4D7B4ABDBEE5882D");
+
+            entity.ToTable("SalaryConfigHistory");
+
+            entity.HasIndex(e => e.ChangedBy, "IX_SalaryConfigHistory_ChangedBy");
+
+            entity.HasIndex(e => e.ConfigId, "IX_SalaryConfigHistory_ConfigId");
+
+            entity.Property(e => e.ChangedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.NewValue).HasMaxLength(1000);
+            entity.Property(e => e.OldValue).HasMaxLength(1000);
+            entity.Property(e => e.Reason).HasMaxLength(500);
+
+            entity.HasOne(d => d.ChangedByNavigation).WithMany(p => p.SalaryConfigHistories)
+                .HasForeignKey(d => d.ChangedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__SalaryCon__Chang__6BE40491");
+
+            entity.HasOne(d => d.Config).WithMany(p => p.SalaryConfigHistories)
+                .HasForeignKey(d => d.ConfigId)
+                .HasConstraintName("FK__SalaryCon__Confi__6AEFE058");
+        });
+
+        modelBuilder.Entity<SalaryConfiguration>(entity =>
+        {
+            entity.HasKey(e => e.ConfigId).HasName("PK__SalaryCo__C3BC335CE83B99FF");
+
+            entity.HasIndex(e => e.CategoryId, "IX_SalaryConfigurations_CategoryId");
+
+            entity.HasIndex(e => e.IsActive, "IX_SalaryConfigurations_IsActive");
+
+            entity.HasIndex(e => e.ConfigCode, "UQ__SalaryCo__5488CE6808AA130F").IsUnique();
+
+            entity.Property(e => e.ConfigCode).HasMaxLength(100);
+            entity.Property(e => e.ConfigName).HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.DefaultValue).HasMaxLength(1000);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.DisplayLabel).HasMaxLength(200);
+            entity.Property(e => e.DisplayOrder).HasDefaultValue(0);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.IsEditable).HasDefaultValue(true);
+            entity.Property(e => e.MaxValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MinValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Unit).HasMaxLength(50);
+            entity.Property(e => e.Value).HasMaxLength(1000);
+            entity.Property(e => e.ValueType).HasMaxLength(50);
+
+            entity.HasOne(d => d.Category).WithMany(p => p.SalaryConfigurations)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__SalaryCon__Categ__681373AD");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.SalaryConfigurationCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK__SalaryCon__Creat__690797E6");
+
+            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.SalaryConfigurationUpdatedByNavigations)
+                .HasForeignKey(d => d.UpdatedBy)
+                .HasConstraintName("FK__SalaryCon__Updat__69FBBC1F");
+        });
+
         modelBuilder.Entity<SystemSetting>(entity =>
         {
             entity.HasKey(e => e.SettingId).HasName("PK__SystemSe__54372B1DEA688F4D");
 
             entity.HasIndex(e => e.Category, "IX_SystemSettings_Category");
 
+            entity.HasIndex(e => new { e.Category, e.ApplyMethod }, "IX_SystemSettings_Category_ApplyMethod").HasFilter("([IsActive]=(1))");
+
             entity.HasIndex(e => e.IsActive, "IX_SystemSettings_IsActive");
+
+            entity.HasIndex(e => e.IsEnabled, "IX_SystemSettings_IsEnabled");
+
+            entity.HasIndex(e => e.Priority, "IX_SystemSettings_Priority")
+                .IsDescending()
+                .HasFilter("([IsActive]=(1) AND [IsEnabled]=(1))");
 
             entity.HasIndex(e => e.SettingKey, "UQ__SystemSe__01E719AD7D8ED9CB").IsUnique();
 
+            entity.Property(e => e.ApplyMethod)
+                .HasMaxLength(20)
+                .HasDefaultValue("Add");
             entity.Property(e => e.Category).HasMaxLength(100);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.DataType).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.DisplayName).HasMaxLength(200);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.IsEnabled).HasDefaultValue(true);
+            entity.Property(e => e.MaxValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MinValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Priority).HasDefaultValue(0);
             entity.Property(e => e.SettingKey).HasMaxLength(100);
             entity.Property(e => e.SettingValue).HasMaxLength(1000);
+            entity.Property(e => e.Unit).HasMaxLength(20);
 
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.SystemSettings)
                 .HasForeignKey(d => d.UpdatedBy)
                 .HasConstraintName("FK__SystemSet__Updat__0A9D95DB");
+        });
+
+        modelBuilder.Entity<SystemSettingsBackup20251123>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("SystemSettings_Backup_20251123");
+
+            entity.Property(e => e.ApplyMethod).HasMaxLength(20);
+            entity.Property(e => e.Category).HasMaxLength(100);
+            entity.Property(e => e.DataType).HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.DisplayName).HasMaxLength(200);
+            entity.Property(e => e.SettingId).ValueGeneratedOnAdd();
+            entity.Property(e => e.SettingKey).HasMaxLength(100);
+            entity.Property(e => e.SettingValue).HasMaxLength(1000);
         });
 
         modelBuilder.Entity<Task>(entity =>
@@ -493,9 +614,14 @@ public partial class TmdContext : DbContext
         {
             entity.HasKey(e => e.UserTaskId).HasName("PK__UserTask__4EF5961FD9ECDA05");
 
+            entity.HasIndex(e => e.Status, "IX_UserTasks_Status");
+
             entity.Property(e => e.CompletedThisWeek).HasDefaultValue(0);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.ReportLink).HasMaxLength(500);
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasDefaultValue("TODO");
 
             entity.HasOne(d => d.Task).WithMany(p => p.UserTasks)
                 .HasForeignKey(d => d.TaskId)
@@ -504,6 +630,25 @@ public partial class TmdContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.UserTasks)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK__UserTasks__UserI__4CA06362");
+        });
+
+        modelBuilder.Entity<VwActiveSalarySetting>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_ActiveSalarySettings");
+
+            entity.Property(e => e.ApplyMethod).HasMaxLength(20);
+            entity.Property(e => e.Category).HasMaxLength(100);
+            entity.Property(e => e.DataType).HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.DisplayName).HasMaxLength(200);
+            entity.Property(e => e.MaxValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MinValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.SettingId).ValueGeneratedOnAdd();
+            entity.Property(e => e.SettingKey).HasMaxLength(100);
+            entity.Property(e => e.SettingValue).HasMaxLength(1000);
+            entity.Property(e => e.Unit).HasMaxLength(20);
         });
 
         modelBuilder.Entity<VwPendingRequestsSummary>(entity =>

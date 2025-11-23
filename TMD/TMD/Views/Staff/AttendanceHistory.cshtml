@@ -13,32 +13,13 @@
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-8">
-        <div class="btn-group view-toggle" role="group">
-            <button type="button" class="btn btn-outline-primary active" id="btnListView">
-                <i class="fas fa-list"></i> Danh Sách
-            </button>
-            <button type="button" class="btn btn-outline-primary" id="btnCalendarView">
-                <i class="fas fa-calendar-alt"></i> Lịch Tháng
-            </button>
-        </div>
-    </div>
-    <div class="col-md-4 text-end">
-        <div class="calendar-nav" id="calendarNav" style="display: none;">
-            <button class="btn btn-sm btn-outline-secondary" id="btnPrevMonth"><i class="fas fa-chevron-left"></i></button>
-            <span class="mx-3 fw-bold" id="currentMonthYear">Tháng 11, 2025</span>
-            <button class="btn btn-sm btn-outline-secondary" id="btnNextMonth"><i class="fas fa-chevron-right"></i></button>
-        </div>
-    </div>
-</div>
-
+<!-- STATISTICS CARDS -->
 <div class="row mb-4">
     <div class="col-md-3">
         <div class="card stat-card stat-success">
             <div class="card-body text-center">
                 <i class="fas fa-calendar-check fa-2x mb-2"></i>
-                <h5 class="mb-0">@Model.Count</h5>
+                <h5 class="mb-0">@ViewBag.TotalRecords</h5>
                 <small class="text-muted">Tổng số ngày</small>
             </div>
         </div>
@@ -47,7 +28,7 @@
         <div class="card stat-card stat-info">
             <div class="card-body text-center">
                 <i class="fas fa-clock fa-2x mb-2"></i>
-                <h5 class="mb-0">@Model.Where(a => a.IsLate == false).Count()</h5>
+                <h5 class="mb-0">@ViewBag.OnTimeCount</h5>
                 <small class="text-muted">Đúng giờ</small>
             </div>
         </div>
@@ -56,7 +37,7 @@
         <div class="card stat-card stat-warning">
             <div class="card-body text-center">
                 <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                <h5 class="mb-0">@Model.Where(a => a.IsLate == true).Count()</h5>
+                <h5 class="mb-0">@ViewBag.LateCount</h5>
                 <small class="text-muted">Đi muộn</small>
             </div>
         </div>
@@ -65,27 +46,18 @@
         <div class="card stat-card stat-primary">
             <div class="card-body text-center">
                 <i class="fas fa-hourglass-half fa-2x mb-2"></i>
-                <h5 class="mb-0">@Model.Sum(a => a.TotalHours ?? 0).ToString("F1")h</h5>
+                <h5 class="mb-0">@ViewBag.TotalWorkHours.ToString("F1")h</h5>
                 <small class="text-muted">Tổng giờ làm</small>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card mb-4" id="calendarLegend" style="display: none;">
-    <div class="card-body">
-        <div class="d-flex justify-content-center gap-4 flex-wrap">
-            <div class="legend-item"><span class="legend-box bg-success"></span><span>Đúng giờ / Tăng ca CN</span></div>
-            <div class="legend-item"><span class="legend-box bg-warning"></span><span>Đi muộn</span></div>
-            <div class="legend-item"><span class="legend-box bg-danger"></span><span>Vắng không phép</span></div>
-            <div class="legend-item"><span class="legend-box" style="background: #ffe6b3;"></span><span>Chưa chấm công</span></div>
-            <div class="legend-item"><span class="legend-box bg-secondary"></span><span>CN nghỉ</span></div>
-        </div>
+<!-- ATTENDANCE TABLE -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0"><i class="fas fa-list"></i> Chi Tiết Chấm Công</h5>
     </div>
-</div>
-
-<div class="card" id="listView">
-    <div class="card-header"><h5 class="card-title mb-0"><i class="fas fa-list"></i> Chi Tiết Chấm Công</h5></div>
     <div class="card-body">
         @if (Model.Any())
         {
@@ -93,6 +65,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th>STT</th>
                             <th>Ngày làm việc</th>
                             <th>Check-in</th>
                             <th>Check-out</th>
@@ -102,14 +75,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @{
+                            int index = 1;
+                        }
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td><strong>@item.WorkDate.ToString("dd/MM/yyyy")</strong><br><small class="text-muted">@item.WorkDate.DayOfWeek</small></td>
+                                <td class="text-center">@index</td>
+                                <td>
+                                    <strong>@item.WorkDate.ToString("dd/MM/yyyy")</strong><br>
+                                    <small class="text-muted">@item.WorkDate.DayOfWeek</small>
+                                </td>
                                 <td>
                                     @if (item.CheckInTime.HasValue)
                                     {
-                                        <span class="badge bg-success"><i class="fas fa-sign-in-alt"></i> @item.CheckInTime.Value.ToString("HH:mm:ss")</span>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-sign-in-alt"></i> @item.CheckInTime.Value.ToString("HH:mm:ss")
+                                        </span>
                                     }
                                     else
                                     {
@@ -119,7 +101,9 @@
                                 <td>
                                     @if (item.CheckOutTime.HasValue)
                                     {
-                                        <span class="badge bg-danger"><i class="fas fa-sign-out-alt"></i> @item.CheckOutTime.Value.ToString("HH:mm:ss")</span>
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-sign-out-alt"></i> @item.CheckOutTime.Value.ToString("HH:mm:ss")
+                                        </span>
                                     }
                                     else
                                     {
@@ -127,7 +111,7 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (item.TotalHours.HasValue)
+                                    @if (item.TotalHours.HasValue && item.TotalHours > 0)
                                     {
                                         <strong>@item.TotalHours.Value.ToString("F2") giờ</strong>
                                     }
@@ -137,21 +121,56 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (item.IsLate == true)
-                                    {
-                                        <span class="badge bg-warning"><i class="fas fa-clock"></i> Đi muộn</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-success"><i class="fas fa-check"></i> Đúng giờ</span>
-                                    }
+                                    <div class="d-flex flex-column gap-1">
+                                        @if (item.CheckInTime.HasValue && item.CheckOutTime.HasValue)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle"></i> Hoàn thành
+                                            </span>
+                                        }
+                                        else if (item.CheckInTime.HasValue)
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock"></i> Chưa checkout
+                                            </span>
+                                        }
+
+                                        @if (item.IsLate == true)
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-exclamation-triangle"></i> Đi muộn
+                                            </span>
+                                        }
+                                        else if (item.IsLate == false)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Đúng giờ
+                                            </span>
+                                        }
+                                    </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary" onclick="viewDetails({WorkDate: '@item.WorkDate.ToString("yyyy-MM-dd")', CheckInTime: '@(item.CheckInTime?.ToString("yyyy-MM-ddTHH:mm:ss"))', CheckOutTime: '@(item.CheckOutTime?.ToString("yyyy-MM-ddTHH:mm:ss"))', TotalHours: @(item.TotalHours ?? 0), CheckInAddress: '@Html.Raw(item.CheckInAddress?.Replace("'", "\\'"))', CheckInPhotos: '@item.CheckInPhotos', CheckOutAddress: '@Html.Raw(item.CheckOutAddress?.Replace("'", "\\'"))', CheckOutPhotos: '@item.CheckOutPhotos', IsLate: @(item.IsLate?.ToString().ToLower() ?? "false")})">
+                                    <button class="btn btn-sm btn-primary"
+                                            onclick='viewDetails(@Html.Raw(Json.Serialize(new {
+                                                workDate = item.WorkDate.ToString("yyyy-MM-dd"),
+                                                checkInTime = item.CheckInTime?.ToString("yyyy-MM-ddTHH:mm:ss"),
+                                                checkOutTime = item.CheckOutTime?.ToString("yyyy-MM-ddTHH:mm:ss"),
+                                                totalHours = item.TotalHours ?? 0,
+                                                checkInAddress = item.CheckInAddress ?? "",
+                                                checkInPhotos = item.CheckInPhotos ?? "",
+                                                checkOutAddress = item.CheckOutAddress ?? "",
+                                                checkOutPhotos = item.CheckOutPhotos ?? "",
+                                                isLate = item.IsLate ?? false,
+                                                checkInLatitude = item.CheckInLatitude ?? 0,
+                                                checkInLongitude = item.CheckInLongitude ?? 0,
+                                                checkOutLatitude = item.CheckOutLatitude ?? 0,
+                                                checkOutLongitude = item.CheckOutLongitude ?? 0
+                                            })))'>
                                         <i class="fas fa-eye"></i> Chi tiết
                                     </button>
                                 </td>
                             </tr>
+                            index++;
                         }
                     </tbody>
                 </table>
@@ -162,23 +181,15 @@
             <div class="text-center py-5">
                 <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
                 <h5 class="text-muted">Chưa có dữ liệu chấm công</h5>
-                <a href="/Staff/Dashboard" class="btn btn-primary"><i class="fas fa-clock"></i> Đi check-in ngay</a>
+                <a href="/Staff/Dashboard" class="btn btn-primary mt-3">
+                    <i class="fas fa-clock"></i> Đi check-in ngay
+                </a>
             </div>
         }
     </div>
 </div>
 
-<div class="card" id="calendarView" style="display: none;">
-    <div class="card-body">
-        <div class="calendar-container">
-            <table class="calendar-table">
-                <thead><tr><th>CN</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th></tr></thead>
-                <tbody id="calendarBody"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
+<!-- DETAIL MODAL -->
 <div class="modal fade" id="detailModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -188,36 +199,67 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <!-- CHECK-IN INFO -->
                     <div class="col-md-6">
                         <div class="detail-section">
-                            <h6 class="section-title"><i class="fas fa-sign-in-alt text-success"></i> Thông tin Check-in</h6>
-                            <div class="info-group"><label><i class="far fa-calendar"></i> Ngày làm việc:</label><p id="detailWorkDate">-</p></div>
-                            <div class="info-group"><label><i class="far fa-clock"></i> Thời gian check-in:</label><p id="detailCheckInTime">-</p></div>
-                            <div class="info-group"><label><i class="fas fa-map-marker-alt"></i> Vị trí:</label><p id="detailCheckInAddress" class="text-muted small">-</p></div>
-                            <div class="info-group" id="checkInPhotoGroup" style="display: none;"><label><i class="fas fa-image"></i> Hình ảnh:</label><div class="photo-preview" id="checkInPhotoContainer"></div></div>
+                            <h6 class="section-title">
+                                <i class="fas fa-sign-in-alt text-success"></i> Thông tin Check-in
+                            </h6>
+                            <div class="info-group">
+                                <label><i class="far fa-calendar"></i> Ngày làm việc:</label>
+                                <p id="detailWorkDate">-</p>
+                            </div>
+                            <div class="info-group">
+                                <label><i class="far fa-clock"></i> Thời gian check-in:</label>
+                                <p id="detailCheckInTime">-</p>
+                            </div>
+                            <div class="info-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Vị trí:</label>
+                                <p id="detailCheckInAddress" class="text-muted small">-</p>
+                            </div>
+                            <div class="info-group" id="checkInPhotoGroup" style="display: none;">
+                                <label><i class="fas fa-image"></i> Hình ảnh:</label>
+                                <div class="photo-preview" id="checkInPhotoContainer"></div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- CHECK-OUT INFO -->
                     <div class="col-md-6">
                         <div class="detail-section">
-                            <h6 class="section-title"><i class="fas fa-sign-out-alt text-danger"></i> Thông tin Check-out</h6>
-                            <div class="info-group"><label><i class="far fa-clock"></i> Thời gian check-out:</label><p id="detailCheckOutTime">-</p></div>
-                            <div class="info-group"><label><i class="fas fa-hourglass-half"></i> Tổng giờ:</label><p id="detailTotalHours" class="text-primary fw-bold">-</p></div>
-                            <div class="info-group"><label><i class="fas fa-map-marker-alt"></i> Vị trí:</label><p id="detailCheckOutAddress" class="text-muted small">-</p></div>
-                            <div class="info-group" id="checkOutPhotoGroup" style="display: none;"><label><i class="fas fa-image"></i> Hình ảnh:</label><div class="photo-preview" id="checkOutPhotoContainer"></div></div>
+                            <h6 class="section-title">
+                                <i class="fas fa-sign-out-alt text-danger"></i> Thông tin Check-out
+                            </h6>
+                            <div class="info-group">
+                                <label><i class="far fa-clock"></i> Thời gian check-out:</label>
+                                <p id="detailCheckOutTime">-</p>
+                            </div>
+                            <div class="info-group">
+                                <label><i class="fas fa-hourglass-half"></i> Tổng giờ:</label>
+                                <p id="detailTotalHours" class="text-primary fw-bold">-</p>
+                            </div>
+                            <div class="info-group">
+                                <label><i class="fas fa-map-marker-alt"></i> Vị trí:</label>
+                                <p id="detailCheckOutAddress" class="text-muted small">-</p>
+                            </div>
+                            <div class="info-group" id="checkOutPhotoGroup" style="display: none;">
+                                <label><i class="fas fa-image"></i> Hình ảnh:</label>
+                                <div class="photo-preview" id="checkOutPhotoContainer"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Đóng</button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Đóng
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    .view-toggle .btn {
-        min-width: 150px;
-    }
-
     .stat-card {
         transition: transform .3s;
         border: none;
@@ -247,130 +289,6 @@
     .stat-primary {
         background: linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);
         color: #fff;
-    }
-
-    .stat-card i {
-        opacity: .9;
-    }
-
-    .calendar-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .calendar-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 10px;
-    }
-
-        .calendar-table th {
-            text-align: center;
-            padding: 15px;
-            background: #f8f9fc;
-            font-weight: 700;
-            color: #4e73df;
-            border-radius: 8px;
-        }
-
-        .calendar-table td {
-            height: 100px;
-            border: 2px solid #e3e6f0;
-            border-radius: 10px;
-            padding: 8px;
-            vertical-align: top;
-            cursor: pointer;
-            transition: all .3s;
-            background: #fff;
-            position: relative;
-        }
-
-            .calendar-table td:hover:not(.status-weekend-no-work) {
-                transform: scale(1.05);
-                box-shadow: 0 5px 15px rgba(0,0,0,.1);
-                z-index: 10;
-            }
-
-            .calendar-table td.other-month {
-                background: #f8f9fc;
-                opacity: .5;
-            }
-
-            .calendar-table td.today {
-                border: 3px solid #4e73df;
-                box-shadow: 0 0 10px rgba(78,115,223,.3);
-            }
-
-            .calendar-table td.status-success {
-                background: linear-gradient(135deg,#d4edda 0%,#c3e6cb 100%);
-                border-color: #28a745;
-            }
-
-            .calendar-table td.status-late {
-                background: linear-gradient(135deg,#fff3cd 0%,#ffeaa7 100%);
-                border-color: #ffc107;
-            }
-
-            .calendar-table td.status-absent {
-                background: linear-gradient(135deg,#f8d7da 0%,#f5c6cb 100%);
-                border-color: #dc3545;
-            }
-
-            .calendar-table td.status-weekend-no-work {
-                background: linear-gradient(135deg,#e9ecef 0%,#dee2e6 100%);
-                border-color: #adb5bd;
-                cursor: default;
-            }
-
-            .calendar-table td.status-not-yet {
-                background: linear-gradient(135deg,#fff9e6 0%,#ffe6b3 100%);
-                border-color: #ff9800;
-                animation: pulse 2s infinite;
-            }
-
-    keyframes pulse {
-        0%,100%
-
-    {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: .8;
-    }
-
-    }
-
-    .calendar-date {
-        font-weight: 700;
-        font-size: 1.1rem;
-        color: #2c3e50;
-        margin-bottom: 5px;
-    }
-
-    .calendar-info {
-        font-size: .75rem;
-        color: #6c757d;
-    }
-
-    .calendar-status-icon {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        font-size: 1.2rem;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .legend-box {
-        width: 30px;
-        height: 20px;
-        border-radius: 4px;
-        border: 2px solid #dee2e6;
     }
 
     .detail-section {
@@ -411,207 +329,88 @@
         border-radius: 8px;
         cursor: pointer;
     }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
 </style>
 
 @section Scripts {
     <script>
-        const attendanceData = @Html.Raw(Json.Serialize(Model.Select(m => new
-            {
-                workDate = m.WorkDate.ToString("yyyy-MM-dd"),
-                checkInTime = m.CheckInTime?.ToString("yyyy-MM-ddTHH:mm:ss"),
-                checkOutTime = m.CheckOutTime?.ToString("yyyy-MM-ddTHH:mm:ss"),
-                totalHours = m.TotalHours,
-                isLate = m.IsLate,
-                checkInAddress = m.CheckInAddress,
-                checkOutAddress = m.CheckOutAddress,
-                checkInPhotos = m.CheckInPhotos,
-                checkOutPhotos = m.CheckOutPhotos
-            })));
-
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-
-        document.getElementById('btnListView').addEventListener('click', () => switchView('list'));
-        document.getElementById('btnCalendarView').addEventListener('click', () => switchView('calendar'));
-
-        function switchView(view) {
-            if (view === 'list') {
-                document.getElementById('listView').style.display = 'block';
-                document.getElementById('calendarView').style.display = 'none';
-                document.getElementById('calendarLegend').style.display = 'none';
-                document.getElementById('calendarNav').style.display = 'none';
-                document.getElementById('btnListView').classList.add('active');
-                document.getElementById('btnCalendarView').classList.remove('active');
-            } else {
-                document.getElementById('listView').style.display = 'none';
-                document.getElementById('calendarView').style.display = 'block';
-                document.getElementById('calendarLegend').style.display = 'block';
-                document.getElementById('calendarNav').style.display = 'inline-flex';
-                document.getElementById('btnListView').classList.remove('active');
-                document.getElementById('btnCalendarView').classList.add('active');
-                renderCalendar(currentMonth, currentYear);
-            }
-        }
-
-        document.getElementById('btnPrevMonth').addEventListener('click', () => {
-            currentMonth--;
-            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-            renderCalendar(currentMonth, currentYear);
-        });
-
-        document.getElementById('btnNextMonth').addEventListener('click', () => {
-            currentMonth++;
-            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-            renderCalendar(currentMonth, currentYear);
-        });
-
-        function renderCalendar(month, year) {
-            const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
-            document.getElementById('currentMonthYear').textContent = `${monthNames[month]}, ${year}`;
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            let html = '<tr>';
-            for (let i = 0; i < firstDay; i++) html += '<td class="other-month"></td>';
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                if ((firstDay + day - 1) % 7 === 0 && day !== 1) html += '</tr><tr>';
-
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const checkDate = new Date(year, month, day);
-                checkDate.setHours(0, 0, 0, 0);
-
-                const dayOfWeek = checkDate.getDay();
-                const attendance = attendanceData.find(a => a.workDate === dateStr);
-                let classes = [], icon = '', info = '';
-
-                const isPast = checkDate < today;
-                const isToday = checkDate.getTime() === today.getTime();
-
-                if (isToday) classes.push('today');
-
-                // ✅ LOGIC ĐÃ FIX: CÓ CHECK-IN = XANH LÁ (Kể cả Chủ Nhật)
-                if (attendance && attendance.checkInTime) {
-                    // Có chấm công (kể cả Chủ Nhật)
-                    if (attendance.isLate) {
-                        classes.push('status-late');
-                        icon = '⚠️';
-                        info = `Đi muộn<br>${new Date(attendance.checkInTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}`;
-                    } else {
-                        classes.push('status-success'); // ← XANH LÁ cho tất cả (kể cả CN)
-                        icon = '✅';
-
-                        // Hiển thị text khác nhau cho CN và ngày thường
-                        if (dayOfWeek === 0) {
-                            info = `Tăng ca CN<br>${new Date(attendance.checkInTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}`;
-                        } else {
-                            info = `Đúng giờ<br>${new Date(attendance.checkInTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}`;
-                        }
-                    }
-
-                    // Hiển thị tổng giờ
-                    if (attendance.totalHours) {
-                        info += `<br><strong>${attendance.totalHours.toFixed(1)}h</strong>`;
-                    }
-
-                } else {
-                    // Không có chấm công
-                    if (dayOfWeek === 0) {
-                        // Chủ Nhật không check-in = Nghỉ (Xám)
-                        classes.push('status-weekend-no-work');
-                        icon = '🏖️';
-                        info = 'Nghỉ CN';
-
-                    } else if (isToday && dayOfWeek >= 1 && dayOfWeek <= 6) {
-                        // Hôm nay chưa check-in (Cam nhấp nháy)
-                        classes.push('status-not-yet');
-                        icon = '⏰';
-                        info = 'Chưa chấm công';
-
-                    } else if (isPast && dayOfWeek >= 1 && dayOfWeek <= 6) {
-                        // Ngày quá khứ không check-in = Vắng (Đỏ)
-                        classes.push('status-absent');
-                        icon = '❌';
-                        info = 'Vắng không phép';
-                    }
-                }
-
-                const dataAttr = attendance ? `data-attendance='${JSON.stringify(attendance)}'` : '';
-                const clickHandler = attendance ? `onclick="handleCalendarClick(this)"` : '';
-
-                html += `<td class="${classes.join(' ')}" ${dataAttr} ${clickHandler}>
-                    <div class="calendar-date">${day}</div>
-                    ${icon ? `<span class="calendar-status-icon">${icon}</span>` : ''}
-                    ${info ? `<div class="calendar-info">${info}</div>` : ''}
-                </td>`;
-            }
-
-            const totalCells = firstDay + daysInMonth;
-            const remainingCells = totalCells % 7;
-            if (remainingCells !== 0) {
-                for (let i = remainingCells; i < 7; i++) html += '<td class="other-month"></td>';
-            }
-
-            html += '</tr>';
-            document.getElementById('calendarBody').innerHTML = html;
-        }
-
-        function handleCalendarClick(cell) {
-            const attendanceStr = cell.getAttribute('data-attendance');
-            if (attendanceStr) {
-                const att = JSON.parse(attendanceStr);
-                viewDetails({WorkDate: att.workDate, CheckInTime: att.checkInTime, CheckOutTime: att.checkOutTime, TotalHours: att.totalHours || 0, CheckInAddress: att.checkInAddress || '', CheckInPhotos: att.checkInPhotos || '', CheckOutAddress: att.checkOutAddress || '', CheckOutPhotos: att.checkOutPhotos || '', IsLate: att.isLate || false});
-            }
-        }
-
         function viewDetails(data) {
-            const workDate = new Date(data.WorkDate);
-            document.getElementById('detailWorkDate').innerHTML = `<strong>${workDate.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>`;
+            // Work Date
+            const workDate = new Date(data.workDate);
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('detailWorkDate').innerHTML =
+                `<strong>${workDate.toLocaleDateString('vi-VN', dateOptions)}</strong>`;
 
-            if (data.CheckInTime) {
-                const checkInDate = new Date(data.CheckInTime);
-                document.getElementById('detailCheckInTime').innerHTML = `<strong>${checkInDate.toLocaleDateString('vi-VN')}</strong> <span class="badge bg-success">${checkInDate.toLocaleTimeString('vi-VN')}</span>`;
+            // Check-in Info
+            if (data.checkInTime) {
+                const checkInDate = new Date(data.checkInTime);
+                document.getElementById('detailCheckInTime').innerHTML = `
+                    <strong>${checkInDate.toLocaleDateString('vi-VN')}</strong>
+                    <span class="badge bg-success">${checkInDate.toLocaleTimeString('vi-VN')}</span>
+                `;
             } else {
-                document.getElementById('detailCheckInTime').innerHTML = '<span class="text-muted">Chưa check-in</span>';
+                document.getElementById('detailCheckInTime').innerHTML =
+                    '<span class="text-muted">Chưa check-in</span>';
             }
 
-            document.getElementById('detailCheckInAddress').textContent = data.CheckInAddress || 'Không có thông tin';
+            document.getElementById('detailCheckInAddress').textContent =
+                data.checkInAddress || 'Không có thông tin';
 
-            if (data.CheckInPhotos) {
+            // Check-in Photo
+            if (data.checkInPhotos) {
                 document.getElementById('checkInPhotoGroup').style.display = 'block';
-                document.getElementById('checkInPhotoContainer').innerHTML = `<img src="${data.CheckInPhotos}" alt="Check-in" onclick="window.open('${data.CheckInPhotos}', '_blank')">`;
+                document.getElementById('checkInPhotoContainer').innerHTML = `
+                    <img src="${data.checkInPhotos}" alt="Check-in"
+                         onclick="window.open('${data.checkInPhotos}', '_blank')"
+                         style="cursor: pointer;">
+                `;
             } else {
                 document.getElementById('checkInPhotoGroup').style.display = 'none';
             }
 
-            if (data.CheckOutTime) {
-                const checkOutDate = new Date(data.CheckOutTime);
-                document.getElementById('detailCheckOutTime').innerHTML = `<strong>${checkOutDate.toLocaleDateString('vi-VN')}</strong> <span class="badge bg-danger">${checkOutDate.toLocaleTimeString('vi-VN')}</span>`;
+            // Check-out Info
+            if (data.checkOutTime) {
+                const checkOutDate = new Date(data.checkOutTime);
+                document.getElementById('detailCheckOutTime').innerHTML = `
+                    <strong>${checkOutDate.toLocaleDateString('vi-VN')}</strong>
+                    <span class="badge bg-danger">${checkOutDate.toLocaleTimeString('vi-VN')}</span>
+                `;
             } else {
-                document.getElementById('detailCheckOutTime').innerHTML = '<span class="badge bg-warning">Chưa check-out</span>';
+                document.getElementById('detailCheckOutTime').innerHTML =
+                    '<span class="badge bg-warning">Chưa check-out</span>';
             }
 
-            if (data.TotalHours) {
-                document.getElementById('detailTotalHours').innerHTML = `<i class="fas fa-clock"></i> ${data.TotalHours.toFixed(2)} giờ`;
+            // Total Hours
+            if (data.totalHours && data.totalHours > 0) {
+                document.getElementById('detailTotalHours').innerHTML = `
+                    <i class="fas fa-clock"></i> ${data.totalHours.toFixed(2)} giờ
+                `;
             } else {
-                document.getElementById('detailTotalHours').innerHTML = '<span class="text-muted">-</span>';
+                document.getElementById('detailTotalHours').innerHTML =
+                    '<span class="text-muted">-</span>';
             }
 
-            document.getElementById('detailCheckOutAddress').textContent = data.CheckOutAddress || 'Không có thông tin';
+            document.getElementById('detailCheckOutAddress').textContent =
+                data.checkOutAddress || 'Không có thông tin';
 
-            if (data.CheckOutPhotos) {
+            // Check-out Photo
+            if (data.checkOutPhotos) {
                 document.getElementById('checkOutPhotoGroup').style.display = 'block';
-                document.getElementById('checkOutPhotoContainer').innerHTML = `<img src="${data.CheckOutPhotos}" alt="Check-out" onclick="window.open('${data.CheckOutPhotos}', '_blank')">`;
+                document.getElementById('checkOutPhotoContainer').innerHTML = `
+                    <img src="${data.checkOutPhotos}" alt="Check-out"
+                         onclick="window.open('${data.checkOutPhotos}', '_blank')"
+                         style="cursor: pointer;">
+                `;
             } else {
                 document.getElementById('checkOutPhotoGroup').style.display = 'none';
             }
 
+            // Show modal
             new bootstrap.Modal(document.getElementById('detailModal')).show();
         }
-
-        document.addEventListener('DOMContentLoaded', () => switchView('list'));
     </script>
 }

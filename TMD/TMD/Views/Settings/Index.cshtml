@@ -5,64 +5,405 @@
 }
 
 <style>
-    .settings-container {
-        max-width: 100%;
-        margin: 0 auto;
+    :root {
+        --primary: #667eea;
+        --secondary: #764ba2;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+    }
+
+    .settings-page {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .tabs-container {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .nav-tabs-custom {
+        background: #f9fafb;
+        padding: 20px 20px 0;
+        border-bottom: 3px solid #e5e7eb;
+    }
+
+    .nav-tabs-custom .nav-link {
+        color: #6b7280;
+        font-weight: 600;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px 10px 0 0;
+        transition: all 0.3s;
+        margin-right: 5px;
+    }
+
+    .nav-tabs-custom .nav-link:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--primary);
+    }
+
+    .nav-tabs-custom .nav-link.active {
+        background: white;
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+        margin-bottom: -3px;
+    }
+
+    .tab-content-custom {
+        padding: 30px;
+    }
+
+    .settings-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .setting-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
         transition: all 0.3s ease;
-        border-left: 4px solid transparent;
+        position: relative;
     }
 
-        .setting-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-
-        .setting-card.modified {
-            border-left-color: #ffc107;
-            background-color: #fffbf0;
-        }
-
-    .setting-input, .setting-select {
-        transition: border-color 0.3s;
+    .setting-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: var(--primary);
+        border-radius: 15px 0 0 15px;
     }
 
-        .setting-input.modified, .setting-select.modified {
-            border-color: #ffc107 !important;
-            border-width: 2px !important;
-        }
-
-    .category-badge {
-        font-size: 0.75rem;
-        padding: 4px 8px;
-        border-radius: 4px;
+    .setting-card:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
     }
 
-    .badge-salary {
-        background-color: #28a745;
+    .setting-card.disabled {
+        opacity: 0.6;
+        background: #f9fafb;
+    }
+
+    .setting-card.disabled::before {
+        background: #9ca3af;
+    }
+
+    .setting-card.modified {
+        border-color: var(--warning);
+        background: #fffbeb;
+    }
+
+    .setting-card.modified::before {
+        background: var(--warning);
+    }
+
+    .setting-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .setting-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .setting-key {
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 4px 10px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-enabled {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-disabled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .setting-description {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .setting-meta {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .meta-badge {
+        background: #f3f4f6;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .input-group-custom {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .input-custom {
+        flex: 1;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .input-custom:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .input-custom.modified {
+        border-color: var(--warning);
+        border-width: 3px;
+    }
+
+    .input-custom:disabled {
+        background: #f3f4f6;
+        cursor: not-allowed;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-custom {
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+
+    .btn-toggle {
+        flex: 1;
+        min-width: 200px;
+        justify-content: center;
+    }
+
+    .btn-toggle.enabled {
+        background: var(--success);
         color: white;
     }
 
-    .badge-attendance {
-        background-color: #17a2b8;
+    .btn-toggle.disabled {
+        background: #9ca3af;
         color: white;
     }
 
-    .badge-general {
-        background-color: #6c757d;
+    .btn-edit {
+        background: var(--info);
         color: white;
     }
 
-    .badge-notification {
-        background-color: #ffc107;
-        color: #000;
+    .btn-delete {
+        background: var(--danger);
+        color: white;
     }
 
-    .badge-branding {
-        background-color: #3498db;
+    .btn-save-all {
+        background: var(--success);
         color: white;
+        padding: 14px 32px;
+        font-size: 1.1rem;
+    }
+
+    .btn-add {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-trash {
+        background: var(--warning);
+        color: white;
+    }
+
+    .modal-custom .modal-content {
+        border-radius: 20px;
+        border: none;
+    }
+
+    .modal-custom .modal-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 20px 20px 0 0;
+        border: none;
+    }
+
+    .modal-custom .modal-body {
+        padding: 30px;
+    }
+
+    .form-group-custom {
+        margin-bottom: 20px;
+    }
+
+    .form-label-custom {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control-custom:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .form-help-text {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+
+    .apply-method-selector {
+        display: grid;
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    .method-option {
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .method-option:hover {
+        border-color: var(--primary);
+        background: #f9fafb;
+    }
+
+    .method-option.selected {
+        border-color: var(--primary);
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .method-option input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    .method-title {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .method-description {
+        font-size: 0.85rem;
+        color: #6b7280;
     }
 
     .save-indicator {
@@ -70,799 +411,708 @@
         top: 80px;
         right: 20px;
         z-index: 1050;
-        display: none;
-    }
-
-    .stats-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--warning);
         color: white;
+        padding: 15px 25px;
         border-radius: 10px;
-        padding: 20px;
-    }
-
-    .monaco-editor-container {
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid #dee2e6;
-        height: 600px;
-        width: 100%;
-    }
-
-    .preview-section {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 20px;
-        border: 2px dashed #dee2e6;
-    }
-
-    .preview-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .preview-title {
-        font-weight: bold;
-        color: #2d2d2d;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .preview-content {
-        min-height: 200px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 20px;
-        background: #fafafa;
-    }
-
-    .nav-pills .nav-link {
-        color: #495057;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-
-        .nav-pills .nav-link.active {
-            background-color: #E74C3C;
-        }
-
-        .nav-pills .nav-link:hover {
-            background-color: rgba(231, 76, 60, 0.1);
-        }
-
-    .holiday-row:hover {
-        background-color: #f8f9fa;
-    }
-
-    .badge-multiplier {
-        font-size: 1rem;
-        padding: 8px 12px;
-    }
-
-    .badge-national {
-        background-color: #dc3545;
-    }
-
-    .badge-lunar {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    .badge-company {
-        background-color: #17a2b8;
-    }
-
-    .image-upload-preview {
-        max-width: 300px;
-        margin-top: 10px;
-        border-radius: 8px;
-        border: 2px solid #dee2e6;
-    }
-
-    .image-upload-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-
-    .image-upload-btn {
-        margin-top: 10px;
-    }
-
-    .color-picker-wrapper {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-
-    .color-preview {
-        width: 50px;
-        height: 38px;
-        border-radius: 6px;
-        border: 2px solid #dee2e6;
-    }
-
-    /* Layout Editor toggle/collapsed */
-    .editor-collapsed {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         display: none;
+        animation: slideIn 0.3s ease;
+    }
+
+    keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .settings-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .setting-header {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-group-actions {
+            flex-direction: column;
+        }
+
+        .btn-toggle {
+            width: 100%;
+        }
     }
 </style>
 
-<div class="settings-container container-fluid py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="mb-1"><i class="fas fa-cog text-primary"></i> Cấu Hình Hệ Thống Nâng Cao</h2>
-                            <p class="text-muted mb-0"><i class="fas fa-magic"></i> Tùy chỉnh Branding, Layout Editor, Lương, Chấm công — không cần deploy.</p>
-                        </div>
-                        <div>
-                            <button class="btn btn-success btn-lg" id="btnSaveAll">
-                                <i class="fas fa-save"></i> Lưu Tất Cả
-                                <span class="badge bg-white text-success ms-2" id="modifiedCount">0</span>
-                            </button>
-                            <button class="btn btn-secondary btn-lg ms-2" onclick="location.reload()">
-                                <i class="fas fa-redo"></i> Tải Lại
-                            </button>
-                            <div class="btn-group ms-2">
-                                <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-bs-toggle="dropdown">
-                                    <i class="fas fa-cog"></i> Nâng Cao
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="/Settings/ExportSettings">
-                                            <i class="fas fa-download text-primary"></i> Export Settings
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#" onclick="$('#importFile').click(); return false;">
-                                            <i class="fas fa-upload text-success"></i> Import Settings
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item text-danger" href="#" onclick="resetToDefault(); return false;">
-                                            <i class="fas fa-exclamation-triangle"></i> Reset về Mặc Định
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importSettings(this)" />
-                        </div>
-                    </div>
+<div class="settings-page">
+    <div class="container-fluid px-4">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h2 class="mb-2">
+                        <i class="fas fa-cog text-primary"></i> 
+                        Quản Lý Cấu Hình Hệ Thống
+                    </h2>
+                    <p class="text-muted mb-0">
+                        Tùy chỉnh cấu hình lương, chấm công và các thiết lập khác
+                    </p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-2 col-6 mb-3">
-            <div class="stats-card">
-                <h6 class="opacity-75 mb-2">Tổng Cấu Hình</h6>
-                <h3 class="mb-0">@Model.Count</h3>
-            </div>
-        </div>
-        <div class="col-md-2 col-6 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <h6 class="opacity-75 mb-2">Lương</h6>
-                <h3 class="mb-0">@Model.Count(s => s.Category == "Salary")</h3>
-            </div>
-        </div>
-        <div class="col-md-2 col-6 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                <h6 class="opacity-75 mb-2">Chấm Công</h6>
-                <h3 class="mb-0">@Model.Count(s => s.Category == "Attendance")</h3>
-            </div>
-        </div>
-        <div class="col-md-2 col-6 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                <h6 class="opacity-75 mb-2">Ngày Lễ</h6>
-                <h3 class="mb-0" id="holidaysStatCount">0</h3>
-            </div>
-        </div>
-        <div class="col-md-2 col-6 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                <h6 class="opacity-75 mb-2">Custom Code</h6>
-                <h3 class="mb-0">@Model.Count(s => s.Category == "CustomCode")</h3>
-            </div>
-        </div>
-        <div class="col-md-2 col-6 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                <h6 class="opacity-75 mb-2">Đã Sửa</h6>
-                <h3 class="mb-0" id="modifiedCountLarge">0</h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Save Indicator -->
-    <div class="save-indicator alert alert-warning" id="saveIndicator">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span id="modifiedText">Bạn có thay đổi chưa lưu!</span>
-    </div>
-
-    <!-- Tabs -->
-    <ul class="nav nav-pills mb-4" role="tablist">
-        <!-- Removed: Custom Code + Layout & Design -->
-        <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#branding-tab">
-                <i class="fas fa-paint-brush"></i> Branding & Logo
-                <span class="badge bg-info ms-1">New</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#salary-tab">
-                <i class="fas fa-money-bill-wave"></i> Lương
-                <span class="badge bg-success ms-1">@Model.Count(s => s.Category == "Salary")</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#attendance-tab">
-                <i class="fas fa-clock"></i> Chấm Công
-                <span class="badge bg-info ms-1">@Model.Count(s => s.Category == "Attendance")</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#general-tab">
-                <i class="fas fa-cogs"></i> Chung
-                <span class="badge bg-secondary ms-1">@Model.Count(s => s.Category == "General")</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#notification-tab">
-                <i class="fas fa-bell"></i> Thông Báo
-                <span class="badge bg-warning text-dark ms-1">@Model.Count(s => s.Category == "Notification")</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#holidays-tab">
-                <i class="fas fa-calendar-day"></i> Ngày Lễ/Nghỉ
-                <span class="badge bg-primary ms-1" id="holidaysCount">0</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#layout-editor-tab">
-                <i class="fas fa-code"></i> Layout Editor
-                <span class="badge bg-danger ms-1">New</span>
-            </a>
-        </li>
-    </ul>
-
-    <!-- Tab Content -->
-    <div class="tab-content">
-        <!-- BRANDING & LOGO -->
-        <div class="tab-pane fade show active" id="branding-tab">
-            <div class="alert alert-info">
-                <i class="fas fa-paint-brush"></i>
-                <strong>Branding:</strong> Đổi logo, màu sắc, font chữ - Tạo thương hiệu riêng cho hệ thống!
-            </div>
-
-            <div class="row">
-                <!-- Logo Upload -->
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-image"></i> Logo Upload</h5>
-                        </div>
-                        <div class="card-body">
-                            @{
-                                var logoUrl = Model.FirstOrDefault(s => s.SettingKey == "LOGO_URL");
-                                var logoValue = logoUrl?.SettingValue ?? "/images/logo.png";
-                            }
-                            <label class="form-label fw-bold">Logo URL</label>
-                            <input type="text" class="form-control setting-input"
-                                   data-key="LOGO_URL"
-                                   data-original="@logoValue"
-                                   value="@logoValue"
-                                   placeholder="https://example.com/logo.png" />
-
-                            <div class="image-upload-wrapper mt-3">
-                                <img src="@logoValue" id="logoPreview" class="image-upload-preview" onerror="this.src='/images/placeholder-logo.png'" />
-                            </div>
-
-                            <button class="btn btn-outline-primary image-upload-btn" onclick="$('#logoUploadInput').click()">
-                                <i class="fas fa-upload"></i> Upload Logo Mới
-                            </button>
-                            <input type="file" id="logoUploadInput" accept="image/*" style="display:none" onchange="uploadLogo(this)" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Colors -->
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-header" style="background: #E74C3C; color: white;">
-                            <h5 class="mb-0"><i class="fas fa-palette"></i> Màu Sắc Chủ Đạo</h5>
-                        </div>
-                        <div class="card-body">
-                            @{
-                                var primaryColor = Model.FirstOrDefault(s => s.SettingKey == "PRIMARY_COLOR");
-                                var primaryValue = primaryColor?.SettingValue ?? "#E74C3C";
-                                var secondaryColor = Model.FirstOrDefault(s => s.SettingKey == "SECONDARY_COLOR");
-                                var secondaryValue = secondaryColor?.SettingValue ?? "#F39C12";
-                            }
-                            <label class="form-label fw-bold">Primary Color</label>
-                            <div class="color-picker-wrapper">
-                                <input type="color" class="form-control setting-input"
-                                       data-key="PRIMARY_COLOR"
-                                       data-original="@primaryValue"
-                                       value="@primaryValue"
-                                       style="width: 100px;" />
-                                <input type="text" class="form-control" id="primaryColorHex" value="@primaryValue" readonly />
-                                <div class="color-preview" id="primaryColorPreview" style="background: @primaryValue;"></div>
-                            </div>
-
-                            <label class="form-label fw-bold mt-3">Secondary Color</label>
-                            <div class="color-picker-wrapper">
-                                <input type="color" class="form-control setting-input"
-                                       data-key="SECONDARY_COLOR"
-                                       data-original="@secondaryValue"
-                                       value="@secondaryValue"
-                                       style="width: 100px;" />
-                                <input type="text" class="form-control" id="secondaryColorHex" value="@secondaryValue" readonly />
-                                <div class="color-preview" id="secondaryColorPreview" style="background: @secondaryValue;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Typography -->
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0"><i class="fas fa-font"></i> Typography</h5>
-                        </div>
-                        <div class="card-body">
-                            @{
-                                var fontFamily = Model.FirstOrDefault(s => s.SettingKey == "FONT_FAMILY");
-                                var fontValue = fontFamily?.SettingValue ?? "Segoe UI";
-                                var fontSize = Model.FirstOrDefault(s => s.SettingKey == "FONT_SIZE_BASE");
-                                var sizeValue = fontSize?.SettingValue ?? "16";
-                            }
-                            <label class="form-label fw-bold">Font Family</label>
-                            <select class="form-select setting-select" data-key="FONT_FAMILY" data-original="@fontValue">
-                                <option value="Segoe UI" selected="@(fontValue == "Segoe UI")">Segoe UI</option>
-                                <option value="Arial" selected="@(fontValue == "Arial")">Arial</option>
-                                <option value="Helvetica" selected="@(fontValue == "Helvetica")">Helvetica</option>
-                                <option value="Roboto" selected="@(fontValue == "Roboto")">Roboto</option>
-                                <option value="Open Sans" selected="@(fontValue == "Open Sans")">Open Sans</option>
-                                <option value="Lato" selected="@(fontValue == "Lato")">Lato</option>
-                            </select>
-
-                            <label class="form-label fw-bold mt-3">Font Size Base (px)</label>
-                            <input type="number" class="form-control setting-input"
-                                   data-key="FONT_SIZE_BASE"
-                                   data-original="@sizeValue"
-                                   value="@sizeValue"
-                                   min="12" max="24" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Company Info -->
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fas fa-building"></i> Company Info</h5>
-                        </div>
-                        <div class="card-body">
-                            @{
-                                var displayName = Model.FirstOrDefault(s => s.SettingKey == "SYSTEM_DISPLAY_NAME");
-                                var displayValue = displayName?.SettingValue ?? "TMD System";
-                                var tagline = Model.FirstOrDefault(s => s.SettingKey == "SYSTEM_TAGLINE");
-                                var taglineValue = tagline?.SettingValue ?? "Quản lý nhân sự thông minh";
-                            }
-                            <label class="form-label fw-bold">Tên Hiển Thị</label>
-                            <input type="text" class="form-control setting-input"
-                                   data-key="SYSTEM_DISPLAY_NAME"
-                                   data-original="@displayValue"
-                                   value="@displayValue"
-                                   placeholder="Tên hệ thống" />
-
-                            <label class="form-label fw-bold mt-3">Tagline</label>
-                            <input type="text" class="form-control setting-input"
-                                   data-key="SYSTEM_TAGLINE"
-                                   data-original="@taglineValue"
-                                   value="@taglineValue"
-                                   placeholder="Slogan công ty" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SALARY -->
-        <div class="tab-pane fade" id="salary-tab">
-            <div class="row">
-                @foreach (var setting in Model.Where(s => s.Category == "Salary"))
-                {
-                    <div class="col-md-6 mb-3">
-                        <div class="card setting-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class="fas fa-money-bill-wave text-success"></i> @setting.SettingKey</h5>
-                                        <p class="text-muted small mb-0"><i class="fas fa-info-circle"></i> @setting.Description</p>
-                                    </div>
-                                    <span class="category-badge badge-salary">@setting.Category</span>
-                                </div>
-
-                                @if (setting.DataType == "Number" || setting.DataType == "Decimal")
-                                {
-                                    <input type="number" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue"
-                                           step="@(setting.DataType == "Decimal" ? "0.01" : "1")"
-                                           placeholder="Nhập @setting.Description" />
-                                }
-                                else
-                                {
-                                    <input type="text" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue"
-                                           placeholder="Nhập giá trị..." />
-                                }
-
-                                @if (setting.UpdatedAt.HasValue)
-                                {
-                                    <small class="text-muted d-block mt-2"><i class="fas fa-clock"></i> Cập nhật: @setting.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</small>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- ATTENDANCE -->
-        <div class="tab-pane fade" id="attendance-tab">
-            <div class="row">
-                @foreach (var setting in Model.Where(s => s.Category == "Attendance"))
-                {
-                    <div class="col-md-6 mb-3">
-                        <div class="card setting-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class="fas fa-clock text-info"></i> @setting.SettingKey</h5>
-                                        <p class="text-muted small mb-0"><i class="fas fa-info-circle"></i> @setting.Description</p>
-                                    </div>
-                                    <span class="category-badge badge-attendance">@setting.Category</span>
-                                </div>
-
-                                @if (setting.DataType == "Boolean")
-                                {
-                                    <select class="form-select setting-select" data-key="@setting.SettingKey" data-original="@setting.SettingValue">
-                                        <option value="true" selected="@(setting.SettingValue?.ToLower() == "true")">Có (True)</option>
-                                        <option value="false" selected="@(setting.SettingValue?.ToLower() == "false")">Không (False)</option>
-                                    </select>
-                                }
-                                else if (setting.DataType == "Number" || setting.DataType == "Decimal")
-                                {
-                                    <input type="number" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue"
-                                           step="@(setting.DataType == "Decimal" ? "0.01" : "1")" />
-                                }
-                                else if (setting.SettingKey.Contains("TIME"))
-                                {
-                                    <input type="time" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue" />
-                                }
-                                else
-                                {
-                                    <input type="text" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue" />
-                                }
-
-                                @if (setting.UpdatedAt.HasValue)
-                                {
-                                    <small class="text-muted d-block mt-2"><i class="fas fa-clock"></i> @setting.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</small>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- GENERAL -->
-        <div class="tab-pane fade" id="general-tab">
-            <div class="row">
-                @foreach (var setting in Model.Where(s => s.Category == "General"))
-                {
-                    <div class="col-md-6 mb-3">
-                        <div class="card setting-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class="fas fa-cogs text-secondary"></i> @setting.SettingKey</h5>
-                                        <p class="text-muted small mb-0"><i class="fas fa-info-circle"></i> @setting.Description</p>
-                                    </div>
-                                    <span class="category-badge badge-general">@setting.Category</span>
-                                </div>
-
-                                <input type="text" class="form-control setting-input"
-                                       data-key="@setting.SettingKey"
-                                       data-original="@setting.SettingValue"
-                                       value="@setting.SettingValue"
-                                       placeholder="Nhập @setting.Description" />
-
-                                @if (setting.UpdatedAt.HasValue)
-                                {
-                                    <small class="text-muted d-block mt-2"><i class="fas fa-clock"></i> @setting.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</small>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- NOTIFICATION -->
-        <div class="tab-pane fade" id="notification-tab">
-            <div class="row">
-                @foreach (var setting in Model.Where(s => s.Category == "Notification"))
-                {
-                    <div class="col-md-6 mb-3">
-                        <div class="card setting-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class="fas fa-bell text-warning"></i> @setting.SettingKey</h5>
-                                        <p class="text-muted small mb-0"><i class="fas fa-info-circle"></i> @setting.Description</p>
-                                    </div>
-                                    <span class="category-badge badge-notification">@setting.Category</span>
-                                </div>
-
-                                @if (setting.DataType == "Boolean")
-                                {
-                                    <select class="form-select setting-select" data-key="@setting.SettingKey" data-original="@setting.SettingValue">
-                                        <option value="true" selected="@(setting.SettingValue?.ToLower() == "true")">Bật (True)</option>
-                                        <option value="false" selected="@(setting.SettingValue?.ToLower() == "false")">Tắt (False)</option>
-                                    </select>
-                                }
-                                else if (setting.DataType == "Number")
-                                {
-                                    <input type="number" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue"
-                                           step="1" />
-                                }
-                                else
-                                {
-                                    <input type="text" class="form-control setting-input"
-                                           data-key="@setting.SettingKey"
-                                           data-original="@setting.SettingValue"
-                                           value="@setting.SettingValue" />
-                                }
-
-                                @if (setting.UpdatedAt.HasValue)
-                                {
-                                    <small class="text-muted d-block mt-2"><i class="fas fa-clock"></i> @setting.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</small>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- HOLIDAYS -->
-        <div class="tab-pane fade" id="holidays-tab">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                <strong>Lưu ý:</strong> Danh sách ngày lễ, tết để tính lương với hệ số đặc biệt.
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Thêm Ngày Lễ Mới</h5>
-                </div>
-                <div class="card-body">
-                    <form id="formAddHoliday">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Ngày <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="holidayDate" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Tên Ngày Lễ <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="holidayName" placeholder="VD: Tết Nguyên Đán" required>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Hệ Số <span class="text-danger">*</span></label>
-                                <select class="form-select" id="salaryMultiplier" required>
-                                    <option value="2">x2</option>
-                                    <option value="3">x3</option>
-                                    <option value="1.5">x1.5</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label fw-bold">Loại</label>
-                                <select class="form-select" id="holidayType">
-                                    <option value="National">Quốc Gia</option>
-                                    <option value="Lunar">Tết</option>
-                                    <option value="Company">Công Ty</option>
-                                </select>
-                            </div>
-                            <div class="col-md-1">
-                                <label class="form-label fw-bold">&nbsp;</label>
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <h5 class="mb-0"><i class="fas fa-list"></i> Danh Sách Ngày Lễ</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="holidaysTable">
-                            <thead>
-                                <tr>
-                                    <th width="5%">#</th>
-                                    <th width="15%">Ngày</th>
-                                    <th width="35%">Tên</th>
-                                    <th width="15%">Hệ Số</th>
-                                    <th width="15%">Loại</th>
-                                    <th width="15%">Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="holidaysTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- LAYOUT EDITOR (collapsed by default, with Copy + Import .txt + Move to Trash) -->
-        <div class="tab-pane fade" id="layout-editor-tab">
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>⚠️ CHÚ Ý:</strong> Bạn đang chỉnh sửa trực tiếp file Layout (.cshtml).
-                Hãy cẩn thận và luôn backup trước khi lưu.
-            </div>
-
-            <!-- Layout Selector -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-file-code"></i> Chọn Layout để chỉnh sửa</h5>
-                </div>
-                <div class="card-body">
-                    <div class="btn-group w-100" role="group">
-                        <button type="button" class="btn btn-lg btn-outline-primary active" id="btnSelectAdmin" onclick="loadLayout('admin')">
-                            <i class="fas fa-user-shield"></i> Admin Layout
-                            <br><small>Views/Shared/_Layout.cshtml</small>
-                        </button>
-                        <button type="button" class="btn btn-lg btn-outline-success" id="btnSelectStaff" onclick="loadLayout('staff')">
-                            <i class="fas fa-users"></i> Staff Layout
-                            <br><small>Views/Shared/_LayoutStaff.cshtml</small>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Layout Editor (default collapsed) -->
-            <div class="card mb-4">
-                <div class="card-header" style="background: #2d2d2d; color: white;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0"><i class="fas fa-edit"></i> <span id="currentLayoutFileName">_Layout.cshtml</span></h5>
-                            <small id="currentLayoutInfo">Last modified: --</small>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-success" onclick="saveLayoutFile()">
-                                <i class="fas fa-save"></i> Lưu File
-                            </button>
-                            <button class="btn btn-sm btn-info" onclick="formatLayoutCode()">
-                                <i class="fas fa-magic"></i> Format
-                            </button>
-                            <button class="btn btn-sm btn-dark" onclick="copyLayoutSource()">
-                                <i class="fas fa-copy"></i> Copy source
-                            </button>
-                            <button class="btn btn-sm btn-secondary" onclick="document.getElementById('importTxtInput').click()">
-                                <i class="fas fa-file-import"></i> Import code (.txt)
-                            </button>
-                            <input type="file" id="importTxtInput" accept=".txt" style="display:none" onchange="importTxtAppend(event)">
-                            <button class="btn btn-sm btn-warning" onclick="loadLayout(currentLayoutType)">
-                                <i class="fas fa-sync"></i> Reload
-                            </button>
-                            <button class="btn btn-sm btn-primary" id="toggleEditorBtn" onclick="toggleMainLayoutEditor(true)">
-                                <i class="fas fa-pencil-alt"></i> Edit
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0 editor-collapsed" id="mainLayoutEditorSection">
-                    <div id="layoutEditor" style="height: 600px; border: 1px solid #dee2e6;"></div>
-                </div>
-            </div>
-
-            <!-- Backup Management -->
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-history"></i> Backup & Restore</h5>
-                </div>
-                <div class="card-body">
-                    <button class="btn btn-primary mb-3" onclick="loadBackupList()">
-                        <i class="fas fa-sync"></i> Refresh Backup List
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <button class="btn btn-custom btn-save-all" id="btnSaveAll">
+                        <i class="fas fa-save"></i> Lưu Tất Cả
+                        <span class="badge bg-white text-success ms-2" id="modifiedCount">0</span>
                     </button>
+                </div>
+            </div>
+        </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th width="5%">#</th>
-                                    <th width="30%">File Name</th>
-                                    <th width="15%">Layout</th>
-                                    <th width="15%">Size</th>
-                                    <th width="20%">Created</th>
-                                    <th width="15%">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="backupListBody">
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
-                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                        Chưa có backup. Click "Lưu File" để tự động tạo backup.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="mt-2">
-                            <small class="text-muted">Xóa backup sẽ chuyển vào thùng rác (Trash). Có thể khôi phục khi cần.</small>
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--primary);">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="text-muted mb-1">Tổng Cấu Hình</div>
+                <h3 class="mb-0" style="color: var(--primary);">@Model.Count</h3>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--success);">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="text-muted mb-1">Lương</div>
+                <h3 class="mb-0" style="color: var(--success);">@Model.Count(s => s.Category == "Salary")</h3>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--info);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="text-muted mb-1">Chấm Công</div>
+                <h3 class="mb-0" style="color: var(--info);">@Model.Count(s => s.Category == "Attendance")</h3>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--warning);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="text-muted mb-1">Đang Bật</div>
+                <h3 class="mb-0" style="color: var(--warning);">@Model.Count(s => s.IsEnabled)</h3>
+            </div>
+        </div>
+
+        <!-- Save Indicator -->
+        <div class="save-indicator" id="saveIndicator">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Bạn có thay đổi chưa lưu!</strong>
+        </div>
+
+        <!-- Tabs Container -->
+        <div class="tabs-container">
+            <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#salary-tab">
+                        <i class="fas fa-money-bill-wave"></i> Lương
+                        <span class="badge bg-success ms-1">@Model.Count(s => s.Category == "Salary")</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#attendance-tab">
+                        <i class="fas fa-clock"></i> Chấm Công
+                        <span class="badge bg-info ms-1">@Model.Count(s => s.Category == "Attendance")</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content tab-content-custom">
+                <!-- SALARY TAB -->
+                <div class="tab-pane fade show active" id="salary-tab">
+                    <div class="settings-toolbar">
+                        <div>
+                            <button class="btn btn-custom btn-add" onclick="openCreateModal('Salary')">
+                                <i class="fas fa-plus"></i> Thêm Cấu Hình
+                            </button>
+                            <button class="btn btn-custom btn-trash" onclick="openTrashModal()">
+                                <i class="fas fa-trash"></i> Thùng Rác
+                                <span class="badge bg-white text-warning ms-1" id="trashCount">0</span>
+                            </button>
                         </div>
+                        <div>
+                            <input type="text" class="form-control-custom" id="searchSalary" 
+                                   placeholder="🔍 Tìm kiếm cấu hình..." 
+                                   style="width: 300px;">
+                        </div>
+                    </div>
+
+                    <div id="salarySettingsList">
+                        @if (!Model.Any(s => s.Category == "Salary"))
+                        {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-inbox"></i>
+                                </div>
+                                <h5>Chưa có cấu hình lương nào</h5>
+                                <p>Nhấn "Thêm Cấu Hình" để bắt đầu</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var setting in Model.Where(s => s.Category == "Salary").OrderBy(s => s.SettingKey))
+                            {
+                                <div class="setting-card @(setting.IsEnabled ? "" : "disabled")" 
+                                     id="setting-card-@setting.SettingId"
+                                     data-key="@setting.SettingKey">
+                                    <div class="setting-header">
+                                        <div>
+                                            <div class="setting-title">
+                                                <i class="fas fa-money-bill-wave text-success"></i>
+                                                @setting.Description
+                                            </div>
+                                            <span class="setting-key">@setting.SettingKey</span>
+                                        </div>
+                                        <div>
+                                            <span class="status-badge @(setting.IsEnabled ? "status-enabled" : "status-disabled")">
+                                                <i class="fas @(setting.IsEnabled ? "fa-check-circle" : "fa-ban")"></i>
+                                                @(setting.IsEnabled ? "BẬT" : "TẮT")
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-description">
+                                        @if (!string.IsNullOrEmpty(setting.ApplyMethod))
+                                        {
+                                            <i class="fas fa-info-circle"></i>
+                                            <strong>Cách áp dụng:</strong> @GetApplyMethodText(setting.ApplyMethod)
+                                        }
+                                    </div>
+
+                                    <div class="setting-meta">
+                                        <div class="meta-item">
+                                            <i class="fas fa-database"></i>
+                                            <span class="meta-badge">@setting.DataType</span>
+                                        </div>
+                                        @if (setting.Unit != null)
+                                        {
+                                            <div class="meta-item">
+                                                <i class="fas fa-tag"></i>
+                                                <span class="meta-badge">@setting.Unit</span>
+                                            </div>
+                                        }
+                                        @if (setting.UpdatedAt.HasValue)
+                                        {
+                                            <div class="meta-item">
+                                                <i class="fas fa-clock"></i>
+                                                @setting.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="input-group-custom">
+                                        @if (setting.DataType == "Number" || setting.DataType == "Decimal")
+                                        {
+                                            <input type="number" class="input-custom setting-input"
+                                                   data-key="@setting.SettingKey"
+                                                   data-id="@setting.SettingId"
+                                                   data-original="@setting.SettingValue"
+                                                   value="@setting.SettingValue"
+                                                   step="@(setting.DataType == "Decimal" ? "0.01" : "1")"
+                                                   @(setting.IsEnabled ? "" : "disabled")
+                                                   placeholder="Nhập giá trị..." />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="input-custom setting-input"
+                                                   data-key="@setting.SettingKey"
+                                                   data-id="@setting.SettingId"
+                                                   data-original="@setting.SettingValue"
+                                                   value="@setting.SettingValue"
+                                                   @(setting.IsEnabled ? "" : "disabled")
+                                                   placeholder="Nhập giá trị..." />
+                                        }
+                                    </div>
+
+                                    <div class="btn-group-actions">
+                                        <button class="btn-custom btn-toggle @(setting.IsEnabled ? "enabled" : "disabled")"
+                                                onclick="toggleSettingStatus(@setting.SettingId, '@setting.SettingKey')">
+                                            <i class="fas @(setting.IsEnabled ? "fa-toggle-on" : "fa-toggle-off")"></i>
+                                            @(setting.IsEnabled ? "Đang Bật" : "Đang Tắt")
+                                        </button>
+                                        <button class="btn-custom btn-edit" 
+                                                onclick='openEditModal(@setting.SettingId, "@setting.SettingKey", "@setting.SettingValue", "@setting.Description", "@setting.DataType", "@setting.Category", "@setting.ApplyMethod")'>
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </button>
+                                        <button class="btn-custom btn-delete" 
+                                                onclick="moveToTrash(@setting.SettingId)">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- ATTENDANCE TAB -->
+                <div class="tab-pane fade" id="attendance-tab">
+                    <div class="settings-toolbar">
+                        <div>
+                            <button class="btn btn-custom btn-add" onclick="openCreateModal('Attendance')">
+                                <i class="fas fa-plus"></i> Thêm Cấu Hình
+                            </button>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control-custom" id="searchAttendance" 
+                                   placeholder="🔍 Tìm kiếm cấu hình..." 
+                                   style="width: 300px;">
+                        </div>
+                    </div>
+
+                    <div id="attendanceSettingsList">
+                        @if (!Model.Any(s => s.Category == "Attendance"))
+                        {
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-inbox"></i>
+                                </div>
+                                <h5>Chưa có cấu hình chấm công nào</h5>
+                                <p>Nhấn "Thêm Cấu Hình" để bắt đầu</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var setting in Model.Where(s => s.Category == "Attendance").OrderBy(s => s.SettingKey))
+                            {
+                                <div class="setting-card @(setting.IsEnabled ? "" : "disabled")" 
+                                     id="setting-card-@setting.SettingId"
+                                     data-key="@setting.SettingKey">
+                                    <div class="setting-header">
+                                        <div>
+                                            <div class="setting-title">
+                                                <i class="fas fa-clock text-info"></i>
+                                                @setting.Description
+                                            </div>
+                                            <span class="setting-key">@setting.SettingKey</span>
+                                        </div>
+                                        <div>
+                                            <span class="status-badge @(setting.IsEnabled ? "status-enabled" : "status-disabled")">
+                                                <i class="fas @(setting.IsEnabled ? "fa-check-circle" : "fa-ban")"></i>
+                                                @(setting.IsEnabled ? "BẬT" : "TẮT")
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-meta">
+                                        <div class="meta-item">
+                                            <i class="fas fa-database"></i>
+                                            <span class="meta-badge">@setting.DataType</span>
+                                        </div>
+                                        @if (setting.UpdatedAt.HasValue)
+                                        {
+                                            <div class="meta-item">
+                                                <i class="fas fa-clock"></i>
+                                                @setting.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="input-group-custom">
+                                        @if (setting.DataType == "Number" || setting.DataType == "Decimal")
+                                        {
+                                            <input type="number" class="input-custom setting-input"
+                                                   data-key="@setting.SettingKey"
+                                                   data-id="@setting.SettingId"
+                                                   data-original="@setting.SettingValue"
+                                                   value="@setting.SettingValue"
+                                                   step="@(setting.DataType == "Decimal" ? "0.01" : "1")"
+                                                   @(setting.IsEnabled ? "" : "disabled")
+                                                   placeholder="Nhập giá trị..." />
+                                        }
+                                        else if (setting.SettingKey.Contains("TIME"))
+                                        {
+                                            <input type="time" class="input-custom setting-input"
+                                                   data-key="@setting.SettingKey"
+                                                   data-id="@setting.SettingId"
+                                                   data-original="@setting.SettingValue"
+                                                   value="@setting.SettingValue"
+                                                   @(setting.IsEnabled ? "" : "disabled")
+                                                   placeholder="Nhập giá trị..." />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="input-custom setting-input"
+                                                   data-key="@setting.SettingKey"
+                                                   data-id="@setting.SettingId"
+                                                   data-original="@setting.SettingValue"
+                                                   value="@setting.SettingValue"
+                                                   @(setting.IsEnabled ? "" : "disabled")
+                                                   placeholder="Nhập giá trị..." />
+                                        }
+                                    </div>
+
+                                    <div class="btn-group-actions">
+                                        <button class="btn-custom btn-toggle @(setting.IsEnabled ? "enabled" : "disabled")"
+                                                onclick="toggleSettingStatus(@setting.SettingId, '@setting.SettingKey')">
+                                            <i class="fas @(setting.IsEnabled ? "fa-toggle-on" : "fa-toggle-off")"></i>
+                                            @(setting.IsEnabled ? "Đang Bật" : "Đang Tắt")
+                                        </button>
+                                        <button class="btn-custom btn-edit" 
+                                                onclick='openEditModal(@setting.SettingId, "@setting.SettingKey", "@setting.SettingValue", "@setting.Description", "@setting.DataType", "@setting.Category", "")'>
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </button>
+                                        <button class="btn-custom btn-delete" 
+                                                onclick="moveToTrash(@setting.SettingId)">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
             </div>
-        </div> <!-- end layout-editor-tab -->
-    </div> <!-- end tab-content -->
-</div> <!-- end settings-container -->
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetApplyMethodText(string method)
+    {
+        return method switch
+        {
+            "BASE" => "Lương cơ bản",
+            "FIXED_MONTHLY" => "Cộng cố định mỗi tháng",
+            "PER_WORKDAY" => "Cộng theo số ngày làm việc",
+            "MULTIPLIER" => "Hệ số nhân",
+            "PER_LATE_INSTANCE" => "Trừ theo số lần đi trễ",
+            "PERCENT_DEDUCTION" => "Trừ theo phần trăm",
+            "CONDITIONAL" => "Theo điều kiện đặc biệt",
+            _ => method ?? "Không xác định"
+        };
+    }
+}
+
+<!-- CREATE MODAL -->
+<div class="modal fade modal-custom" id="createModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus"></i> Thêm Cấu Hình Mới
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm">
+                    <input type="hidden" id="createCategoryHidden">
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-file-signature"></i> 
+                                    Tên Cấu Hình <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control-custom" id="createDescription"
+                                       placeholder="VD: Phụ cấp ăn trưa"
+                                       onblur="autoGenerateKey()">
+                                <div class="form-help-text">
+                                    <i class="fas fa-info-circle"></i> Nhập tên mô tả cho cấu hình
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-layer-group"></i> Danh Mục
+                                </label>
+                                <select class="form-control-custom" id="createCategory">
+                                    <option value="Salary">💰 Lương</option>
+                                    <option value="Attendance">🕐 Chấm Công</option>
+                                    <option value="General">⚙️ Chung</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">
+                            <i class="fas fa-key"></i> Key (Tự Động Tạo)
+                        </label>
+                        <div class="input-group">
+                            <input type="text" class="form-control-custom" id="createKey"
+                                   readonly style="background-color: #f3f4f6; font-family: 'Courier New', monospace; font-weight: bold;">
+                            <button class="btn btn-custom btn-edit" type="button" onclick="autoGenerateKey()" style="margin-left: 10px;">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                        <div class="form-help-text" id="keyStatus"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-money-bill"></i> 
+                                    Giá Trị <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control-custom" id="createValue"
+                                       placeholder="VD: 500000" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-database"></i> Loại Dữ Liệu
+                                </label>
+                                <select class="form-control-custom" id="createDataType">
+                                    <option value="String">Text</option>
+                                    <option value="Number">Số Nguyên</option>
+                                    <option value="Decimal" selected>Số Thập Phân</option>
+                                    <option value="Boolean">Boolean</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom" id="applyMethodGroup">
+                        <label class="form-label-custom">
+                            <i class="fas fa-cogs"></i> Cách Áp Dụng (Cho Lương)
+                        </label>
+                        
+                        <div class="apply-method-selector">
+                            <label class="method-option">
+                                <input type="radio" name="applyMethod" value="FIXED_MONTHLY">
+                                <div>
+                                    <div class="method-title">💰 Cố định mỗi tháng</div>
+                                    <div class="method-description">Cộng số tiền cố định vào lương mỗi tháng (VD: Phụ cấp đi lại 300,000₫/tháng)</div>
+                                </div>
+                            </label>
+
+                            <label class="method-option">
+                                <input type="radio" name="applyMethod" value="PER_WORKDAY">
+                                <div>
+                                    <div class="method-title">📅 Theo ngày làm việc</div>
+                                    <div class="method-description">Cộng theo số ngày đi làm thực tế (VD: Phụ cấp ăn trưa 30,000₫ × số ngày)</div>
+                                </div>
+                            </label>
+
+                            <label class="method-option">
+                                <input type="radio" name="applyMethod" value="MULTIPLIER">
+                                <div>
+                                    <div class="method-title">✖️ Hệ số nhân</div>
+                                    <div class="method-description">Nhân với lương cơ bản (VD: Thưởng 10% = nhập 10)</div>
+                                </div>
+                            </label>
+
+                            <label class="method-option">
+                                <input type="radio" name="applyMethod" value="PER_LATE_INSTANCE">
+                                <div>
+                                    <div class="method-title">⚠️ Trừ theo lần đi trễ</div>
+                                    <div class="method-description">Trừ tiền theo số lần đi muộn (VD: 20,000₫ × số lần trễ)</div>
+                                </div>
+                            </label>
+
+                            <label class="method-option">
+                                <input type="radio" name="applyMethod" value="PERCENT_DEDUCTION">
+                                <div>
+                                    <div class="method-title">📉 Trừ theo phần trăm</div>
+                                    <div class="method-description">Trừ % lương cơ bản (VD: Bảo hiểm 8%)</div>
+                                </div>
+                            </label>
+
+                            <label class="method-option">
+                                <input type="radio" name="applyMethod" value="CONDITIONAL">
+                                <div>
+                                    <div class="method-title">🎯 Theo điều kiện</div>
+                                    <div class="method-description">Áp dụng khi đủ điều kiện (VD: Thưởng chuyên cần khi đủ 26 ngày)</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom" id="conditionalDescGroup" style="display: none;">
+                        <label class="form-label-custom">
+                            <i class="fas fa-file-alt"></i> Mô tả điều kiện
+                        </label>
+                        <textarea class="form-control-custom" id="createConditionalDesc" rows="3"
+                                  placeholder="VD: Áp dụng khi đi làm đủ 26 ngày và không đi trễ lần nào"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-custom btn-add" onclick="createSetting()">
+                    <i class="fas fa-save"></i> Tạo Cấu Hình
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal fade modal-custom" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit"></i> Chỉnh Sửa Cấu Hình
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editId">
+                    
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">
+                            <i class="fas fa-key"></i> Setting Key <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control-custom" id="editKey" required>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">
+                            <i class="fas fa-file-signature"></i> Tên Cấu Hình
+                        </label>
+                        <input type="text" class="form-control-custom" id="editDescription">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-money-bill"></i> Giá Trị
+                                </label>
+                                <input type="text" class="form-control-custom" id="editValue">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group-custom">
+                                <label class="form-label-custom">
+                                    <i class="fas fa-database"></i> Loại Dữ Liệu
+                                </label>
+                                <select class="form-control-custom" id="editDataType">
+                                    <option value="String">String</option>
+                                    <option value="Number">Number</option>
+                                    <option value="Decimal">Decimal</option>
+                                    <option value="Boolean">Boolean</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">
+                            <i class="fas fa-layer-group"></i> Danh Mục
+                        </label>
+                        <select class="form-control-custom" id="editCategory">
+                            <option value="Salary">Salary</option>
+                            <option value="Attendance">Attendance</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">
+                            <i class="fas fa-cogs"></i> Cách Áp Dụng
+                        </label>
+                        <select class="form-control-custom" id="editApplyMethod">
+                            <option value="">-- Không áp dụng --</option>
+                            <option value="BASE">BASE - Lương cơ bản</option>
+                            <option value="FIXED_MONTHLY">FIXED_MONTHLY - Cố định mỗi tháng</option>
+                            <option value="PER_WORKDAY">PER_WORKDAY - Theo ngày làm việc</option>
+                            <option value="MULTIPLIER">MULTIPLIER - Hệ số nhân</option>
+                            <option value="PER_LATE_INSTANCE">PER_LATE_INSTANCE - Trừ theo lần trễ</option>
+                            <option value="PERCENT_DEDUCTION">PERCENT_DEDUCTION - Trừ theo %</option>
+                            <option value="CONDITIONAL">CONDITIONAL - Theo điều kiện</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-custom btn-edit" onclick="editSetting()">
+                    <i class="fas fa-save"></i> Cập Nhật
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TRASH MODAL -->
+<div class="modal fade modal-custom" id="trashModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--warning);">
+                <h5 class="modal-title">
+                    <i class="fas fa-trash"></i> Thùng Rác
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="background: #f9fafb;">
+                            <tr>
+                                <th>Key</th>
+                                <th>Tên</th>
+                                <th>Giá Trị</th>
+                                <th>Danh Mục</th>
+                                <th width="200">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trashTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         let modifiedSettings = new Set();
         let originalValues = {};
-        let monacoEditors = {}; // reserved for any additional editors if needed
-        let layoutEditor;
-        let currentLayoutType = 'admin';
-        let layoutEditorInitialized = false;
 
         $(document).ready(function() {
-            initializeRegularInputs();
-            initializeColorPickers();
-            loadHolidays();
+            initializeInputs();
+            loadTrashCount();
+            initializeSearch();
+            initializeApplyMethodToggle();
         });
 
-        function initializeRegularInputs() {
-            $('[data-key]:not(.monaco-input)').each(function() {
+        function initializeInputs() {
+            $('[data-key]').each(function() {
                 const key = $(this).data('key');
                 originalValues[key] = $(this).val();
             });
 
-            $('[data-key]:not(.monaco-input)').on('change input', function() {
+            $('[data-key]').on('change input', function() {
                 const key = $(this).data('key');
                 const newValue = $(this).val();
 
@@ -873,511 +1123,761 @@
                 } else {
                     modifiedSettings.delete(key);
                     $(this).removeClass('modified');
-                    $(this).closest('.setting-card').removeClass('modified');
+                    if (modifiedSettings.size === 0) {
+                        $(this).closest('.setting-card').removeClass('modified');
+                    }
                 }
                 updateModifiedCount();
             });
         }
 
-        function initializeColorPickers() {
-            $('input[type="color"]').on('input', function() {
-                const color = $(this).val();
-                const id = $(this).data('key');
+        function initializeSearch() {
+            $('#searchSalary').on('input', function() {
+                const query = $(this).val().toLowerCase();
+                filterSettings('#salarySettingsList', query);
+            });
 
-                if (id === 'PRIMARY_COLOR') {
-                    $('#primaryColorHex').val(color);
-                    $('#primaryColorPreview').css('background', color);
-                } else if (id === 'SECONDARY_COLOR') {
-                    $('#secondaryColorHex').val(color);
-                    $('#secondaryColorPreview').css('background', color);
-                }
+            $('#searchAttendance').on('input', function() {
+                const query = $(this).val().toLowerCase();
+                filterSettings('#attendanceSettingsList', query);
             });
         }
 
-        // -------- Layout Editor (lazy Monaco init) --------
-        function ensureMonacoForLayout() {
-            return new Promise((resolve, reject) => {
-                if (layoutEditorInitialized) { resolve(); return; }
-                var script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js';
-                script.onload = function() {
-                    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
-                    require(['vs/editor/editor.main'], function () {
-                        layoutEditor = monaco.editor.create(document.getElementById('layoutEditor'), {
-                            value: '<!-- Loading... -->',
-                            language: 'html',
-                            theme: 'vs-dark',
-                            automaticLayout: true,
-                            minimap: { enabled: true },
-                            fontSize: 14,
-                            wordWrap: 'on',
-                            scrollBeyondLastLine: false,
-                            lineNumbers: 'on',
-                            renderWhitespace: 'selection',
-                            folding: true,
-                            formatOnPaste: true,
-                            formatOnType: true
-                        });
-                        layoutEditorInitialized = true;
-                        loadLayout(currentLayoutType);
-                        resolve();
-                    });
-                };
-                script.onerror = function() { reject('Không thể tải Monaco Editor.'); };
-                document.head.appendChild(script);
-            });
-        }
-
-        function toggleMainLayoutEditor(openRequested = false) {
-            const section = document.getElementById('mainLayoutEditorSection');
-            const btn = document.getElementById('toggleEditorBtn');
-            const isCollapsed = section.classList.contains('editor-collapsed');
-
-            if (isCollapsed || openRequested) {
-                section.classList.remove('editor-collapsed');
-                btn.innerHTML = '<i class="fas fa-times"></i> Close editor';
-                ensureMonacoForLayout()
-                    .then(() => setTimeout(() => layoutEditor && layoutEditor.layout(), 100))
-                    .catch(err => Swal.fire('Lỗi', String(err), 'error'));
-            } else {
-                section.classList.add('editor-collapsed');
-                btn.innerHTML = '<i class="fas fa-pencil-alt"></i> Edit';
-            }
-        }
-
-        function loadLayout(layoutType) {
-            currentLayoutType = layoutType;
-            $('#btnSelectAdmin').toggleClass('active', layoutType === 'admin');
-            $('#btnSelectStaff').toggleClass('active', layoutType === 'staff');
-
-            Swal.fire({ title: 'Đang tải...', html: 'Vui lòng đợi', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-            fetch(`/Settings/GetLayoutContent?layoutType=${layoutType}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (layoutEditor) {
-                            layoutEditor.setValue(data.content);
-                            layoutEditor.layout();
-                        }
-                        $('#currentLayoutFileName').text(data.fileName);
-                        $('#currentLayoutInfo').text(`Last modified: ${data.lastModified}`);
-                        Swal.close();
-                        Swal.fire({ icon: 'success', title: 'Đã tải', text: data.fileName, timer: 900, showConfirmButton: false });
-                    } else {
-                        Swal.fire('Lỗi', data.message, 'error');
-                    }
-                })
-                .catch(() => Swal.fire('Lỗi', 'Không thể tải layout file!', 'error'));
-        }
-
-        function saveLayoutFile() {
-            if (!layoutEditor) {
-                Swal.fire('Thông báo', 'Nhấn Edit để mở editor trước khi lưu.', 'info');
-                return;
-            }
-            const content = layoutEditor.getValue();
-
-            Swal.fire({
-                title: 'Xác nhận lưu?',
-                html: `<strong>⚠️ CHÚ Ý:</strong> Ghi đè file layout! Backup tự động sẽ được tạo.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-save"></i> Lưu',
-                cancelButtonText: 'Hủy',
-                confirmButtonColor: '#28a745'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-
-                Swal.fire({ title: 'Đang lưu...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-                fetch('/Settings/SaveLayoutFile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ layoutType: currentLayoutType, content })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({ icon: 'success', title: 'Đã lưu!', text: data.message, confirmButtonText: 'OK' })
-                            .then(() => loadBackupList());
-                    } else {
-                        Swal.fire('Lỗi', data.message, 'error');
-                    }
-                })
-                .catch(() => Swal.fire('Lỗi', 'Không thể lưu file!', 'error'));
-            });
-        }
-
-        function formatLayoutCode() {
-            if (!layoutEditor) {
-                Swal.fire('Thông báo', 'Nhấn Edit để mở editor trước khi format.', 'info');
-                return;
-            }
-            layoutEditor.getAction('editor.action.formatDocument').run();
-            Swal.fire({ icon: 'success', title: 'Formatted!', timer: 800, showConfirmButton: false });
-        }
-
-        function copyLayoutSource() {
-            if (!layoutEditor) {
-                Swal.fire('Thông báo', 'Nhấn Edit để mở editor trước khi copy.', 'info');
-                return;
-            }
-            const code = layoutEditor.getValue();
-            navigator.clipboard.writeText(code)
-                .then(() => Swal.fire({ icon: 'success', title: 'Đã copy', timer: 900, showConfirmButton: false }))
-                .catch(() => Swal.fire('Lỗi', 'Không thể copy vào clipboard.', 'error'));
-        }
-
-        function importTxtAppend(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (!layoutEditor) {
-                Swal.fire('Thông báo', 'Nhấn Edit để mở editor trước khi import.', 'info');
-                e.target.value = '';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const content = evt.target.result || '';
-                const current = layoutEditor.getValue();
-                const merged = current + '\n\n' + content;
-                layoutEditor.setValue(merged);
-                layoutEditor.layout();
-                Swal.fire({ icon: 'success', title: 'Đã chèn code', timer: 900, showConfirmButton: false });
-                e.target.value = '';
-            };
-            reader.onerror = function() {
-                Swal.fire('Lỗi', 'Không thể đọc file .txt', 'error');
-                e.target.value = '';
-            };
-            reader.readAsText(file, 'utf-8');
-        }
-
-        function loadBackupList() {
-            fetch('/Settings/GetBackupFiles')
-                .then(r => r.json())
-                .then(data => {
-                    if (!data.success) return;
-                    const tbody = $('#backupListBody');
-                    tbody.empty();
-
-                    if (!data.backups || data.backups.length === 0) {
-                        tbody.append(`
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-4">
-                                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                    Chưa có backup
-                                </td>
-                            </tr>
-                        `);
-                        return;
-                    }
-
-                    data.backups.forEach((backup, index) => {
-                        const sizeKB = (backup.size / 1024).toFixed(2);
-                        const layoutBadge = backup.layoutType === 'admin'
-                            ? '<span class="badge bg-primary">Admin</span>'
-                            : '<span class="badge bg-success">Staff</span>';
-
-                        tbody.append(`
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td><small>${backup.fileName}</small></td>
-                                <td>${layoutBadge}</td>
-                                <td>${sizeKB} KB</td>
-                                <td>${backup.created}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-info" onclick="restoreBackup('${backup.fileName}')">
-                                        <i class="fas fa-undo"></i> Restore
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="moveBackupToTrash('${backup.fileName}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `);
-                    });
-                })
-                .catch(err => console.error('Error:', err));
-        }
-
-        function restoreBackup(backupFileName) {
-            Swal.fire({
-                title: 'Restore backup?',
-                html: `Restore từ:<br><strong>${backupFileName}</strong>`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Restore',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-                fetch('/Settings/RestoreFromBackup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ backupFileName })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Thành công!', data.message, 'success')
-                            .then(() => { if (layoutEditorInitialized && layoutEditor) loadLayout(currentLayoutType); });
-                    } else {
-                        Swal.fire('Lỗi', data.message, 'error');
-                    }
-                });
-            });
-        }
-
-        // Move backup to Trash (requires corresponding controller endpoint: MoveBackupToTrash)
-        function moveBackupToTrash(backupFileName) {
-            Swal.fire({
-                title: 'Chuyển vào thùng rác?',
-                text: 'Có thể khôi phục từ Trash sau này.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Chuyển',
-                cancelButtonText: 'Hủy',
-                confirmButtonColor: '#dc3545'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-                fetch('/Settings/MoveBackupToTrash', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ backupFileName })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Đã chuyển!', '', 'success');
-                        loadBackupList();
-                    } else {
-                        Swal.fire('Lỗi', data.message, 'error');
-                    }
-                })
-                .catch(() => Swal.fire('Lỗi', 'Không thể chuyển vào thùng rác!', 'error'));
-            });
-        }
-
-        // Keep Monaco sized properly
-        $(window).on('resize', function() {
-            if (layoutEditorInitialized && layoutEditor) layoutEditor.layout();
-            Object.values(monacoEditors).forEach(editor => editor.layout && editor.layout());
-        });
-        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
-            setTimeout(function() {
-                if (layoutEditorInitialized && layoutEditor) layoutEditor.layout();
-                Object.values(monacoEditors).forEach(editor => editor.layout && editor.layout());
-            }, 100);
-        });
-
-        // -------- Holidays --------
-        let holidays = [];
-        function loadHolidays() {
-            const stored = localStorage.getItem('system_holidays');
-            holidays = stored ? JSON.parse(stored) : [];
-            renderHolidaysTable();
-            updateHolidaysCount();
-        }
-        function saveHolidays() {
-            localStorage.setItem('system_holidays', JSON.stringify(holidays));
-            updateHolidaysCount();
-        }
-        function renderHolidaysTable() {
-            const tbody = $('#holidaysTableBody');
-            tbody.empty();
-
-            if (holidays.length === 0) {
-                tbody.append(`
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            <i class="fas fa-inbox fa-3x mb-2 d-block"></i>
-                            Chưa có ngày lễ nào
-                        </td>
-                    </tr>
-                `);
-                return;
-            }
-
-            holidays.forEach((holiday, index) => {
-                const dateObj = new Date(holiday.date);
-                const formattedDate = dateObj.toLocaleDateString('vi-VN', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                });
-
-                tbody.append(`
-                    <tr class="holiday-row">
-                        <td class="text-center">${index + 1}</td>
-                        <td><strong>${formattedDate}</strong></td>
-                        <td>${holiday.name}</td>
-                        <td><span class="badge badge-multiplier bg-success">x${holiday.multiplier}</span></td>
-                        <td><span class="badge badge-${holiday.type.toLowerCase()}">${holiday.type}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="deleteHoliday(${holiday.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `);
-            });
-        }
-        function deleteHoliday(id) {
-            Swal.fire({
-                title: 'Xác nhận xóa?', icon: 'warning',
-                showCancelButton: true, confirmButtonText: 'Xóa', cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-                holidays = holidays.filter(h => h.id !== id);
-                saveHolidays();
-                renderHolidaysTable();
-                Swal.fire('Đã xóa!', '', 'success');
-            });
-        }
-        function updateHolidaysCount() {
-            $('#holidaysCount').text(holidays.length);
-            $('#holidaysStatCount').text(holidays.length);
-        }
-        $('#formAddHoliday').on('submit', function(e) {
-            e.preventDefault();
-            const holiday = {
-                id: Date.now(),
-                date: $('#holidayDate').val(),
-                name: $('#holidayName').val(),
-                multiplier: parseFloat($('#salaryMultiplier').val()),
-                type: $('#holidayType').val()
-            };
-            if (holidays.some(h => h.date === holiday.date)) {
-                Swal.fire('Cảnh báo', 'Ngày này đã tồn tại!', 'warning');
-                return;
-            }
-            holidays.push(holiday);
-            holidays.sort((a, b) => new Date(a.date) - new Date(b.date));
-            saveHolidays();
-            renderHolidaysTable();
-            Swal.fire({ icon: 'success', title: 'Thành công!', text: 'Đã thêm ngày lễ', timer: 1200, showConfirmButton: false });
-            this.reset();
-        });
-
-        // -------- Import/Export/Reset --------
-        function uploadLogo(input) {
-            const file = input.files[0];
-            if (!file) return;
-            Swal.fire({ title: 'Đang upload...', html: 'Vui lòng đợi', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-            const formData = new FormData(); formData.append('file', file);
-            fetch('/Settings/UploadLogo', { method: 'POST', body: formData })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    $('#logoPreview').attr('src', data.logoUrl);
-                    $('[data-key="LOGO_URL"]').val(data.logoUrl);
-                    Swal.fire({ icon: 'success', title: 'Upload thành công!', text: 'Logo đã được cập nhật', timer: 1500 });
+        function filterSettings(container, query) {
+            $(container + ' .setting-card').each(function() {
+                const key = $(this).data('key').toLowerCase();
+                const text = $(this).text().toLowerCase();
+                
+                if (key.includes(query) || text.includes(query)) {
+                    $(this).fadeIn();
                 } else {
-                    Swal.fire('Lỗi', data.message, 'error');
+                    $(this).fadeOut();
                 }
-            })
-            .catch(() => Swal.fire('Lỗi', 'Không thể upload logo!', 'error'));
-            input.value = '';
-        }
-
-        function importSettings(input) {
-            const file = input.files[0];
-            if (!file) return;
-            Swal.fire({ title: 'Đang import...', html: 'Vui lòng đợi', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-            const formData = new FormData(); formData.append('file', file);
-            fetch('/Settings/ImportSettings', { method: 'POST', body: formData })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Thành công!', text: data.message, confirmButtonText: 'Reload' })
-                        .then(() => location.reload());
-                } else {
-                    Swal.fire('Lỗi', data.message, 'error');
-                }
-            })
-            .catch(() => Swal.fire('Lỗi', 'Không thể import file!', 'error'));
-            input.value = '';
-        }
-
-        function resetToDefault() {
-            Swal.fire({
-                title: 'Xác nhận Reset?',
-                html: '<strong>CẢNH BÁO:</strong> Tất cả cấu hình sẽ về mặc định!<br>Bạn có chắc chắn?',
-                icon: 'warning', showCancelButton: true,
-                confirmButtonText: 'Reset', cancelButtonText: 'Hủy', confirmButtonColor: '#dc3545'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-                fetch('/Settings/ResetToDefault', { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({ icon: 'success', title: 'Đã reset!', confirmButtonText: 'Reload' })
-                            .then(() => location.reload());
-                    } else {
-                        Swal.fire('Lỗi', data.message, 'error');
-                    }
-                })
-                .catch(() => Swal.fire('Lỗi', 'Không thể reset!', 'error'));
             });
         }
 
-        // Save all settings (batch)
+        function initializeApplyMethodToggle() {
+            $('input[name="applyMethod"]').on('change', function() {
+                $('.method-option').removeClass('selected');
+                $(this).closest('.method-option').addClass('selected');
+                
+                if ($(this).val() === 'CONDITIONAL') {
+                    $('#conditionalDescGroup').slideDown();
+                } else {
+                    $('#conditionalDescGroup').slideUp();
+                }
+            });
+
+            $('#createCategory').on('change', function() {
+                if ($(this).val() === 'Salary') {
+                    $('#applyMethodGroup').slideDown();
+                } else {
+                    $('#applyMethodGroup').slideUp();
+                    $('input[name="applyMethod"]').prop('checked', false);
+                    $('.method-option').removeClass('selected');
+                }
+            });
+        }
+
         function updateModifiedCount() {
             const count = modifiedSettings.size;
             $('#modifiedCount').text(count);
-            $('#modifiedCountLarge').text(count);
+            
             if (count > 0) {
                 $('#saveIndicator').fadeIn();
-                $('#btnSaveAll').removeClass('btn-success').addClass('btn-warning');
+                $('#btnSaveAll').removeClass('btn-save-all').addClass('btn-custom').css({
+                    'background': 'var(--warning)',
+                    'animation': 'pulse 2s infinite'
+                });
             } else {
                 $('#saveIndicator').fadeOut();
-                $('#btnSaveAll').removeClass('btn-warning').addClass('btn-success');
+                $('#btnSaveAll').removeClass('btn-custom').addClass('btn-save-all').css({
+                    'background': 'var(--success)',
+                    'animation': 'none'
+                });
             }
         }
 
         $('#btnSaveAll').click(function() {
             if (modifiedSettings.size === 0) {
-                Swal.fire({ icon: 'info', title: 'Không có thay đổi', text: 'Bạn chưa thay đổi gì cả!', timer: 1500 });
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Không có thay đổi',
+                    text: 'Bạn chưa thay đổi cấu hình nào!',
+                    timer: 1500
+                });
                 return;
             }
+
             const settings = [];
-            Object.keys(monacoEditors).forEach(key => {
-                const editorValue = monacoEditors[key].getValue();
-                $(`#input-${key}`).val(editorValue);
-            });
             modifiedSettings.forEach(key => {
                 const element = $(`[data-key="${key}"]`);
-                const value = element.val();
-                settings.push({ SettingKey: key, SettingValue: value });
+                settings.push({
+                    SettingKey: key,
+                    SettingValue: element.val()
+                });
             });
 
             Swal.fire({
                 title: 'Xác nhận lưu',
-                html: `Lưu <strong>${settings.length}</strong> cấu hình?`,
-                icon: 'question', showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-save"></i> Lưu', cancelButtonText: 'Hủy',
-                confirmButtonColor: '#28a745', cancelButtonColor: '#6c757d'
-            }).then((result) => { if (result.isConfirmed) saveSettings(settings); });
+                html: `Lưu <strong>${settings.length}</strong> cấu hình đã thay đổi?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-save"></i> Lưu',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: 'var(--success)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    saveSettings(settings);
+                }
+            });
         });
 
         function saveSettings(settings) {
-            Swal.fire({ title: 'Đang lưu...', html: 'Vui lòng đợi', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({
+                title: 'Đang lưu...',
+                html: 'Vui lòng đợi trong giây lát',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
             fetch('/Settings/BatchUpdateSettings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settings)
             })
-            .then(r => { if (!r.ok) throw new Error('Network error'); return r.json(); })
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Thành công!', text: data.message || 'Đã lưu cấu hình!', timer: 1500, showConfirmButton: false })
-                        .then(() => location.reload());
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message,
+                        timer: 1500
+                    }).then(() => location.reload());
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Có lỗi xảy ra khi lưu!' });
+                    Swal.fire('Lỗi', data.message, 'error');
                 }
             })
-            .catch(() => Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối đến server!' }));
+            .catch(() => Swal.fire('Lỗi', 'Không thể kết nối server!', 'error'));
+        }
+
+        function autoGenerateKey() {
+            const description = $('#createDescription').val();
+            if (!description) {
+                $('#keyStatus').html('');
+                return;
+            }
+
+            const category = $('#createCategory').val();
+            const applyMethod = $('input[name="applyMethod"]:checked').val();
+
+            fetch('/Settings/GenerateKey', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    description: description,
+                    applyMethod: applyMethod
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    $('#createKey').val(data.key);
+                    if (data.exists) {
+                        $('#keyStatus').html('<i class="fas fa-exclamation-triangle text-warning"></i> Key này đã tồn tại!');
+                    } else {
+                        $('#keyStatus').html('<i class="fas fa-check-circle text-success"></i> Key sẵn sàng');
+                    }
+                }
+            });
+        }
+
+        function openCreateModal(category = 'Salary') {
+            $('#createForm')[0].reset();
+            $('#createCategoryHidden').val(category);
+            $('#createCategory').val(category);
+            $('#keyStatus').html('');
+            $('.method-option').removeClass('selected');
+            $('input[name="applyMethod"]').prop('checked', false);
+            $('#conditionalDescGroup').hide();
+            
+            if (category === 'Salary') {
+                $('#applyMethodGroup').show();
+            } else {
+                $('#applyMethodGroup').hide();
+            }
+            
+            $('#createModal').modal('show');
+        }
+
+        function createSetting() {
+            const key = $('#createKey').val();
+            const value = $('#createValue').val();
+            const description = $('#createDescription').val();
+            const dataType = $('#createDataType').val();
+            const category = $('#createCategory').val();
+            const applyMethod = $('input[name="applyMethod"]:checked').val() || null;
+
+            if (!key || !value || !description) {
+                Swal.fire('Lỗi', 'Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Xác nhận tạo?',
+                html: `<strong>${description}</strong><br><code>${key}</code>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Tạo',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang tạo...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    fetch('/Settings/CreateSetting', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            SettingKey: key,
+                            SettingValue: value,
+                            Description: description,
+                            DataType: dataType,
+                            Category: category,
+                            ApplyMethod: applyMethod
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                timer: 1500
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire('Lỗi', data.message, 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function toggleSettingStatus(settingId, settingKey) {
+            Swal.fire({
+                title: 'Thay đổi trạng thái?',
+                text: `Thiết lập: ${settingKey}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Thay đổi',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang cập nhật...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    fetch('/Settings/ToggleSettingStatus', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ SettingId: settingId })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message,
+                                timer: 1500
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire('Lỗi', data.message, 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function openEditModal(id, key, value, desc, dataType, category, applyMethod) {
+            $('#editId').val(id);
+            $('#editKey').val(key);
+            $('#editValue').val(value);
+            $('#editDescription').val(desc);
+            $('#editDataType').val(dataType);
+            $('#editCategory').val(category);
+            $('#editApplyMethod').val(applyMethod || '');
+            $('#editModal').modal('show');
+        }
+
+        function editSetting() {
+            const data = {
+                SettingId: parseInt($('#editId').val()),
+                SettingKey: $('#editKey').val(),
+                SettingValue: $('#editValue').val(),
+                Description: $('#editDescription').val(),
+                DataType: $('#editDataType').val(),
+                Category: $('#editCategory').val(),
+                ApplyMethod: $('#editApplyMethod').val()
+            };
+
+            Swal.fire({
+                title: 'Đang cập nhật...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch('/Settings/EditSetting', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đã cập nhật!',
+                        timer: 1500
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Lỗi', data.message, 'error');
+                }
+            });
+        }
+
+        function moveToTrash(id) {
+            Swal.fire({
+                title: 'Chuyển vào thùng rác?',
+                text: 'Bạn có thể khôi phục sau!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: 'var(--danger)'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                fetch('/Settings/MoveToTrash', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `id=${id}`
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã xóa!',
+                            timer: 1500
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire('Lỗi', data.message, 'error');
+                    }
+                });
+            });
+        }
+
+        function openTrashModal() {
+            fetch('/Settings/GetTrashList')
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = $('#trashTableBody');
+                    tbody.empty();
+
+                    if (!data.data || data.data.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Thùng rác trống</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                    } else {
+                        data.data.forEach(item => {
+                            tbody.append(`
+                                <tr>
+                                    <td><code>${item.settingKey}</code></td>
+                                    <td>${item.description || '-'}</td>
+                                    <td>${item.settingValue || '-'}</td>
+                                    <td><span class="badge bg-secondary">${item.category}</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-custom btn-edit" onclick="restoreSetting(${item.settingId})" style="padding: 6px 12px;">
+                                            <i class="fas fa-undo"></i> Khôi phục
+                                        </button>
+                                        <button class="btn btn-sm btn-custom btn-delete" onclick="permanentDelete(${item.settingId})" style="padding: 6px 12px;">
+                                            <i class="fas fa-times"></i> Xóa vĩnh viễn
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                    $('#trashModal').modal('show');
+                }
+            });
+        }
+
+        function restoreSetting(id) {
+            Swal.fire({
+                title: 'Khôi phục?',
+                text: 'Cấu hình sẽ được khôi phục!',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Khôi phục',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                fetch('/Settings/RestoreSetting', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `id=${id}`
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã khôi phục!',
+                            timer: 1500
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire('Lỗi', data.message, 'error');
+                    }
+                });
+            });
+        }
+
+        function permanentDelete(id) {
+            Swal.fire({
+                title: 'XÓA VĨNH VIỄN?',
+                html: '<strong>CẢNH BÁO:</strong> Không thể khôi phục sau khi xóa!',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-trash"></i> Xóa vĩnh viễn',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#dc3545'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                fetch('/Settings/PermanentDelete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `id=${id}`
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã xóa vĩnh viễn!',
+                            timer: 1500
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire('Lỗi', data.message, 'error');
+                    }
+                });
+            });
+        }
+
+        function loadTrashCount() {
+            fetch('/Settings/GetTrashList')
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    const count = data.data.length;
+                    $('#trashCount').text(count);
+                }
+            })
+            .catch(() => console.log('Error loading trash count'));
         }
     </script>
+
+    <style>
+        keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .btn-custom:active {
+            transform: scale(0.95);
+        }
+
+        .setting-card {
+            animation: fadeIn 0.3s ease;
+        }
+
+        keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        input, select, textarea {
+            transition: all 0.3s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* Print Styles */
+        media print {
+            .settings-page {
+                background: white;
+            }
+
+            .btn-custom, .stats-grid, .settings-toolbar, .nav-tabs-custom {
+                display: none !important;
+            }
+
+            .setting-card {
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Responsive Table */
+        media (max-width: 768px) {
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+
+            .table td, .table th {
+                padding: 8px 5px;
+            }
+
+            .btn-custom {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Tooltip Enhancement */
+        [title] {
+            position: relative;
+            cursor: help;
+        }
+
+        /* Focus Styles */
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 3px solid rgba(102, 126, 234, 0.3);
+            outline-offset: 2px;
+        }
+
+        /* Error State */
+        .form-control-custom.is-invalid {
+            border-color: var(--danger);
+        }
+
+        .form-control-custom.is-invalid:focus {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Success State */
+        .form-control-custom.is-valid {
+            border-color: var(--success);
+        }
+
+        .form-control-custom.is-valid:focus {
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Badge Animations */
+        .badge {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Modal Backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Card Hover Effects */
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border-radius: 15px;
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Button Group Spacing */
+        .btn-group-actions > * {
+            flex: 1 1 auto;
+        }
+
+        /* Modal Animation */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Empty State Animation */
+        .empty-state-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Search Input Enhancement */
+        #searchSalary:focus,
+        #searchAttendance:focus {
+            width: 350px;
+        }
+
+        /* Status Badge Pulse for Modified */
+        .setting-card.modified .status-badge {
+            animation: pulse 2s infinite;
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Dark Mode Support (Optional) */
+        media (prefers-color-scheme: dark) {
+            .settings-page {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            }
+
+            .page-header,
+            .tabs-container,
+            .setting-card {
+                background: #2d2d44;
+                color: #e0e0e0;
+            }
+
+            .setting-title,
+            .form-label-custom {
+                color: #e0e0e0;
+            }
+
+            .form-control-custom,
+            .input-custom {
+                background: #3d3d5c;
+                color: #e0e0e0;
+                border-color: #4a4a6a;
+            }
+
+            .text-muted {
+                color: #a0a0b0 !important;
+            }
+        }
+
+        /* Accessibility Improvements */
+        .btn-custom:focus-visible {
+            outline: 3px solid rgba(102, 126, 234, 0.5);
+            outline-offset: 3px;
+        }
+
+        /* High Contrast Mode */
+        media (prefers-contrast: high) {
+            .setting-card {
+                border: 3px solid #000;
+            }
+
+            .btn-custom {
+                border: 2px solid #000;
+            }
+        }
+
+        /* Reduced Motion */
+        media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Print Optimization */
+        page {
+            margin: 1cm;
+        }
+
+        media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .setting-card {
+                box-shadow: none;
+            }
+        }
+    </style>
 }

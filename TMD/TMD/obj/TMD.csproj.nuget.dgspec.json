@@ -58,6 +58,10 @@
               "target": "Package",
               "version": "[0.105.0, )"
             },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            },
             "Google.Apis.Auth": {
               "target": "Package",
               "version": "[1.72.0, )"

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TMD.Models;
 using TMDSystem.Helpers;
+using TMDSystem.Services;
+using TMDSystem.Hubs; // ✅ THÊM DÒNG NÀY
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,10 @@ builder.Services.AddHttpClient();
 
 // Helper
 builder.Services.AddScoped<AuditHelper>();
+builder.Services.AddHostedService<AutoRejectRequestsService>();
+
+// ✅ SignalR
+builder.Services.AddSignalR();
 
 // QUAN TRỌNG: Cấu hình giới hạn kích thước file upload 10MB
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -60,10 +66,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(); // Cho phép truy cập file tĩnh từ wwwroot
 
 app.UseRouting();
-
 app.UseSession(); // Phải đặt trước UseAuthorization
-
 app.UseAuthorization();
+
+// ✅✅✅ THÊM DÒNG NÀY - QUAN TRỌNG NHẤT ✅✅✅
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllerRoute(
 	name: "default",
@@ -81,6 +88,7 @@ else
 	Console.WriteLine($"📁 Uploads directory exists: {uploadsPath}");
 }
 
+// ✅ THÊM LOG SIGNALR
 Console.WriteLine("╔════════════════════════════════════════════╗");
 Console.WriteLine("║     🚀 TMD SYSTEM IS RUNNING...           ║");
 Console.WriteLine("╚════════════════════════════════════════════╝");
@@ -88,6 +96,7 @@ Console.WriteLine($"📁 Upload folder: {uploadsPath}");
 Console.WriteLine("⏰ Using SERVER TIME for all attendance records");
 Console.WriteLine("🌍 Reverse Geocoding: OpenStreetMap Nominatim API");
 Console.WriteLine("📸 Max file size: 10MB (JPG, JPEG, PNG)");
+Console.WriteLine("🔔 SignalR Hub: /notificationHub"); // ✅ THÊM LOG NÀY
 Console.WriteLine("══════════════════════════════════════════════");
 
 app.Run();

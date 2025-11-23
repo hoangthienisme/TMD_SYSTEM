@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "htP1kDAn+sc3MxLu7YBPGHFYFg3fr/NJWeOTb+vWsas=",
+  "Hash": "zEPfIKWbIC67Dj67D0ibklZKfGC4NM4qdZc7nWMGQyc=",
   "Source": "TMD",
   "BasePath": "_content/TMD",
   "Mode": "Default",
@@ -939,6 +939,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\attendance-management.css"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\h7dx66gt61-meyd7kavet.gz",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "sounds/notification#[.{fingerprint=meyd7kavet}]?.wav.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.wav",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "rpfqt4cnsr",
+      "Integrity": "8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.wav"
     },
     {
       "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\hgc7j2aksy-pk9g2wxc8p.gz",
@@ -3440,6 +3461,48 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
     },
     {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.mp3",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "sounds/notification#[.{fingerprint}]?.mp3",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "5ny2l3alaq",
+      "Integrity": "H+M/lt78P0nE1rPUVmhnckE1+0aDqpcLSzJTrmMAw84=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\sounds\\notification.mp3"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.wav",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "sounds/notification#[.{fingerprint}]?.wav",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "meyd7kavet",
+      "Integrity": "bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\sounds\\notification.wav"
+    },
+    {
       "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251117_121108_checkin.jpg",
       "SourceId": "TMD",
       "SourceType": "Discovered",
@@ -3480,6 +3543,153 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\attendance\\12_20251118_142904_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_193700_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/12_20251121_193700_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "wy2dpynvpw",
+      "Integrity": "SAHBYC9+tDc2+tnJUcOKG56CSlb9MIPFliRUZubBBXs=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\12_20251121_193700_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_194138_checkout.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/12_20251121_194138_checkout#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "fbj3zjrwzc",
+      "Integrity": "i2NvHUXtk4BGQUZ4en3/f62Oos1wwhEUMh52dm3H5DI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\12_20251121_194138_checkout.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_020538_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/12_20251123_020538_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ff75q9vlxr",
+      "Integrity": "Jf2WfhfKQXK0feKyDsiEj9qd511zx3fp9PbDHP2Md3Y=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\12_20251123_020538_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_234053_checkout.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/12_20251123_234053_checkout#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "igr07pbl93",
+      "Integrity": "AuYDNJMtmswMWOo0VZxYhq/wSxe8C/9bH6gxKmODHuY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\12_20251123_234053_checkout.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\14_20251121_202839_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/14_20251121_202839_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "i5ea0yhmab",
+      "Integrity": "Jr4gHvUh7b43nrthVGUkTvZwSZs/70Udh1ogPjVafsI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\14_20251121_202839_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_210659_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/15_20251121_210659_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "5l4u1wwtia",
+      "Integrity": "udOsk/GH6KY9XiSJMUbN2KW5P1XSkLRxj2XtCvv/nSk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\15_20251121_210659_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_213522_checkout.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/15_20251121_213522_checkout#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "4vsquh48af",
+      "Integrity": "oBYNaWUy1WIWQB8490rtEEaLIRhI0xcJf4ODjfYdcbM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\15_20251121_213522_checkout.jpg"
     },
     {
       "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251116_015000_checkin.jpg",
@@ -3690,6 +3900,174 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251121_003641_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251121_193629_checkout.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251121_193629_checkout#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "0wfxtksria",
+      "Integrity": "sFvUVPEdRjw87Zt3I+CMcULMfmCA7VMvJmVDOugkz88=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251121_193629_checkout.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013310_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251123_013310_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "k5n0d4ako2",
+      "Integrity": "ONJ7hP1feeASE4ZEgYfokDH2ginCiEZqktI2jErgOJQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251123_013310_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013319_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251123_013319_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ou75coxru8",
+      "Integrity": "AI1JG6E+MvbborN6ha/IN3tDTnT047KaLooV8NUlPt0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251123_013319_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013332_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251123_013332_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b3tog6wlr5",
+      "Integrity": "R9HHJ8dt9BBNyS6nduMpXPgoNcgpNrWULyb67AdDb/g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251123_013332_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013405_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251123_013405_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8g478nw3nn",
+      "Integrity": "uGnZ9lAFN/6SVjcPadqSG6+lBAiZ6lk6MgTOsrWk1xU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251123_013405_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_021821_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251123_021821_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "qf80rohcut",
+      "Integrity": "SmqfglqlHE2LpYyKwH4r22AuEkdR9A2os3SnL7cUSZI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251123_021821_checkin.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_222326_checkout.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251123_222326_checkout#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "rcse8k0x30",
+      "Integrity": "9WBaoyqOhsqBWM5nua/7M7fLvZjmtyVVdXUKzlT0PW0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251123_222326_checkout.jpg"
+    },
+    {
+      "Identity": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251124_014027_checkin.jpg",
+      "SourceId": "TMD",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\",
+      "BasePath": "_content/TMD",
+      "RelativePath": "uploads/attendance/9_20251124_014027_checkin#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8em0yoylr7",
+      "Integrity": "YJNJfl0qvY9Bar+yG5jlTYk5FOUf2yKLkOUy2ffwgYs=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\attendance\\9_20251124_014027_checkin.jpg"
     }
   ],
   "Endpoints": [
@@ -7890,7 +8268,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Nov 2025 03:00:19 GMT"
+          "Value": "Sat, 22 Nov 2025 19:17:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -7943,7 +8321,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Nov 2025 03:00:19 GMT"
+          "Value": "Sat, 22 Nov 2025 19:17:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -7980,7 +8358,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Nov 2025 03:00:19 GMT"
+          "Value": "Sat, 22 Nov 2025 19:17:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -8027,7 +8405,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Nov 2025 03:00:19 GMT"
+          "Value": "Sat, 22 Nov 2025 19:17:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -8088,7 +8466,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Nov 2025 03:00:19 GMT"
+          "Value": "Sat, 22 Nov 2025 19:17:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -8133,7 +8511,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Nov 2025 03:00:19 GMT"
+          "Value": "Sat, 22 Nov 2025 19:17:52 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27318,6 +27696,386 @@
       ]
     },
     {
+      "Route": "sounds/notification.5ny2l3alaq.mp3",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.mp3",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "32852"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/mpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"H+M/lt78P0nE1rPUVmhnckE1+0aDqpcLSzJTrmMAw84=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:24:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "5ny2l3alaq"
+        },
+        {
+          "Name": "label",
+          "Value": "sounds/notification.mp3"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-H+M/lt78P0nE1rPUVmhnckE1+0aDqpcLSzJTrmMAw84="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.meyd7kavet.wav",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\h7dx66gt61-meyd7kavet.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000004832459"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "206933"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:55:55 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/wav"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "meyd7kavet"
+        },
+        {
+          "Name": "label",
+          "Value": "sounds/notification.wav"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.meyd7kavet.wav",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.wav",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "352878"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/wav"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:55:55 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "meyd7kavet"
+        },
+        {
+          "Name": "label",
+          "Value": "sounds/notification.wav"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.meyd7kavet.wav.gz",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\h7dx66gt61-meyd7kavet.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "206933"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/wav"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:55:55 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "meyd7kavet"
+        },
+        {
+          "Name": "label",
+          "Value": "sounds/notification.wav.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.mp3",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.mp3",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "32852"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/mpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"H+M/lt78P0nE1rPUVmhnckE1+0aDqpcLSzJTrmMAw84=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:24:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-H+M/lt78P0nE1rPUVmhnckE1+0aDqpcLSzJTrmMAw84="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.wav",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\h7dx66gt61-meyd7kavet.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000004832459"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "206933"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:55:55 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/wav"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.wav",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\sounds\\notification.wav",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "352878"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/wav"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:55:55 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bobkrB4xwap/lYlWR1zWKnzI/0cjKARyWwYWPiiRjbQ="
+        }
+      ]
+    },
+    {
+      "Route": "sounds/notification.wav.gz",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\h7dx66gt61-meyd7kavet.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "206933"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "audio/wav"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:55:55 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-8eCmTNMgIjPTYa/ONSlqINBDCFPxiDHq8sbsZBhrb+c="
+        }
+      ]
+    },
+    {
       "Route": "TMD.bundle.scp.css",
       "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\obj\\Debug\\net9.0\\compressed\\nzs1moicdq-sylsvlrxnc.gz",
       "Selectors": [
@@ -27342,7 +28100,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27395,7 +28153,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27432,7 +28190,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27479,7 +28237,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27532,7 +28290,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27569,7 +28327,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27616,7 +28374,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27677,7 +28435,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27722,7 +28480,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27777,7 +28535,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27838,7 +28596,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -27883,7 +28641,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 19 Nov 2025 19:09:26 GMT"
+          "Value": "Sun, 23 Nov 2025 15:15:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -28074,6 +28832,580 @@
         {
           "Name": "integrity",
           "Value": "sha256-/QAFB2hZavoFcRsH5rDRjF9DfIcdMxqOalQHSPmptoU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251121_193700_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_193700_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "141711"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SAHBYC9+tDc2+tnJUcOKG56CSlb9MIPFliRUZubBBXs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 12:37:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-SAHBYC9+tDc2+tnJUcOKG56CSlb9MIPFliRUZubBBXs="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251121_193700_checkin.wy2dpynvpw.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_193700_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "141711"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SAHBYC9+tDc2+tnJUcOKG56CSlb9MIPFliRUZubBBXs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 12:37:00 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "wy2dpynvpw"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/12_20251121_193700_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-SAHBYC9+tDc2+tnJUcOKG56CSlb9MIPFliRUZubBBXs="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251121_194138_checkout.fbj3zjrwzc.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_194138_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "141210"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"i2NvHUXtk4BGQUZ4en3/f62Oos1wwhEUMh52dm3H5DI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 12:41:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fbj3zjrwzc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/12_20251121_194138_checkout.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-i2NvHUXtk4BGQUZ4en3/f62Oos1wwhEUMh52dm3H5DI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251121_194138_checkout.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251121_194138_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "141210"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"i2NvHUXtk4BGQUZ4en3/f62Oos1wwhEUMh52dm3H5DI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 12:41:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-i2NvHUXtk4BGQUZ4en3/f62Oos1wwhEUMh52dm3H5DI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251123_020538_checkin.ff75q9vlxr.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_020538_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "87925"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Jf2WfhfKQXK0feKyDsiEj9qd511zx3fp9PbDHP2Md3Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 19:05:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ff75q9vlxr"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/12_20251123_020538_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Jf2WfhfKQXK0feKyDsiEj9qd511zx3fp9PbDHP2Md3Y="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251123_020538_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_020538_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "87925"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Jf2WfhfKQXK0feKyDsiEj9qd511zx3fp9PbDHP2Md3Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 19:05:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Jf2WfhfKQXK0feKyDsiEj9qd511zx3fp9PbDHP2Md3Y="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251123_234053_checkout.igr07pbl93.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_234053_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "112377"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"AuYDNJMtmswMWOo0VZxYhq/wSxe8C/9bH6gxKmODHuY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 16:40:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "igr07pbl93"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/12_20251123_234053_checkout.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-AuYDNJMtmswMWOo0VZxYhq/wSxe8C/9bH6gxKmODHuY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/12_20251123_234053_checkout.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\12_20251123_234053_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "112377"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"AuYDNJMtmswMWOo0VZxYhq/wSxe8C/9bH6gxKmODHuY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 16:40:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-AuYDNJMtmswMWOo0VZxYhq/wSxe8C/9bH6gxKmODHuY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/14_20251121_202839_checkin.i5ea0yhmab.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\14_20251121_202839_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "127172"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Jr4gHvUh7b43nrthVGUkTvZwSZs/70Udh1ogPjVafsI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 13:28:39 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "i5ea0yhmab"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/14_20251121_202839_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Jr4gHvUh7b43nrthVGUkTvZwSZs/70Udh1ogPjVafsI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/14_20251121_202839_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\14_20251121_202839_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "127172"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Jr4gHvUh7b43nrthVGUkTvZwSZs/70Udh1ogPjVafsI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 13:28:39 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Jr4gHvUh7b43nrthVGUkTvZwSZs/70Udh1ogPjVafsI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/15_20251121_210659_checkin.5l4u1wwtia.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_210659_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "124448"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"udOsk/GH6KY9XiSJMUbN2KW5P1XSkLRxj2XtCvv/nSk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 14:06:59 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "5l4u1wwtia"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/15_20251121_210659_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-udOsk/GH6KY9XiSJMUbN2KW5P1XSkLRxj2XtCvv/nSk="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/15_20251121_210659_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_210659_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "124448"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"udOsk/GH6KY9XiSJMUbN2KW5P1XSkLRxj2XtCvv/nSk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 14:06:59 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-udOsk/GH6KY9XiSJMUbN2KW5P1XSkLRxj2XtCvv/nSk="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/15_20251121_213522_checkout.4vsquh48af.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_213522_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "124911"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oBYNaWUy1WIWQB8490rtEEaLIRhI0xcJf4ODjfYdcbM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 14:35:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "4vsquh48af"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/15_20251121_213522_checkout.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oBYNaWUy1WIWQB8490rtEEaLIRhI0xcJf4ODjfYdcbM="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/15_20251121_213522_checkout.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\15_20251121_213522_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "124911"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oBYNaWUy1WIWQB8490rtEEaLIRhI0xcJf4ODjfYdcbM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 14:35:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oBYNaWUy1WIWQB8490rtEEaLIRhI0xcJf4ODjfYdcbM="
         }
       ]
     },
@@ -28894,6 +30226,662 @@
         {
           "Name": "integrity",
           "Value": "sha256-Qy2x1gHIAD6DdFBOXRMIybcpkyb/xEsxieStLtFUuu4="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251121_193629_checkout.0wfxtksria.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251121_193629_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "142018"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sFvUVPEdRjw87Zt3I+CMcULMfmCA7VMvJmVDOugkz88=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 12:36:29 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "0wfxtksria"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251121_193629_checkout.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sFvUVPEdRjw87Zt3I+CMcULMfmCA7VMvJmVDOugkz88="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251121_193629_checkout.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251121_193629_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "142018"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sFvUVPEdRjw87Zt3I+CMcULMfmCA7VMvJmVDOugkz88=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 12:36:29 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sFvUVPEdRjw87Zt3I+CMcULMfmCA7VMvJmVDOugkz88="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013310_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013310_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "102856"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ONJ7hP1feeASE4ZEgYfokDH2ginCiEZqktI2jErgOJQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:33:10 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ONJ7hP1feeASE4ZEgYfokDH2ginCiEZqktI2jErgOJQ="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013310_checkin.k5n0d4ako2.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013310_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "102856"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ONJ7hP1feeASE4ZEgYfokDH2ginCiEZqktI2jErgOJQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:33:10 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "k5n0d4ako2"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251123_013310_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ONJ7hP1feeASE4ZEgYfokDH2ginCiEZqktI2jErgOJQ="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013319_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013319_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "96062"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"AI1JG6E+MvbborN6ha/IN3tDTnT047KaLooV8NUlPt0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:33:19 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-AI1JG6E+MvbborN6ha/IN3tDTnT047KaLooV8NUlPt0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013319_checkin.ou75coxru8.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013319_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "96062"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"AI1JG6E+MvbborN6ha/IN3tDTnT047KaLooV8NUlPt0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:33:19 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ou75coxru8"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251123_013319_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-AI1JG6E+MvbborN6ha/IN3tDTnT047KaLooV8NUlPt0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013332_checkin.b3tog6wlr5.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013332_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "102458"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"R9HHJ8dt9BBNyS6nduMpXPgoNcgpNrWULyb67AdDb/g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:33:32 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b3tog6wlr5"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251123_013332_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-R9HHJ8dt9BBNyS6nduMpXPgoNcgpNrWULyb67AdDb/g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013332_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013332_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "102458"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"R9HHJ8dt9BBNyS6nduMpXPgoNcgpNrWULyb67AdDb/g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:33:32 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-R9HHJ8dt9BBNyS6nduMpXPgoNcgpNrWULyb67AdDb/g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013405_checkin.8g478nw3nn.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013405_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "104943"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"uGnZ9lAFN/6SVjcPadqSG6+lBAiZ6lk6MgTOsrWk1xU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:34:05 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8g478nw3nn"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251123_013405_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-uGnZ9lAFN/6SVjcPadqSG6+lBAiZ6lk6MgTOsrWk1xU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_013405_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_013405_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "104943"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"uGnZ9lAFN/6SVjcPadqSG6+lBAiZ6lk6MgTOsrWk1xU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 18:34:05 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-uGnZ9lAFN/6SVjcPadqSG6+lBAiZ6lk6MgTOsrWk1xU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_021821_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_021821_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "101547"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SmqfglqlHE2LpYyKwH4r22AuEkdR9A2os3SnL7cUSZI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 19:18:21 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-SmqfglqlHE2LpYyKwH4r22AuEkdR9A2os3SnL7cUSZI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_021821_checkin.qf80rohcut.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_021821_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "101547"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SmqfglqlHE2LpYyKwH4r22AuEkdR9A2os3SnL7cUSZI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 22 Nov 2025 19:18:21 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "qf80rohcut"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251123_021821_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-SmqfglqlHE2LpYyKwH4r22AuEkdR9A2os3SnL7cUSZI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_222326_checkout.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_222326_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "144444"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"9WBaoyqOhsqBWM5nua/7M7fLvZjmtyVVdXUKzlT0PW0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 15:23:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-9WBaoyqOhsqBWM5nua/7M7fLvZjmtyVVdXUKzlT0PW0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251123_222326_checkout.rcse8k0x30.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251123_222326_checkout.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "144444"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"9WBaoyqOhsqBWM5nua/7M7fLvZjmtyVVdXUKzlT0PW0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 15:23:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "rcse8k0x30"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251123_222326_checkout.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-9WBaoyqOhsqBWM5nua/7M7fLvZjmtyVVdXUKzlT0PW0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251124_014027_checkin.8em0yoylr7.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251124_014027_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "92889"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YJNJfl0qvY9Bar+yG5jlTYk5FOUf2yKLkOUy2ffwgYs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:40:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8em0yoylr7"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/attendance/9_20251124_014027_checkin.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-YJNJfl0qvY9Bar+yG5jlTYk5FOUf2yKLkOUy2ffwgYs="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/attendance/9_20251124_014027_checkin.jpg",
+      "AssetFile": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\uploads\\attendance\\9_20251124_014027_checkin.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "92889"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"YJNJfl0qvY9Bar+yG5jlTYk5FOUf2yKLkOUy2ffwgYs=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Nov 2025 18:40:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-YJNJfl0qvY9Bar+yG5jlTYk5FOUf2yKLkOUy2ffwgYs="
         }
       ]
     }

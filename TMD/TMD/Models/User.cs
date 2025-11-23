@@ -69,6 +69,12 @@ public partial class User
 
     public virtual ICollection<SalaryAdjustment> SalaryAdjustmentUsers { get; set; } = new List<SalaryAdjustment>();
 
+    public virtual ICollection<SalaryConfigHistory> SalaryConfigHistories { get; set; } = new List<SalaryConfigHistory>();
+
+    public virtual ICollection<SalaryConfiguration> SalaryConfigurationCreatedByNavigations { get; set; } = new List<SalaryConfiguration>();
+
+    public virtual ICollection<SalaryConfiguration> SalaryConfigurationUpdatedByNavigations { get; set; } = new List<SalaryConfiguration>();
+
     public virtual ICollection<SystemSetting> SystemSettings { get; set; } = new List<SystemSetting>();
 
     public virtual ICollection<UserSalarySetting> UserSalarySettingCreatedByNavigations { get; set; } = new List<UserSalarySetting>();

@@ -363,7 +363,7 @@
         var customCss = "";
         try
         {
-            customCss = TMDSystem.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_CSS");
+            customCss = TMD.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_CSS");
         }
         catch { }
     }
@@ -543,7 +543,7 @@
         var customJs = "";
         try
         {
-            customJs = TMDSystem.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_JS");
+            customJs = TMD.Controllers.SettingsController.GetSettingValue(_dbContext, "CUSTOM_JS");
         }
         catch { }
     }
