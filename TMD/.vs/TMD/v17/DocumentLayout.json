@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|e:\\aihub task\\tmd_system\\tmd_system\\tmd\\tmd\\views\\admin\\userlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|solutionrelative:tmd\\views\\admin\\userlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|e:\\aihub task\\tmd_system\\tmd_system\\tmd\\tmd\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|solutionrelative:tmd\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -25,10 +29,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|e:\\aihub task\\tmd_system\\tmd_system\\tmd\\tmd\\models\\usertask.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|solutionrelative:tmd\\models\\usertask.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|e:\\aihub task\\tmd_system\\tmd_system\\tmd\\tmd\\views\\admin\\userlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|solutionrelative:tmd\\views\\admin\\userlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{850C1418-9545-46EC-B535-4A4C523B78F6}|TMD\\TMD.csproj|e:\\aihub task\\tmd_system\\tmd_system\\tmd\\tmd\\controllers\\staffcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -434,7 +434,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Document",
@@ -447,18 +447,17 @@
               "ViewState": "AgIAADEEAAAAAAAAAAA5wFUEAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-18T07:08:49.731Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "AdminController.cs",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Controllers\\AdminController.cs",
               "RelativeDocumentMoniker": "TMD\\Controllers\\AdminController.cs",
               "ToolTip": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Controllers\\AdminController.cs",
               "RelativeToolTip": "TMD\\Controllers\\AdminController.cs",
-              "ViewState": "AgIAAE4LAAAAAAAAAAAswGwLAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAE4LAAAAAAAAAAA7wGwLAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-14T10:44:28.334Z",
               "IsPinned": true,
@@ -475,8 +474,7 @@
               "ViewState": "AgIAAEwHAAAAAAAAAAAmwHMHAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-15T04:28:56.236Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -508,25 +506,24 @@
               "RelativeToolTip": "TMD\\Controllers\\HomeController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-14T10:52:07.103Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T10:52:07.103Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 0,
               "Title": "UserList.cshtml",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Views\\Admin\\UserList.cshtml",
               "RelativeDocumentMoniker": "TMD\\Views\\Admin\\UserList.cshtml",
               "ToolTip": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Views\\Admin\\UserList.cshtml",
               "RelativeToolTip": "TMD\\Views\\Admin\\UserList.cshtml",
-              "ViewState": "AgIAAH0DAAAAAAAAAADwv50DAABQAAAAAAAAAA==",
+              "ViewState": "AgIAAHwDAAAAAAAAAAAkwKgDAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-11-15T05:38:01.223Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "UserTask.cs",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Models\\UserTask.cs",
               "RelativeDocumentMoniker": "TMD\\Models\\UserTask.cs",
@@ -534,12 +531,11 @@
               "RelativeToolTip": "TMD\\Models\\UserTask.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-15T04:15:21.092Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T04:15:21.092Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "User.cs",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Models\\User.cs",
               "RelativeDocumentMoniker": "TMD\\Models\\User.cs",
@@ -547,12 +543,11 @@
               "RelativeToolTip": "TMD\\Models\\User.cs",
               "ViewState": "AgIAADsAAAAAAAAAAAA2wFsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-14T18:02:43.213Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T18:02:43.213Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Task.cs",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Models\\Task.cs",
               "RelativeDocumentMoniker": "TMD\\Models\\Task.cs",
@@ -560,12 +555,11 @@
               "RelativeToolTip": "TMD\\Models\\Task.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-15T05:49:48.447Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T05:49:48.447Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Attendance.cs",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Models\\Attendance.cs",
               "RelativeDocumentMoniker": "TMD\\Models\\Attendance.cs",
@@ -573,12 +567,11 @@
               "RelativeToolTip": "TMD\\Models\\Attendance.cs",
               "ViewState": "AgIAADkAAAAAAAAAAAA2wFkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-14T10:51:14.017Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T10:51:14.017Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Department.cs",
               "DocumentMoniker": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\Models\\Department.cs",
               "RelativeDocumentMoniker": "TMD\\Models\\Department.cs",
@@ -586,8 +579,7 @@
               "RelativeToolTip": "TMD\\Models\\Department.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-15T05:00:56.484Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T05:00:56.484Z"
             },
             {
               "$type": "Document",
@@ -599,8 +591,7 @@
               "RelativeToolTip": "TMD\\Views\\Admin\\AttendanceHistory.cshtml",
               "ViewState": "AgIAADUDAAAAAAAAAAAcwGgDAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-16T07:56:05.974Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-16T07:56:05.974Z"
             },
             {
               "$type": "Document",
@@ -612,8 +603,7 @@
               "RelativeToolTip": "TMD\\Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAIQAAAAAAAAAAAAhwJEAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-14T10:45:31.528Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T10:45:31.528Z"
             },
             {
               "$type": "Document",
@@ -625,8 +615,7 @@
               "RelativeToolTip": "TMD\\Views\\Shared\\_LayoutStaff.cshtml",
               "ViewState": "AgIAACUBAAAAAAAAAAAhwDQBAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-14T10:45:42.878Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T10:45:42.878Z"
             },
             {
               "$type": "Document",
@@ -638,8 +627,7 @@
               "RelativeToolTip": "TMD\\Program.cs",
               "ViewState": "AgIAADIAAAAAAAAAAAAcwGUAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-14T10:43:03.491Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T10:43:03.491Z"
             },
             {
               "$type": "Document",
@@ -651,8 +639,7 @@
               "RelativeToolTip": "TMD\\Views\\Salary\\Index.cshtml",
               "ViewState": "AgIAAL0EAAAAAAAAAAAcwMkEAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-18T07:11:25.48Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-18T07:11:25.48Z"
             },
             {
               "$type": "Document",
@@ -664,8 +651,7 @@
               "RelativeToolTip": "TMD\\Controllers\\SalaryController.cs",
               "ViewState": "AgIAAPQCAAAAAAAAAAAgwBcDAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-18T07:08:12.813Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-18T07:08:12.813Z"
             },
             {
               "$type": "Document",
@@ -677,8 +663,7 @@
               "RelativeToolTip": "TMD\\Hubs\\NotificationHub.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAUwC0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-23T18:00:32.144Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-23T18:00:32.144Z"
             },
             {
               "$type": "Document",
@@ -690,8 +675,7 @@
               "RelativeToolTip": "TMD\\Views\\Staff\\AttendanceHistory.cshtml",
               "ViewState": "AgIAAHQBAAAAAAAAAAAAAJ8BAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-15T16:12:08.344Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T16:12:08.344Z"
             },
             {
               "$type": "Document",
@@ -703,8 +687,7 @@
               "RelativeToolTip": "TMD\\Models\\TmdContext.cs",
               "ViewState": "AgIAAOECAAAAAAAAAAAqwAwDAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-14T10:31:46.2Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-14T10:31:46.2Z"
             },
             {
               "$type": "Document",
@@ -716,8 +699,7 @@
               "RelativeToolTip": "TMD\\Views\\Admin\\PendingRequests.cshtml",
               "ViewState": "AgIAAKECAAAAAAAAAAAQwLICAABiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-19T18:35:28.27Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-19T18:35:28.27Z"
             },
             {
               "$type": "Document",
@@ -729,8 +711,7 @@
               "RelativeToolTip": "TMD\\Views\\Settings\\Index.cshtml",
               "ViewState": "AgIAAE8GAAAAAAAAAAAgwGMGAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-18T07:11:02.438Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-18T07:11:02.438Z"
             },
             {
               "$type": "Document",
@@ -742,8 +723,7 @@
               "RelativeToolTip": "TMD\\Views\\Staff\\Dashboard.cshtml",
               "ViewState": "AgIAAB0FAAAAAAAAAADwv0QFAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-15T05:13:03.35Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T05:13:03.35Z"
             },
             {
               "$type": "Document",
@@ -755,8 +735,7 @@
               "RelativeToolTip": "TMD\\Views\\Admin\\TaskList.cshtml",
               "ViewState": "AgIAABsCAAAAAAAAAAAswEcCAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-15T05:46:31.788Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T05:46:31.788Z"
             },
             {
               "$type": "Document",
@@ -768,8 +747,7 @@
               "RelativeToolTip": "TMD\\Views\\Staff\\MyTasks.cshtml",
               "ViewState": "AgIAAJwCAAAAAAAAAAAAAMcCAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-15T18:23:57.292Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-15T18:23:57.292Z"
             },
             {
               "$type": "Document",
@@ -781,8 +759,7 @@
               "RelativeToolTip": "TMD\\Services\\AutoRejectRequestService.cs",
               "ViewState": "AgIAAK0AAAAAAAAAAAAwwOcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-23T08:10:05.654Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-23T08:10:05.654Z"
             },
             {
               "$type": "Document",
@@ -794,8 +771,7 @@
               "RelativeToolTip": "TMD\\wwwroot\\css\\staff-dashboard.css",
               "ViewState": "AgIAALACAAAAAAAAAAAQwNUCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-11-17T06:26:19.078Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-17T06:26:19.078Z"
             },
             {
               "$type": "Document",
@@ -807,8 +783,7 @@
               "RelativeToolTip": "TMD\\wwwroot\\css\\tasklist-ad.css",
               "ViewState": "AgIAAHoFAAAAAAAAAAAuwKYFAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-11-16T17:01:27.248Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-16T17:01:27.248Z"
             },
             {
               "$type": "Document",
@@ -820,8 +795,7 @@
               "RelativeToolTip": "TMD\\wwwroot\\js\\admin-request.js",
               "ViewState": "AgIAAPIAAAAAAAAAAAAIwCYBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-11-20T05:00:07.512Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-20T05:00:07.512Z"
             },
             {
               "$type": "Document",
@@ -833,8 +807,7 @@
               "RelativeToolTip": "TMD\\Backups\\Layouts\\_Layout_20251119161232.cshtml",
               "ViewState": "AgIAAEwCAAAAAAAAAAAAwF0CAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-22T10:15:52.807Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-22T10:15:52.807Z"
             },
             {
               "$type": "Document",
@@ -846,8 +819,7 @@
               "RelativeToolTip": "TMD\\Models\\SystemSetting.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAC0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-22T03:06:53.578Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-22T03:06:53.578Z"
             },
             {
               "$type": "Document",
@@ -859,8 +831,7 @@
               "RelativeToolTip": "TMD\\Views\\Staff\\MyRequests.cshtml",
               "ViewState": "AgIAAAoCAAAAAAAAAAAQwDQCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-22T18:04:48.555Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-22T18:04:48.555Z"
             },
             {
               "$type": "Document",
@@ -884,8 +855,7 @@
               "RelativeToolTip": "TMD\\Backups\\Layouts\\_LayoutStaff_20251120002435.cshtml",
               "ViewState": "AgIAAAYCAAAAAAAAAAAlwCECAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-22T10:16:45.615Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-22T10:16:45.615Z"
             },
             {
               "$type": "Document",
@@ -897,8 +867,7 @@
               "RelativeToolTip": "TMD\\Backups\\Layouts\\_LayoutStaff_20251119161302.cshtml",
               "ViewState": "AgIAAAYCAAAAAAAAAAAlwCECAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-22T10:16:51.231Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-22T10:16:51.231Z"
             },
             {
               "$type": "Document",
@@ -922,8 +891,7 @@
               "RelativeToolTip": "TMD\\Models\\OvertimeRequest.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAA1wBAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-22T04:19:35.597Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-22T04:19:35.597Z"
             },
             {
               "$type": "Document",
