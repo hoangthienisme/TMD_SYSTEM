@@ -59,6 +59,8 @@ public partial class User
 
     public virtual ICollection<PasswordResetOtp> PasswordResetOtps { get; set; } = new List<PasswordResetOtp>();
 
+    public virtual ICollection<PasswordResetToken1> PasswordResetToken1s { get; set; } = new List<PasswordResetToken1>();
+
     public virtual ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
 
     public virtual Role Role { get; set; } = null!;

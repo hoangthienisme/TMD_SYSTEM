@@ -135,7 +135,28 @@
                                             <span>@(i + 1)</span>
                                         }
                                     </div>
-                                    <div class="dash-user-avatar">@performer.User.FullName?.Substring(0, 1)</div>
+
+                                    <!-- ✅ AVATAR WITH FALLBACK -->
+                                    @if (performer.HasAvatar)
+                                    {
+                                        <img src="@performer.Avatar"
+                                             class="dash-user-avatar"
+                                             alt="@performer.User.FullName"
+                                             style="object-fit: cover;"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                        <div class="dash-user-avatar"
+                                             style="display:none;background:linear-gradient(135deg,#667eea,#764ba2);color:white;justify-content:center;align-items:center;">
+                                            @performer.Initials
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="dash-user-avatar"
+                                             style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;justify-content:center;align-items:center;">
+                                            @performer.Initials
+                                        </div>
+                                    }
+
                                     <div class="dash-leaderboard-info">
                                         <div class="dash-leaderboard-name">@performer.User.FullName</div>
                                         <div class="dash-leaderboard-dept">
@@ -236,7 +257,27 @@
                                         <i class="fas fa-user-check"></i>
                                     </div>
                                     <div class="dash-user-info justify-content-center">
-                                        <div class="dash-user-avatar">@staff.User.FullName?.Substring(0, 1)</div>
+                                        <!-- ✅ AVATAR WITH FALLBACK -->
+                                        @if (staff.HasAvatar)
+                                        {
+                                            <img src="@staff.Avatar"
+                                                 class="dash-user-avatar"
+                                                 alt="@staff.User.FullName"
+                                                 style="object-fit: cover;"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                            <div class="dash-user-avatar"
+                                                 style="display:none;background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                                                @staff.Initials
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="dash-user-avatar"
+                                                 style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                                                @staff.Initials
+                                            </div>
+                                        }
+
                                         <div class="dash-user-details text-center">
                                             <div class="dash-user-name">@staff.User.FullName</div>
                                             <small class="dash-user-meta">@staff.User.Department?.DepartmentName</small>
@@ -281,7 +322,27 @@
                                         <i class="fas fa-user-clock"></i>
                                     </div>
                                     <div class="dash-user-info justify-content-center">
-                                        <div class="dash-user-avatar">@late.User.FullName?.Substring(0, 1)</div>
+                                        <!-- ✅ AVATAR WITH FALLBACK -->
+                                        @if (late.HasAvatar)
+                                        {
+                                            <img src="@late.Avatar"
+                                                 class="dash-user-avatar"
+                                                 alt="@late.User.FullName"
+                                                 style="object-fit: cover;"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                            <div class="dash-user-avatar"
+                                                 style="display:none;background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                                                @late.Initials
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="dash-user-avatar"
+                                                 style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                                                @late.Initials
+                                            </div>
+                                        }
+
                                         <div class="dash-user-details text-center">
                                             <div class="dash-user-name">@late.User.FullName</div>
                                             <small class="dash-user-meta">@late.User.Department?.DepartmentName</small>

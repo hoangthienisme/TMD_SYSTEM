@@ -148,9 +148,28 @@
                                                             @(isChecked ? "checked" : "")>
                                                             <label class="custom-control-label tm-user-label" for="user_@user.UserId">
                                                                 <div class="d-flex align-items-center">
-                                                                    <img src="@(user.Avatar ?? "/images/default-avatar.png")"
-                                                                         class="rounded-circle me-2" width="35" height="35"
-                                                                         onerror="this.src='/images/default-avatar.png'">
+                                                                    @if (!string.IsNullOrEmpty(user.Avatar) && user.Avatar != "/images/default-avatar.png")
+                                                                    {
+                                                                        <!-- Avatar có ảnh -->
+                                                                        <img src="@user.Avatar"
+                                                                             class="rounded-circle me-2"
+                                                                             width="35"
+                                                                             height="35"
+                                                                             style="object-fit: cover;"
+                                                                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                                                        <div class="avatar-placeholder rounded-circle me-2"
+                                                                             style="display:none;width:35px;height:35px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;align-items:center;justify-content:center;font-weight:700;font-size:14px;">
+                                                                            @user.FullName.Substring(0, 1).ToUpper()
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <!-- Placeholder chữ cái đầu -->
+                                                                        <div class="rounded-circle me-2"
+                                                                             style="width:35px;height:35px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">
+                                                                            @user.FullName.Substring(0, 1).ToUpper()
+                                                                        </div>
+                                                                    }
                                                                     <div>
                                                                         <strong class="d-block">@user.FullName</strong>
                                                                         <small class="tm-text-muted">@user.Username</small>
@@ -208,10 +227,24 @@
                         foreach (var ut in Model.UserTasks.OrderBy(ut => ut.User.FullName))
                         {
                             <div class="tm-user-card mb-3">
-                                <img src="@(ut.User.Avatar ?? "/images/default-avatar.png")"
-                                     class="tm-user-avatar"
-                                     onerror="this.src='/images/default-avatar.png'"
-                                     alt="@ut.User.FullName">
+                                @if (!string.IsNullOrEmpty(ut.User.Avatar) && ut.User.Avatar != "/images/default-avatar.png")
+                                {
+                                    <img src="@ut.User.Avatar"
+                                         class="tm-user-avatar"
+                                         style="object-fit: cover; width: 50px; height: 50px;"
+                                         onerror="this.style.display='none';this.parentElement.querySelector('.avatar-placeholder-sidebar').style.display='flex'">
+                                    <div class="avatar-placeholder-sidebar rounded-circle"
+                                         style="display:none;width:50px;height:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;">
+                                        @ut.User.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle"
+                                         style="width:50px;height:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;margin-right:12px;">
+                                        @ut.User.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+                                }
                                 <div class="tm-user-info">
                                     <div class="tm-user-name">@ut.User.FullName</div>
                                     <div class="tm-user-department">

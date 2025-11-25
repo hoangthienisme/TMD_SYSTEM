@@ -2,18 +2,24 @@
 using TMD.Models;
 using TMDSystem.Helpers;
 using TMDSystem.Services;
-using TMDSystem.Hubs; // ✅ THÊM DÒNG NÀY
+using TMDSystem.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// ============================================
+// 1. ADD SERVICES TO CONTAINER
+// ============================================
+
+// Controllers with Views
 builder.Services.AddControllersWithViews();
 
 // Database Context
 builder.Services.AddDbContext<TmdContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Session configuration
+// ============================================
+// 2. SESSION CONFIGURATION
+// ============================================
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromHours(8);
@@ -23,35 +29,50 @@ builder.Services.AddSession(options =>
 
 // HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-// HttpClient cho Reverse Geocoding
+// HttpClient
 builder.Services.AddHttpClient();
 
-// Helper
+// ============================================
+// 3. DEPENDENCY INJECTION
+// ============================================
+
+// Helpers
 builder.Services.AddScoped<AuditHelper>();
+
+// Services
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddHostedService<AutoRejectRequestsService>();
 
-// ✅ SignalR
+// SignalR
 builder.Services.AddSignalR();
 
-// QUAN TRỌNG: Cấu hình giới hạn kích thước file upload 10MB
+// ============================================
+// 4. CONFIGURATION SETTINGS
+// ============================================
+
+// Email Settings (appsettings.json -> EmailSettings section)
+
+
+// ============================================
+// 5. FILE UPLOAD SIZE LIMITS (10MB)
+// ============================================
+
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
-	options.MultipartBodyLengthLimit = 10_485_760; // 10MB
+	options.MultipartBodyLengthLimit = 10_485_760;
 	options.ValueLengthLimit = 10_485_760;
 });
 
-// Cấu hình Kestrel
 builder.Services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
 {
-	options.Limits.MaxRequestBodySize = 10_485_760; // 10MB
+	options.Limits.MaxRequestBodySize = 10_485_760;
 });
 
-// Cấu hình web.config cho IIS (nếu cần)
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-	serverOptions.Limits.MaxRequestBodySize = 10_485_760; // 10MB
-});
+// ============================================
+// 6. BUILD APP
+// ============================================
 
 var app = builder.Build();
 
@@ -63,40 +84,54 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Cho phép truy cập file tĩnh từ wwwroot
-
+app.UseStaticFiles();
 app.UseRouting();
-app.UseSession(); // Phải đặt trước UseAuthorization
+
+// ✅ IMPORTANT: Session must be before UseAuthorization
+app.UseSession();
 app.UseAuthorization();
 
-// ✅✅✅ THÊM DÒNG NÀY - QUAN TRỌNG NHẤT ✅✅✅
+// ============================================
+// 7. ROUTE MAPPING
+// ============================================
+
+// SignalR Hub
 app.MapHub<NotificationHub>("/notificationHub");
 
+// Default Controller Route
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Account}/{action=Login}/{id?}");
 
-// Tạo thư mục uploads nếu chưa có
+// ============================================
+// 8. CREATE UPLOADS DIRECTORY
+// ============================================
+
 var uploadsPath = Path.Combine(app.Environment.WebRootPath, "uploads", "attendance");
 if (!Directory.Exists(uploadsPath))
 {
 	Directory.CreateDirectory(uploadsPath);
 	Console.WriteLine($"✅ Created uploads directory: {uploadsPath}");
 }
-else
-{
-	Console.WriteLine($"📁 Uploads directory exists: {uploadsPath}");
-}
 
-// ✅ THÊM LOG SIGNALR
-Console.WriteLine("╔════════════════════════════════════════════╗");
-Console.WriteLine("║     🚀 TMD SYSTEM IS RUNNING...           ║");
+// ============================================
+// 9. STARTUP LOGGING
+// ============================================
+
+Console.WriteLine("\n╔════════════════════════════════════════════╗");
+Console.WriteLine("║     🚀 TMD SYSTEM IS STARTING...          ║");
 Console.WriteLine("╚════════════════════════════════════════════╝");
 Console.WriteLine($"📁 Upload folder: {uploadsPath}");
-Console.WriteLine("⏰ Using SERVER TIME for all attendance records");
-Console.WriteLine("🌍 Reverse Geocoding: OpenStreetMap Nominatim API");
+Console.WriteLine("⏰ Using SERVER TIME for attendance records");
+Console.WriteLine("🌍 Reverse Geocoding: OpenStreetMap Nominatim");
 Console.WriteLine("📸 Max file size: 10MB (JPG, JPEG, PNG)");
-Console.WriteLine("🔔 SignalR Hub: /notificationHub"); // ✅ THÊM LOG NÀY
-Console.WriteLine("══════════════════════════════════════════════");
+Console.WriteLine("🔔 SignalR Hub: /notificationHub");
+Console.WriteLine("📧 Email Service: Gmail SMTP");
+Console.WriteLine("🔐 Password Reset: OTP (3 minutes expiry)");
+Console.WriteLine("══════════════════════════════════════════════\n");
+
+// ============================================
+// 10. RUN APP
+// ============================================
 
 app.Run();

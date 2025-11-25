@@ -80,6 +80,7 @@ namespace TMDSystem.Controllers
 				? Math.Round((double)ViewBag.OnTimeCount / monthlyAttendances.Count * 100, 1)
 				: 0;
 
+			// ✅ TOP PERFORMERS - FIX AVATAR
 			var topPerformers = await _context.Users
 				.Include(u => u.Department)
 				.Include(u => u.UserTasks)
@@ -89,7 +90,11 @@ namespace TMDSystem.Controllers
 				{
 					User = u,
 					TotalCompleted = u.UserTasks.Sum(ut => ut.CompletedThisWeek),
-					TaskCount = u.UserTasks.Count(ut => ut.Task.IsActive == true)
+					TaskCount = u.UserTasks.Count(ut => ut.Task.IsActive == true),
+					// ✅ THÊM AVATAR INFO
+					Avatar = string.IsNullOrEmpty(u.Avatar) || u.Avatar == "/images/default-avatar.png" ? null : u.Avatar,
+					Initials = u.FullName != null ? u.FullName.Substring(0, 1).ToUpper() : "U",
+					HasAvatar = !string.IsNullOrEmpty(u.Avatar) && u.Avatar != "/images/default-avatar.png"
 				})
 				.OrderByDescending(x => x.TotalCompleted)
 				.Take(5)
@@ -97,6 +102,7 @@ namespace TMDSystem.Controllers
 
 			ViewBag.TopPerformers = topPerformers;
 
+			// ✅ LATE COMERS - FIX AVATAR
 			var lateComers = await _context.Attendances
 				.Include(a => a.User)
 					.ThenInclude(u => u.Department)
@@ -108,7 +114,13 @@ namespace TMDSystem.Controllers
 				{
 					UserId = g.Key,
 					User = g.First().User,
-					LateCount = g.Count()
+					LateCount = g.Count(),
+					// ✅ THÊM AVATAR INFO
+					Avatar = string.IsNullOrEmpty(g.First().User.Avatar) || g.First().User.Avatar == "/images/default-avatar.png"
+						? null
+						: g.First().User.Avatar,
+					Initials = g.First().User.FullName != null ? g.First().User.FullName.Substring(0, 1).ToUpper() : "U",
+					HasAvatar = !string.IsNullOrEmpty(g.First().User.Avatar) && g.First().User.Avatar != "/images/default-avatar.png"
 				})
 				.OrderByDescending(x => x.LateCount)
 				.Take(5)
@@ -116,6 +128,7 @@ namespace TMDSystem.Controllers
 
 			ViewBag.LateComers = lateComers;
 
+			// ✅ PUNCTUAL STAFF - FIX AVATAR
 			var punctualStaff = await _context.Attendances
 				.Include(a => a.User)
 					.ThenInclude(u => u.Department)
@@ -127,7 +140,13 @@ namespace TMDSystem.Controllers
 				{
 					UserId = g.Key,
 					User = g.First().User,
-					OnTimeCount = g.Count()
+					OnTimeCount = g.Count(),
+					// ✅ THÊM AVATAR INFO
+					Avatar = string.IsNullOrEmpty(g.First().User.Avatar) || g.First().User.Avatar == "/images/default-avatar.png"
+						? null
+						: g.First().User.Avatar,
+					Initials = g.First().User.FullName != null ? g.First().User.FullName.Substring(0, 1).ToUpper() : "U",
+					HasAvatar = !string.IsNullOrEmpty(g.First().User.Avatar) && g.First().User.Avatar != "/images/default-avatar.png"
 				})
 				.OrderByDescending(x => x.OnTimeCount)
 				.Take(5)

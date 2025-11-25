@@ -157,6 +157,31 @@
         }
 
         }
+
+        /* USER AVATAR STYLES */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+
+        .user-avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            border: 2px solid #e2e8f0;
+        }
     </style>
 
     @{
@@ -233,16 +258,30 @@
                     </div>
                 </div>
 
-                <img src="@Context.Session.GetString("Avatar")" alt="Avatar" class="user-avatar" />
+                @{
+                    var avatarUrl = Context.Session.GetString("Avatar");
+                    var fullName = Context.Session.GetString("FullName") ?? "User";
+                    var firstLetter = fullName.Substring(0, 1).ToUpper();
+                }
+                @if (!string.IsNullOrEmpty(avatarUrl) && avatarUrl != "/images/default-avatar.png")
+                {
+                    <img src="@avatarUrl" alt="Avatar" class="user-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <div class="user-avatar-placeholder" style="display:none;">@firstLetter</div>
+                }
+                else
+                {
+                    <div class="user-avatar-placeholder">@firstLetter</div>
+                }
                 <div class="dropdown">
                     <a class="dropdown-toggle d-flex align-items-center" href="#" id="adminDropdown" data-bs-toggle="dropdown">
                         <div>
-                            <div class="fw-bold">@Context.Session.GetString("FullName")</div>
+                            <div class="fw-bold">@fullName</div>
                             <small class="text-muted">@Context.Session.GetString("RoleName")</small>
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="/Staff/Profile"><i class="fas fa-user"></i><span>Thông tin cá nhân</span></a></li>
+                        <li><a class="dropdown-item" href="/Staff/MyFiles"><i class="fas fa-folder-open"></i><span>Tệp đã tải lên</span></a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="/Account/Logout"><i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span></a></li>
                     </ul>

@@ -3,8 +3,242 @@
     ViewData["Title"] = "Quản lý phòng ban";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/css/tasklist-ad.css" rel="stylesheet" />
 <link href="~/css/departmen-list.css" rel="stylesheet" />
+
+<!-- ✅ CSS CHO MODAL - KHÔNG DÙNG BOOTSTRAP -->
+<style>
+    /* ===== MODAL OVERLAY ===== */
+    .tm-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9998;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+        .tm-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+            align-items: center;
+            justify-content: center;
+        }
+
+    /* ===== MODAL CONTAINER ===== */
+    .tm-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 90%;
+        max-width: 600px;
+        background: var(--tm-white);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .tm-modal.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+    .tm-modal-header {
+        background: linear-gradient(135deg, var(--tm-primary) 0%, var(--tm-primary-dark) 100%);
+        padding: 1.5rem;
+        border-radius: 16px 16px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tm-modal-title {
+        color: var(--tm-white);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .tm-btn-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: var(--tm-white);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .tm-btn-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+    .tm-modal-body {
+        padding: 2rem;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+        /* Custom scrollbar */
+        .tm-modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .tm-modal-body::-webkit-scrollbar-track {
+            background: var(--tm-gray-100);
+            border-radius: 10px;
+        }
+
+        .tm-modal-body::-webkit-scrollbar-thumb {
+            background: var(--tm-gray-400);
+            border-radius: 10px;
+        }
+
+    .tm-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .tm-form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--tm-dark);
+        margin-bottom: 0.5rem;
+        font-size: 0.9375rem;
+    }
+
+    .tm-text-danger {
+        color: var(--tm-danger);
+    }
+
+    .tm-form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--tm-gray-300);
+        border-radius: 10px;
+        font-size: 0.9375rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+        .tm-form-control:focus {
+            outline: none;
+            border-color: var(--tm-primary);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+    textarea.tm-form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Custom Checkbox */
+    .tm-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+    }
+
+        .tm-checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--tm-success);
+        }
+
+    .tm-checkbox-label {
+        font-size: 0.9375rem;
+        color: var(--tm-dark);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* Buttons */
+    .tm-btn-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-secondary {
+        background: var(--tm-gray-400);
+        color: var(--tm-white);
+    }
+
+        .btn-secondary:hover {
+            background: var(--tm-gray-500);
+            transform: translateY(-2px);
+        }
+
+    .btn-primary {
+        background: var(--tm-primary);
+        color: var(--tm-white);
+    }
+
+        .btn-primary:hover {
+            background: var(--tm-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: var(--tm-gray-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+    /* SweetAlert2 Custom */
+    .swal-custom-popup {
+        border-radius: 16px;
+    }
+
+    .swal-custom-title {
+        color: var(--tm-dark);
+        font-weight: 700;
+    }
+
+    .swal-custom-html {
+        color: var(--tm-text-muted);
+    }
+
+    .swal-custom-confirm,
+    .swal-custom-cancel {
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+</style>
+
 <div class="container-fluid px-4 py-4 tm-container">
     <!-- Header Section -->
     <div class="tm-page-header">
@@ -85,18 +319,18 @@
                                 <a asp-action="DepartmentDetail" asp-route-id="@dept.DepartmentId" class="tm-btn-icon tm-btn-icon--info" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <button class="tm-btn-icon tm-btn-icon--primary" onclick="editDepartment(@dept.DepartmentId, '@dept.DepartmentName', '@(dept.Description ?? "")', @dept.IsActive.ToString().ToLower())" title="Chỉnh sửa">
+                                <button class="tm-btn-icon tm-btn-icon--primary" onclick="editDepartment(@dept.DepartmentId, '@dept.DepartmentName', '@Html.Raw(dept.Description?.Replace("'", "\\'") ?? "")', @dept.IsActive.ToString().ToLower())" title="Chỉnh sửa">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 @if (dept.IsActive == true)
                                 {
-                                    <button class="tm-btn-icon tm-btn-icon--danger" onclick="toggleDepartmentStatus(@dept.DepartmentId, '@dept.DepartmentName')" title="Vô hiệu hóa">
+                                    <button class="tm-btn-icon tm-btn-icon--danger" onclick="toggleDepartmentStatus(@dept.DepartmentId, '@Html.Raw(dept.DepartmentName.Replace("'", "\\'"))')" title="Vô hiệu hóa">
                                         <i class="fas fa-ban"></i>
                                     </button>
                                 }
                                 else
                                 {
-                                    <button class="tm-btn-icon tm-btn-icon--success" onclick="toggleDepartmentStatus(@dept.DepartmentId, '@dept.DepartmentName')" title="Kích hoạt">
+                                    <button class="tm-btn-icon tm-btn-icon--success" onclick="toggleDepartmentStatus(@dept.DepartmentId, '@Html.Raw(dept.DepartmentName.Replace("'", "\\'"))')" title="Kích hoạt">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 }
@@ -183,69 +417,88 @@
     }
 </div>
 
-<!-- Modal Add/Edit Department -->
-<div class="modal fade tm-modal" id="departmentModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="tm-modal-header">
-                <h5 class="tm-modal-title" id="modalTitle">
-                    <i class="fas fa-building me-2"></i> Thêm phòng ban
-                </h5>
-                <button type="button" class="tm-btn-close" data-dismiss="modal">
-                    <i class="fas fa-times"></i>
+<!-- ✅ MODAL - VANILLA JS (NO BOOTSTRAP) -->
+<div class="tm-modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+<div class="tm-modal" id="departmentModal">
+    <div class="tm-modal-header">
+        <h5 class="tm-modal-title" id="modalTitle">
+            <i class="fas fa-building me-2"></i> Thêm phòng ban
+        </h5>
+        <button type="button" class="tm-btn-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="tm-modal-body">
+        <form id="departmentForm" onsubmit="handleSubmit(event)">
+            <input type="hidden" id="departmentId" value="0">
+
+            <div class="tm-form-group">
+                <label for="departmentName" class="tm-form-label">
+                    Tên phòng ban <span class="tm-text-danger">*</span>
+                </label>
+                <input type="text" class="tm-form-control" id="departmentName"
+                       placeholder="Nhập tên phòng ban..." required>
+            </div>
+
+            <div class="tm-form-group">
+                <label for="departmentDescription" class="tm-form-label">Mô tả</label>
+                <textarea class="tm-form-control" id="departmentDescription" rows="4"
+                          placeholder="Mô tả về phòng ban..."></textarea>
+            </div>
+
+            <div class="tm-form-group">
+                <label class="tm-checkbox-wrapper">
+                    <input type="checkbox" id="departmentIsActive" checked>
+                    <span class="tm-checkbox-label">
+                        <i class="fas fa-check-circle me-1"></i> Kích hoạt phòng ban
+                    </span>
+                </label>
+            </div>
+
+            <div class="tm-divider"></div>
+
+            <div class="tm-btn-group">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnSaveDepartment">
+                    <i class="fas fa-save"></i> Lưu
                 </button>
             </div>
-            <div class="tm-modal-body">
-                <form id="departmentForm">
-                    <input type="hidden" id="departmentId" value="0">
-
-                    <div class="tm-form-group">
-                        <label for="departmentName" class="tm-form-label">
-                            Tên phòng ban <span class="tm-text-danger">*</span>
-                        </label>
-                        <input type="text" class="form-control tm-form-control" id="departmentName"
-                               placeholder="Nhập tên phòng ban..." required>
-                    </div>
-
-                    <div class="tm-form-group">
-                        <label for="departmentDescription" class="tm-form-label">Mô tả</label>
-                        <textarea class="form-control tm-form-control" id="departmentDescription" rows="3"
-                                  placeholder="Mô tả về phòng ban..."></textarea>
-                    </div>
-
-                    <div class="tm-form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="departmentIsActive" checked>
-                            <label class="custom-control-label" for="departmentIsActive">
-                                <i class="fas fa-check-circle me-1"></i> Kích hoạt phòng ban
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="tm-divider"></div>
-
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            <i class="fas fa-times me-1"></i> Hủy
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="btnSaveDepartment">
-                            <i class="fas fa-save me-1"></i> Lưu
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // ✅ MODAL FUNCTIONS - VANILLA JS
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('departmentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('departmentModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ESC key to close
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // ✅ TOAST NOTIFICATION
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `tm-toast tm-toast-${type}`;
             toast.innerHTML = `
                 <div class="tm-toast-content">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} tm-toast-icon"></i>
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} tm-toast-icon"></i>
                     <span class="tm-toast-message">${message}</span>
                     <button class="tm-toast-close" onclick="this.parentElement.parentElement.remove()">
                         <i class="fas fa-times"></i>
@@ -260,109 +513,182 @@
             }, 5000);
         }
 
+        // ✅ THÊM PHÒNG BAN
         function addDepartment() {
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus me-2"></i> Thêm phòng ban';
             document.getElementById('departmentId').value = '0';
             document.getElementById('departmentName').value = '';
             document.getElementById('departmentDescription').value = '';
             document.getElementById('departmentIsActive').checked = true;
-
-            const modal = new bootstrap.Modal(document.getElementById('departmentModal'));
-            modal.show();
+            openModal();
         }
 
+        // ✅ CHỈNH SỬA PHÒNG BAN
         function editDepartment(id, name, description, isActive) {
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit me-2"></i> Chỉnh sửa phòng ban';
             document.getElementById('departmentId').value = id;
             document.getElementById('departmentName').value = name;
             document.getElementById('departmentDescription').value = description || '';
             document.getElementById('departmentIsActive').checked = isActive;
-
-            const modal = new bootstrap.Modal(document.getElementById('departmentModal'));
-            modal.show();
+            openModal();
         }
 
+        // ✅ TOGGLE STATUS
         function toggleDepartmentStatus(id, name) {
-            if (!confirm(`Bạn có chắc muốn thay đổi trạng thái phòng ban "${name}"?`)) return;
+            Swal.fire({
+                title: 'Xác nhận thay đổi',
+                html: `Bạn có chắc muốn thay đổi trạng thái phòng ban<br><strong>"${name}"</strong>?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#E74C3C',
+                cancelButtonColor: '#95A5A6',
+                confirmButtonText: '<i class="fas fa-check me-2"></i>Xác nhận',
+                cancelButtonText: '<i class="fas fa-times me-2"></i>Hủy',
+                customClass: {
+                    popup: 'swal-custom-popup',
+                    title: 'swal-custom-title',
+                    htmlContainer: 'swal-custom-html',
+                    confirmButton: 'swal-custom-confirm',
+                    cancelButton: 'swal-custom-cancel'
+                },
+                showLoaderOnConfirm: true,
+                preConfirm: async () => {
+                    try {
+                        const response = await fetch('/Admin/ToggleDepartmentStatus', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ departmentId: parseInt(id) })
+                        });
 
-            fetch('@Url.Action("ToggleDepartmentStatus", "Admin")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ departmentId: parseInt(id) })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast(data.message, 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.message, 'danger');
+                        const data = await response.json();
+
+                        if (!data.success) {
+                            throw new Error(data.message || 'Có lỗi xảy ra');
+                        }
+
+                        return data;
+                    } catch (error) {
+                        Swal.showValidationMessage(`Lỗi: ${error.message}`);
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: result.value.message,
+                        icon: 'success',
+                        confirmButtonColor: '#27AE60',
+                        confirmButtonText: '<i class="fas fa-check me-2"></i>OK',
+                        customClass: {
+                            popup: 'swal-custom-popup',
+                            title: 'swal-custom-title',
+                            confirmButton: 'swal-custom-confirm'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
                 }
-            })
-            .catch(() => showToast('Có lỗi xảy ra!', 'danger'));
+            });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('departmentForm');
+        // ✅ FORM SUBMIT
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const departmentId = parseInt(document.getElementById('departmentId').value);
+            const departmentName = document.getElementById('departmentName').value.trim();
+            const description = document.getElementById('departmentDescription').value.trim();
+            const isActive = document.getElementById('departmentIsActive').checked;
             const btnSave = document.getElementById('btnSaveDepartment');
 
-            // Close modal handlers
-            document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('departmentModal'));
-                    if (modal) modal.hide();
+            if (!departmentName) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Vui lòng nhập tên phòng ban!',
+                    icon: 'error',
+                    confirmButtonColor: '#E74C3C',
+                    confirmButtonText: '<i class="fas fa-times me-2"></i>Đóng',
+                    customClass: {
+                        popup: 'swal-custom-popup',
+                        title: 'swal-custom-title',
+                        confirmButton: 'swal-custom-confirm'
+                    }
                 });
-            });
+                return;
+            }
 
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+            btnSave.disabled = true;
+            btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
 
-                const departmentId = parseInt(document.getElementById('departmentId').value);
-                const departmentName = document.getElementById('departmentName').value.trim();
-                const description = document.getElementById('departmentDescription').value.trim();
-                const isActive = document.getElementById('departmentIsActive').checked;
+            const url = departmentId > 0
+                ? '/Admin/UpdateDepartment'
+                : '/Admin/CreateDepartment';
 
-                if (!departmentName) {
-                    showToast('Vui lòng nhập tên phòng ban!', 'danger');
-                    return;
-                }
+            const data = departmentId > 0
+                ? { departmentId, departmentName, description, isActive }
+                : { departmentName, description, isActive };
 
-                btnSave.disabled = true;
-                btnSave.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang xử lý...';
-
-                const url = departmentId > 0
-                    ? '@Url.Action("UpdateDepartment", "Admin")'
-                    : '@Url.Action("CreateDepartment", "Admin")';
-
-                const data = departmentId > 0
-                    ? { departmentId, departmentName, description, isActive }
-                    : { departmentName, description, isActive };
-
-                fetch(url, {
+            try {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast(data.message, 'success');
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('departmentModal'));
-                        if (modal) modal.hide();
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showToast(data.message, 'danger');
-                        btnSave.disabled = false;
-                        btnSave.innerHTML = '<i class="fas fa-save me-1"></i> Lưu';
-                    }
-                })
-                .catch(() => {
-                    showToast('Có lỗi xảy ra!', 'danger');
-                    btnSave.disabled = false;
-                    btnSave.innerHTML = '<i class="fas fa-save me-1"></i> Lưu';
                 });
-            });
-        });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    closeModal();
+
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: result.message,
+                        icon: 'success',
+                        confirmButtonColor: '#27AE60',
+                        confirmButtonText: '<i class="fas fa-check me-2"></i>OK',
+                        customClass: {
+                            popup: 'swal-custom-popup',
+                            title: 'swal-custom-title',
+                            confirmButton: 'swal-custom-confirm'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: result.message,
+                        icon: 'error',
+                        confirmButtonColor: '#E74C3C',
+                        confirmButtonText: '<i class="fas fa-times me-2"></i>Đóng',
+                        customClass: {
+                            popup: 'swal-custom-popup',
+                            title: 'swal-custom-title',
+                            confirmButton: 'swal-custom-confirm'
+                        }
+                    });
+
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = '<i class="fas fa-save"></i> ' + (departmentId > 0 ? 'Cập nhật' : 'Lưu');
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Có lỗi xảy ra khi kết nối đến server!',
+                    icon: 'error',
+                    confirmButtonColor: '#E74C3C',
+                    confirmButtonText: '<i class="fas fa-times me-2"></i>Đóng',
+                    customClass: {
+                        popup: 'swal-custom-popup',
+                        title: 'swal-custom-title',
+                        confirmButton: 'swal-custom-confirm'
+                    }
+                });
+
+                btnSave.disabled = false;
+                btnSave.innerHTML = '<i class="fas fa-save"></i> ' + (departmentId > 0 ? 'Cập nhật' : 'Lưu');
+            }
+        }
     </script>
 }
-

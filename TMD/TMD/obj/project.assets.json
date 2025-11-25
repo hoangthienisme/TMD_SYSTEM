@@ -60,6 +60,19 @@
           }
         }
       },
+      "BouncyCastle.Cryptography/2.6.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "ClosedXML/0.105.0": {
         "type": "package",
         "dependencies": {
@@ -182,10 +195,10 @@
           }
         }
       },
-      "Google.Apis/1.72.0": {
+      "Google.Apis/1.73.0": {
         "type": "package",
         "dependencies": {
-          "Google.Apis.Core": "1.72.0"
+          "Google.Apis.Core": "1.73.0"
         },
         "compile": {
           "lib/net6.0/Google.Apis.dll": {
@@ -198,11 +211,11 @@
           }
         }
       },
-      "Google.Apis.Auth/1.72.0": {
+      "Google.Apis.Auth/1.73.0": {
         "type": "package",
         "dependencies": {
-          "Google.Apis": "1.72.0",
-          "Google.Apis.Core": "1.72.0",
+          "Google.Apis": "1.73.0",
+          "Google.Apis.Core": "1.73.0",
           "System.Management": "7.0.2"
         },
         "compile": {
@@ -216,7 +229,7 @@
           }
         }
       },
-      "Google.Apis.Core/1.72.0": {
+      "Google.Apis.Core/1.73.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "13.0.4"
@@ -232,11 +245,11 @@
           }
         }
       },
-      "Google.Apis.Gmail.v1/1.70.0.3833": {
+      "Google.Apis.Gmail.v1/1.72.0.3966": {
         "type": "package",
         "dependencies": {
-          "Google.Apis": "1.70.0",
-          "Google.Apis.Auth": "1.70.0"
+          "Google.Apis": "1.72.0",
+          "Google.Apis.Auth": "1.72.0"
         },
         "compile": {
           "lib/net6.0/Google.Apis.Gmail.v1.dll": {
@@ -259,6 +272,23 @@
         "runtime": {
           "lib/net6.0/Humanizer.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "MailKit/4.14.1": {
+        "type": "package",
+        "dependencies": {
+          "MimeKit": "4.14.0",
+          "System.Formats.Asn1": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/MailKit.dll": {
+            "related": ".dll.config;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/MailKit.dll": {
+            "related": ".dll.config;.pdb;.xml"
           }
         }
       },
@@ -1303,6 +1333,23 @@
           }
         }
       },
+      "MimeKit/4.14.0": {
+        "type": "package",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.1",
+          "System.Security.Cryptography.Pkcs": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/MimeKit.dll": {
+            "related": ".dll.config;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/MimeKit.dll": {
+            "related": ".dll.config;.pdb;.xml"
+          }
+        }
+      },
       "Mono.TextTemplating/3.0.0": {
         "type": "package",
         "dependencies": {
@@ -1834,11 +1881,8 @@
           }
         }
       },
-      "System.Security.Cryptography.Pkcs/8.0.0": {
+      "System.Security.Cryptography.Pkcs/8.0.1": {
         "type": "package",
-        "dependencies": {
-          "System.Formats.Asn1": "8.0.0"
-        },
         "compile": {
           "lib/net8.0/System.Security.Cryptography.Pkcs.dll": {
             "related": ".xml"
@@ -2119,6 +2163,26 @@
         "readme.md"
       ]
     },
+    "BouncyCastle.Cryptography/2.6.1": {
+      "sha512": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA==",
+      "type": "package",
+      "path": "bouncycastle.cryptography/2.6.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "README.md",
+        "bouncycastle.cryptography.2.6.1.nupkg.sha512",
+        "bouncycastle.cryptography.nuspec",
+        "lib/net461/BouncyCastle.Cryptography.dll",
+        "lib/net461/BouncyCastle.Cryptography.xml",
+        "lib/net6.0/BouncyCastle.Cryptography.dll",
+        "lib/net6.0/BouncyCastle.Cryptography.xml",
+        "lib/netstandard2.0/BouncyCastle.Cryptography.dll",
+        "lib/netstandard2.0/BouncyCastle.Cryptography.xml",
+        "packageIcon.png"
+      ]
+    },
     "ClosedXML/0.105.0": {
       "sha512": "U0hAdnYyPvF7TqHMFloxrS7pmozab79tFFF4c/bgPtqeelUs7ILpUd3r3c7C0a/DXsUZb3k1n4Pf7Q2LMyMQOg==",
       "type": "package",
@@ -2288,16 +2352,16 @@
         "lib/netstandard2.0/ExcelNumberFormat.xml"
       ]
     },
-    "Google.Apis/1.72.0": {
-      "sha512": "QbSJ08W7QuqsfzDPOZDHl1aFzCYwMcfBoHqQRh7koglwDN5WacShCKYMpU/zR1Pf3h3sH6JTGEeM/txAxaJuEg==",
+    "Google.Apis/1.73.0": {
+      "sha512": "TnCjEyV2aCLQ6Zl40OCbEJULDuEkEWc6C/g81KYw5l1PqGo+G7pFZrV+YH8XgUL0JRUanz+IrUp8SsKF4dzkqg==",
       "type": "package",
-      "path": "google.apis/1.72.0",
+      "path": "google.apis/1.73.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.1.72.0.nupkg.sha512",
+        "google.apis.1.73.0.nupkg.sha512",
         "google.apis.nuspec",
         "lib/net462/Google.Apis.dll",
         "lib/net462/Google.Apis.pdb",
@@ -2310,16 +2374,16 @@
         "lib/netstandard2.0/Google.Apis.xml"
       ]
     },
-    "Google.Apis.Auth/1.72.0": {
-      "sha512": "RBoFwFKBHKUjuyJf2weEnqICQLaY0TdIrdFv2yC8bsiR2VFYxizOn3C/qN1FWCCb0Uh9GhW+zwAV1yUxPjiocw==",
+    "Google.Apis.Auth/1.73.0": {
+      "sha512": "wEu12uhnRv3zrPBSqv4E2vPH6lYLtc1RPAnU9MJRCMFlBVwZ7Lnq3NfbYXi6VG7EurkYInTaMpeBZkbM/HrAog==",
       "type": "package",
-      "path": "google.apis.auth/1.72.0",
+      "path": "google.apis.auth/1.73.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.auth.1.72.0.nupkg.sha512",
+        "google.apis.auth.1.73.0.nupkg.sha512",
         "google.apis.auth.nuspec",
         "lib/net462/Google.Apis.Auth.dll",
         "lib/net462/Google.Apis.Auth.pdb",
@@ -2332,16 +2396,16 @@
         "lib/netstandard2.0/Google.Apis.Auth.xml"
       ]
     },
-    "Google.Apis.Core/1.72.0": {
-      "sha512": "ZmYX1PU0vTKFT42c7gp4zaYcb/0TFAXrt9qw8yEz0wjvaug85+/WddlPTfT525Qei8iIUsF6t4bHYrsb2O7crg==",
+    "Google.Apis.Core/1.73.0": {
+      "sha512": "vSc7CY4KCP7HE4QTElDx/ExnGLbg9kXb89MS6cdvI+0D4sxvTYb16vGtXmF2jSDMV3iDmykSXdIUPTz8TDS6gg==",
       "type": "package",
-      "path": "google.apis.core/1.72.0",
+      "path": "google.apis.core/1.73.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.core.1.72.0.nupkg.sha512",
+        "google.apis.core.1.73.0.nupkg.sha512",
         "google.apis.core.nuspec",
         "lib/net462/Google.Apis.Core.dll",
         "lib/net462/Google.Apis.Core.pdb",
@@ -2354,16 +2418,16 @@
         "lib/netstandard2.0/Google.Apis.Core.xml"
       ]
     },
-    "Google.Apis.Gmail.v1/1.70.0.3833": {
-      "sha512": "Gh3ziWCiCGdEqGkBLp5PzK811YPARjoB+PRnMeBEZ3K2dFgdqVJGZoZfZp8C6BiWMEIFtyvAnO4rPm0oKsRD5w==",
+    "Google.Apis.Gmail.v1/1.72.0.3966": {
+      "sha512": "d36037417A0xBPD4N4LTAS4hvTT8uOEhMPr3aUVT06sr5jAnMqogrEN6XAEZYX3uVNp7jvoufw3RWGIOwMzLLQ==",
       "type": "package",
-      "path": "google.apis.gmail.v1/1.70.0.3833",
+      "path": "google.apis.gmail.v1/1.72.0.3966",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.gmail.v1.1.70.0.3833.nupkg.sha512",
+        "google.apis.gmail.v1.1.72.0.3966.nupkg.sha512",
         "google.apis.gmail.v1.nuspec",
         "lib/net462/Google.Apis.Gmail.v1.dll",
         "lib/net462/Google.Apis.Gmail.v1.pdb",
@@ -2392,6 +2456,46 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "MailKit/4.14.1": {
+      "sha512": "Rawu+h3lSSjKra0AxR+IUB99VQ7jWI+MvxThekqLhf+ic7VQ7a69lmPFW+LXuRYHla4ADcn3x16Gsvju3LTq9w==",
+      "type": "package",
+      "path": "mailkit/4.14.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "docs/ExchangeOAuth2.md",
+        "docs/FAQ.md",
+        "docs/GMailOAuth2.md",
+        "docs/README.md",
+        "icons/mailkit-50.png",
+        "lib/net462/MailKit.dll",
+        "lib/net462/MailKit.dll.config",
+        "lib/net462/MailKit.pdb",
+        "lib/net462/MailKit.xml",
+        "lib/net47/MailKit.dll",
+        "lib/net47/MailKit.dll.config",
+        "lib/net47/MailKit.pdb",
+        "lib/net47/MailKit.xml",
+        "lib/net48/MailKit.dll",
+        "lib/net48/MailKit.dll.config",
+        "lib/net48/MailKit.pdb",
+        "lib/net48/MailKit.xml",
+        "lib/net8.0/MailKit.dll",
+        "lib/net8.0/MailKit.dll.config",
+        "lib/net8.0/MailKit.pdb",
+        "lib/net8.0/MailKit.xml",
+        "lib/netstandard2.0/MailKit.dll",
+        "lib/netstandard2.0/MailKit.dll.config",
+        "lib/netstandard2.0/MailKit.pdb",
+        "lib/netstandard2.0/MailKit.xml",
+        "lib/netstandard2.1/MailKit.dll",
+        "lib/netstandard2.1/MailKit.dll.config",
+        "lib/netstandard2.1/MailKit.pdb",
+        "lib/netstandard2.1/MailKit.xml",
+        "mailkit.4.14.1.nupkg.sha512",
+        "mailkit.nuspec"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
@@ -4435,6 +4539,41 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "MimeKit/4.14.0": {
+      "sha512": "g0LtsMC8DCTkc030C3UgVqbltOJmV5cz4AX8ASowz2ZA+lxopXSYtC1XXYmenxy606aWFLwi5Xy4cC/zyYjbjQ==",
+      "type": "package",
+      "path": "mimekit/4.14.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "docs/FAQ.md",
+        "docs/README.md",
+        "icons/mimekit-50.png",
+        "lib/net462/MimeKit.dll",
+        "lib/net462/MimeKit.pdb",
+        "lib/net462/MimeKit.xml",
+        "lib/net47/MimeKit.dll",
+        "lib/net47/MimeKit.pdb",
+        "lib/net47/MimeKit.xml",
+        "lib/net48/MimeKit.dll",
+        "lib/net48/MimeKit.pdb",
+        "lib/net48/MimeKit.xml",
+        "lib/net8.0/MimeKit.dll",
+        "lib/net8.0/MimeKit.dll.config",
+        "lib/net8.0/MimeKit.pdb",
+        "lib/net8.0/MimeKit.xml",
+        "lib/netstandard2.0/MimeKit.dll",
+        "lib/netstandard2.0/MimeKit.dll.config",
+        "lib/netstandard2.0/MimeKit.pdb",
+        "lib/netstandard2.0/MimeKit.xml",
+        "lib/netstandard2.1/MimeKit.dll",
+        "lib/netstandard2.1/MimeKit.dll.config",
+        "lib/netstandard2.1/MimeKit.pdb",
+        "lib/netstandard2.1/MimeKit.xml",
+        "mimekit.4.14.0.nupkg.sha512",
+        "mimekit.nuspec"
+      ]
+    },
     "Mono.TextTemplating/3.0.0": {
       "sha512": "YqueG52R/Xej4VVbKuRIodjiAhV0HR/XVbLbNrJhCZnzjnSjgMJ/dCdV0akQQxavX6hp/LC6rqLGLcXeQYU7XA==",
       "type": "package",
@@ -5440,10 +5579,10 @@
         "version.txt"
       ]
     },
-    "System.Security.Cryptography.Pkcs/8.0.0": {
-      "sha512": "ULmp3xoOwNYjOYp4JZ2NK/6NdTgiN1GQXzVVN1njQ7LOZ0d0B9vyMnhyqbIi9Qw4JXj1JgCsitkTShboHRx7Eg==",
+    "System.Security.Cryptography.Pkcs/8.0.1": {
+      "sha512": "CoCRHFym33aUSf/NtWSVSZa99dkd0Hm7OCZUxORBjRB16LNhIEOf8THPqzIYlvKM0nNDAPTRBa1FxEECrgaxxA==",
       "type": "package",
-      "path": "system.security.cryptography.pkcs/8.0.0",
+      "path": "system.security.cryptography.pkcs/8.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5472,7 +5611,7 @@
         "runtimes/win/lib/net7.0/System.Security.Cryptography.Pkcs.xml",
         "runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.xml",
-        "system.security.cryptography.pkcs.8.0.0.nupkg.sha512",
+        "system.security.cryptography.pkcs.8.0.1.nupkg.sha512",
         "system.security.cryptography.pkcs.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -5899,11 +6038,13 @@
       "BCrypt.Net-Next >= 4.0.3",
       "ClosedXML >= 0.105.0",
       "EPPlus >= 7.0.11",
-      "Google.Apis.Auth >= 1.72.0",
-      "Google.Apis.Gmail.v1 >= 1.70.0.3833",
+      "Google.Apis.Auth >= 1.73.0",
+      "Google.Apis.Gmail.v1 >= 1.72.0.3966",
+      "MailKit >= 4.14.1",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.0",
-      "Microsoft.EntityFrameworkCore.Tools >= 9.0.0"
+      "Microsoft.EntityFrameworkCore.Tools >= 9.0.0",
+      "MimeKit >= 4.14.0"
     ]
   },
   "packageFolders": {
@@ -5970,11 +6111,15 @@
           },
           "Google.Apis.Auth": {
             "target": "Package",
-            "version": "[1.72.0, )"
+            "version": "[1.73.0, )"
           },
           "Google.Apis.Gmail.v1": {
             "target": "Package",
-            "version": "[1.70.0.3833, )"
+            "version": "[1.72.0.3966, )"
+          },
+          "MailKit": {
+            "target": "Package",
+            "version": "[4.14.1, )"
           },
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -5991,6 +6136,10 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[9.0.0, )"
+          },
+          "MimeKit": {
+            "target": "Package",
+            "version": "[4.14.0, )"
           }
         },
         "imports": [

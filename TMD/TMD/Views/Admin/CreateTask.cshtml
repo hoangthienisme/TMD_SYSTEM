@@ -139,9 +139,28 @@
                                                                    id="user_@user.UserId" value="@user.UserId">
                                                             <label class="custom-control-label tm-user-label" for="user_@user.UserId">
                                                                 <div class="d-flex align-items-center">
-                                                                    <img src="@(user.Avatar ?? "/images/default-avatar.png")"
-                                                                         class="rounded-circle me-2" width="35" height="35"
-                                                                         onerror="this.src='/images/default-avatar.png'">
+                                                                    @if (!string.IsNullOrEmpty(user.Avatar) && user.Avatar != "/images/default-avatar.png")
+                                                                    {
+                                                                        <!-- Avatar có ảnh -->
+                                                                        <img src="@user.Avatar"
+                                                                             class="rounded-circle me-2"
+                                                                             width="35"
+                                                                             height="35"
+                                                                             style="object-fit: cover;"
+                                                                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                                                        <div class="avatar-placeholder rounded-circle me-2"
+                                                                             style="display:none;width:35px;height:35px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;align-items:center;justify-content:center;font-weight:700;font-size:14px;">
+                                                                            @user.FullName.Substring(0, 1).ToUpper()
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <!-- Placeholder chữ cái đầu -->
+                                                                        <div class="rounded-circle me-2"
+                                                                             style="width:35px;height:35px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">
+                                                                            @user.FullName.Substring(0, 1).ToUpper()
+                                                                        </div>
+                                                                    }
                                                                     <div>
                                                                         <strong class="d-block">@user.FullName</strong>
                                                                         <small class="tm-text-muted">@user.Username</small>

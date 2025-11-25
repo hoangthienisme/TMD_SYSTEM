@@ -1876,11 +1876,128 @@ namespace TMDSystem.Controllers
 
 			return View(model);
 		}
+		// ============================================
+		// THÊM METHOD NÀY VÀO StaffController.cs
+		// ============================================
 
+		[HttpPost]
+		[RequestSizeLimit(5_242_880)] // 5MB limit
+		public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+		{
+			if (!IsAuthenticated())
+				return Json(new { success = false, message = "Phiên đăng nhập hết hạn" });
+
+			var userId = HttpContext.Session.GetInt32("UserId").Value;
+
+			// Validate file
+			if (avatar == null || avatar.Length == 0)
+				return Json(new { success = false, message = "Vui lòng chọn ảnh để tải lên" });
+
+			// Validate file type
+			var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+			var extension = Path.GetExtension(avatar.FileName).ToLower();
+			if (!allowedExtensions.Contains(extension))
+				return Json(new { success = false, message = "Chỉ chấp nhận file ảnh định dạng JPG, JPEG, PNG" });
+
+			// Validate file size (max 5MB)
+			if (avatar.Length > 5 * 1024 * 1024)
+				return Json(new { success = false, message = "Kích thước ảnh không được vượt quá 5MB" });
+
+			try
+			{
+				var user = await _context.Users.FindAsync(userId);
+				if (user == null)
+					return Json(new { success = false, message = "Không tìm thấy người dùng" });
+
+				// Create uploads folder if not exists
+				var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "avatars");
+				if (!Directory.Exists(uploadsFolder))
+					Directory.CreateDirectory(uploadsFolder);
+
+				// Delete old avatar if exists
+				if (!string.IsNullOrEmpty(user.Avatar) && user.Avatar != "/images/default-avatar.png")
+				{
+					var oldAvatarPath = Path.Combine(_env.WebRootPath, user.Avatar.TrimStart('/'));
+					if (System.IO.File.Exists(oldAvatarPath))
+					{
+						try
+						{
+							System.IO.File.Delete(oldAvatarPath);
+						}
+						catch (Exception ex)
+						{
+							// Log but continue
+							Console.WriteLine($"Failed to delete old avatar: {ex.Message}");
+						}
+					}
+				}
+
+				// Generate unique filename
+				var uniqueFileName = $"{userId}_{DateTime.Now:yyyyMMddHHmmss}{extension}";
+				var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+				// Save file
+				using (var fileStream = new FileStream(filePath, FileMode.Create))
+				{
+					await avatar.CopyToAsync(fileStream);
+				}
+
+				// Update user avatar path
+				var avatarUrl = $"/uploads/avatars/{uniqueFileName}";
+				var oldAvatar = user.Avatar;
+				user.Avatar = avatarUrl;
+				user.UpdatedAt = DateTime.Now;
+
+				await _context.SaveChangesAsync();
+
+				// Update session
+				HttpContext.Session.SetString("Avatar", avatarUrl);
+
+				// Log audit
+				await _auditHelper.LogDetailedAsync(
+					userId,
+					"UPDATE",
+					"User",
+					userId,
+					new { Avatar = oldAvatar },
+					new { Avatar = avatarUrl },
+					"Cập nhật ảnh đại diện",
+					new Dictionary<string, object>
+					{
+				{ "FileName", uniqueFileName },
+				{ "FileSize", $"{avatar.Length / 1024.0:F2} KB" },
+				{ "Extension", extension }
+					}
+				);
+
+				return Json(new
+				{
+					success = true,
+					message = "Cập nhật ảnh đại diện thành công!",
+					avatarUrl = avatarUrl
+				});
+			}
+			catch (Exception ex)
+			{
+				await _auditHelper.LogFailedAttemptAsync(
+					userId,
+					"UPLOAD_AVATAR",
+					"User",
+					$"Exception: {ex.Message}",
+					new { Error = ex.ToString() }
+				);
+
+				return Json(new
+				{
+					success = false,
+					message = $"Có lỗi xảy ra: {ex.Message}"
+				});
+			}
+		}
 		// ============================================
 		// REQUEST MODELS
 		// ============================================
-		
+
 
 		public class CheckInRequest
 		{

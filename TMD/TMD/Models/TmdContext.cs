@@ -35,6 +35,8 @@ public partial class TmdContext : DbContext
 
     public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
+    public virtual DbSet<PasswordResetToken1> PasswordResetTokens1 { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<SalaryAdjustment> SalaryAdjustments { get; set; }
@@ -319,7 +321,27 @@ public partial class TmdContext : DbContext
 
         modelBuilder.Entity<PasswordResetToken>(entity =>
         {
+            entity.HasKey(e => e.Id).HasName("PK__Password__3214EC071B5D66E3");
+
+            entity.ToTable("PasswordResetToken");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
+            entity.Property(e => e.LockoutUntil).HasColumnType("datetime");
+            entity.Property(e => e.ResendAvailableAt).HasColumnType("datetime");
+            entity.Property(e => e.TokenCode).HasMaxLength(6);
+
+            entity.HasOne(d => d.User).WithMany(p => p.PasswordResetTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PasswordResetToken_User");
+        });
+
+        modelBuilder.Entity<PasswordResetToken1>(entity =>
+        {
             entity.HasKey(e => e.Id).HasName("PK__Password__3214EC071EAAF641");
+
+            entity.ToTable("PasswordResetTokens");
 
             entity.HasIndex(e => e.Token, "IX_PasswordResetTokens_Token");
 
@@ -332,7 +354,7 @@ public partial class TmdContext : DbContext
             entity.Property(e => e.Token).HasMaxLength(500);
             entity.Property(e => e.UsedAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.User).WithMany(p => p.PasswordResetTokens)
+            entity.HasOne(d => d.User).WithMany(p => p.PasswordResetToken1s)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PasswordResetTokens_Users");

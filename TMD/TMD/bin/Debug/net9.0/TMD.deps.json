@@ -11,11 +11,13 @@
           "BCrypt.Net-Next": "4.0.3",
           "ClosedXML": "0.105.0",
           "EPPlus": "7.1.0",
-          "Google.Apis.Auth": "1.72.0",
-          "Google.Apis.Gmail.v1": "1.70.0.3833",
+          "Google.Apis.Auth": "1.73.0",
+          "Google.Apis.Gmail.v1": "1.72.0.3966",
+          "MailKit": "4.14.1",
           "Microsoft.EntityFrameworkCore.Design": "9.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.0",
-          "Microsoft.EntityFrameworkCore.Tools": "9.0.0"
+          "Microsoft.EntityFrameworkCore.Tools": "9.0.0",
+          "MimeKit": "4.14.0"
         },
         "runtime": {
           "TMD.dll": {}
@@ -61,6 +63,14 @@
           "lib/net6.0/BCrypt.Net-Next.dll": {
             "assemblyVersion": "4.0.3.0",
             "fileVersion": "4.0.3.0"
+          }
+        }
+      },
+      "BouncyCastle.Cryptography/2.6.1": {
+        "runtime": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.6.1.59591"
           }
         }
       },
@@ -116,7 +126,7 @@
           "Microsoft.Extensions.Configuration.Json": "8.0.0",
           "Microsoft.IO.RecyclableMemoryStream": "3.0.0",
           "System.ComponentModel.Annotations": "5.0.0",
-          "System.Security.Cryptography.Pkcs": "8.0.0",
+          "System.Security.Cryptography.Pkcs": "8.0.1",
           "System.Text.Encoding.CodePages": "8.0.0"
         },
         "runtime": {
@@ -154,50 +164,50 @@
           }
         }
       },
-      "Google.Apis/1.72.0": {
+      "Google.Apis/1.73.0": {
         "dependencies": {
-          "Google.Apis.Core": "1.72.0"
+          "Google.Apis.Core": "1.73.0"
         },
         "runtime": {
           "lib/net6.0/Google.Apis.dll": {
-            "assemblyVersion": "1.72.0.0",
-            "fileVersion": "1.72.0.0"
+            "assemblyVersion": "1.73.0.0",
+            "fileVersion": "1.73.0.0"
           }
         }
       },
-      "Google.Apis.Auth/1.72.0": {
+      "Google.Apis.Auth/1.73.0": {
         "dependencies": {
-          "Google.Apis": "1.72.0",
-          "Google.Apis.Core": "1.72.0",
+          "Google.Apis": "1.73.0",
+          "Google.Apis.Core": "1.73.0",
           "System.Management": "7.0.2"
         },
         "runtime": {
           "lib/net6.0/Google.Apis.Auth.dll": {
-            "assemblyVersion": "1.72.0.0",
-            "fileVersion": "1.72.0.0"
+            "assemblyVersion": "1.73.0.0",
+            "fileVersion": "1.73.0.0"
           }
         }
       },
-      "Google.Apis.Core/1.72.0": {
+      "Google.Apis.Core/1.73.0": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
           "lib/net6.0/Google.Apis.Core.dll": {
-            "assemblyVersion": "1.72.0.0",
-            "fileVersion": "1.72.0.0"
+            "assemblyVersion": "1.73.0.0",
+            "fileVersion": "1.73.0.0"
           }
         }
       },
-      "Google.Apis.Gmail.v1/1.70.0.3833": {
+      "Google.Apis.Gmail.v1/1.72.0.3966": {
         "dependencies": {
-          "Google.Apis": "1.72.0",
-          "Google.Apis.Auth": "1.72.0"
+          "Google.Apis": "1.73.0",
+          "Google.Apis.Auth": "1.73.0"
         },
         "runtime": {
           "lib/net6.0/Google.Apis.Gmail.v1.dll": {
-            "assemblyVersion": "1.70.0.3833",
-            "fileVersion": "1.70.0.3833"
+            "assemblyVersion": "1.72.0.3966",
+            "fileVersion": "1.72.0.3966"
           }
         }
       },
@@ -206,6 +216,18 @@
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
+          }
+        }
+      },
+      "MailKit/4.14.1": {
+        "dependencies": {
+          "MimeKit": "4.14.0",
+          "System.Formats.Asn1": "9.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/MailKit.dll": {
+            "assemblyVersion": "4.14.0.0",
+            "fileVersion": "4.14.1.0"
           }
         }
       },
@@ -866,6 +888,18 @@
           }
         }
       },
+      "MimeKit/4.14.0": {
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.1",
+          "System.Security.Cryptography.Pkcs": "8.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/MimeKit.dll": {
+            "assemblyVersion": "4.14.0.0",
+            "fileVersion": "4.14.0.0"
+          }
+        }
+      },
       "Mono.TextTemplating/3.0.0": {
         "dependencies": {
           "System.CodeDom": "7.0.0"
@@ -1111,11 +1145,7 @@
           "System.Formats.Asn1": "9.0.0"
         }
       },
-      "System.Security.Cryptography.Pkcs/8.0.0": {
-        "dependencies": {
-          "System.Formats.Asn1": "9.0.0"
-        }
-      },
+      "System.Security.Cryptography.Pkcs/8.0.1": {},
       "System.Security.Cryptography.ProtectedData/6.0.0": {
         "runtime": {
           "lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
@@ -1209,6 +1239,13 @@
       "path": "bcrypt.net-next/4.0.3",
       "hashPath": "bcrypt.net-next.4.0.3.nupkg.sha512"
     },
+    "BouncyCastle.Cryptography/2.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA==",
+      "path": "bouncycastle.cryptography/2.6.1",
+      "hashPath": "bouncycastle.cryptography.2.6.1.nupkg.sha512"
+    },
     "ClosedXML/0.105.0": {
       "type": "package",
       "serviceable": true,
@@ -1265,33 +1302,33 @@
       "path": "excelnumberformat/1.1.0",
       "hashPath": "excelnumberformat.1.1.0.nupkg.sha512"
     },
-    "Google.Apis/1.72.0": {
+    "Google.Apis/1.73.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-QbSJ08W7QuqsfzDPOZDHl1aFzCYwMcfBoHqQRh7koglwDN5WacShCKYMpU/zR1Pf3h3sH6JTGEeM/txAxaJuEg==",
-      "path": "google.apis/1.72.0",
-      "hashPath": "google.apis.1.72.0.nupkg.sha512"
+      "sha512": "sha512-TnCjEyV2aCLQ6Zl40OCbEJULDuEkEWc6C/g81KYw5l1PqGo+G7pFZrV+YH8XgUL0JRUanz+IrUp8SsKF4dzkqg==",
+      "path": "google.apis/1.73.0",
+      "hashPath": "google.apis.1.73.0.nupkg.sha512"
     },
-    "Google.Apis.Auth/1.72.0": {
+    "Google.Apis.Auth/1.73.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-RBoFwFKBHKUjuyJf2weEnqICQLaY0TdIrdFv2yC8bsiR2VFYxizOn3C/qN1FWCCb0Uh9GhW+zwAV1yUxPjiocw==",
-      "path": "google.apis.auth/1.72.0",
-      "hashPath": "google.apis.auth.1.72.0.nupkg.sha512"
+      "sha512": "sha512-wEu12uhnRv3zrPBSqv4E2vPH6lYLtc1RPAnU9MJRCMFlBVwZ7Lnq3NfbYXi6VG7EurkYInTaMpeBZkbM/HrAog==",
+      "path": "google.apis.auth/1.73.0",
+      "hashPath": "google.apis.auth.1.73.0.nupkg.sha512"
     },
-    "Google.Apis.Core/1.72.0": {
+    "Google.Apis.Core/1.73.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ZmYX1PU0vTKFT42c7gp4zaYcb/0TFAXrt9qw8yEz0wjvaug85+/WddlPTfT525Qei8iIUsF6t4bHYrsb2O7crg==",
-      "path": "google.apis.core/1.72.0",
-      "hashPath": "google.apis.core.1.72.0.nupkg.sha512"
+      "sha512": "sha512-vSc7CY4KCP7HE4QTElDx/ExnGLbg9kXb89MS6cdvI+0D4sxvTYb16vGtXmF2jSDMV3iDmykSXdIUPTz8TDS6gg==",
+      "path": "google.apis.core/1.73.0",
+      "hashPath": "google.apis.core.1.73.0.nupkg.sha512"
     },
-    "Google.Apis.Gmail.v1/1.70.0.3833": {
+    "Google.Apis.Gmail.v1/1.72.0.3966": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Gh3ziWCiCGdEqGkBLp5PzK811YPARjoB+PRnMeBEZ3K2dFgdqVJGZoZfZp8C6BiWMEIFtyvAnO4rPm0oKsRD5w==",
-      "path": "google.apis.gmail.v1/1.70.0.3833",
-      "hashPath": "google.apis.gmail.v1.1.70.0.3833.nupkg.sha512"
+      "sha512": "sha512-d36037417A0xBPD4N4LTAS4hvTT8uOEhMPr3aUVT06sr5jAnMqogrEN6XAEZYX3uVNp7jvoufw3RWGIOwMzLLQ==",
+      "path": "google.apis.gmail.v1/1.72.0.3966",
+      "hashPath": "google.apis.gmail.v1.1.72.0.3966.nupkg.sha512"
     },
     "Humanizer.Core/2.14.1": {
       "type": "package",
@@ -1299,6 +1336,13 @@
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
+    },
+    "MailKit/4.14.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Rawu+h3lSSjKra0AxR+IUB99VQ7jWI+MvxThekqLhf+ic7VQ7a69lmPFW+LXuRYHla4ADcn3x16Gsvju3LTq9w==",
+      "path": "mailkit/4.14.1",
+      "hashPath": "mailkit.4.14.1.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
       "type": "package",
@@ -1636,6 +1680,13 @@
       "path": "microsoft.win32.systemevents/7.0.0",
       "hashPath": "microsoft.win32.systemevents.7.0.0.nupkg.sha512"
     },
+    "MimeKit/4.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-g0LtsMC8DCTkc030C3UgVqbltOJmV5cz4AX8ASowz2ZA+lxopXSYtC1XXYmenxy606aWFLwi5Xy4cC/zyYjbjQ==",
+      "path": "mimekit/4.14.0",
+      "hashPath": "mimekit.4.14.0.nupkg.sha512"
+    },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
       "serviceable": true,
@@ -1853,12 +1904,12 @@
       "path": "system.security.cryptography.cng/5.0.0",
       "hashPath": "system.security.cryptography.cng.5.0.0.nupkg.sha512"
     },
-    "System.Security.Cryptography.Pkcs/8.0.0": {
+    "System.Security.Cryptography.Pkcs/8.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ULmp3xoOwNYjOYp4JZ2NK/6NdTgiN1GQXzVVN1njQ7LOZ0d0B9vyMnhyqbIi9Qw4JXj1JgCsitkTShboHRx7Eg==",
-      "path": "system.security.cryptography.pkcs/8.0.0",
-      "hashPath": "system.security.cryptography.pkcs.8.0.0.nupkg.sha512"
+      "sha512": "sha512-CoCRHFym33aUSf/NtWSVSZa99dkd0Hm7OCZUxORBjRB16LNhIEOf8THPqzIYlvKM0nNDAPTRBa1FxEECrgaxxA==",
+      "path": "system.security.cryptography.pkcs/8.0.1",
+      "hashPath": "system.security.cryptography.pkcs.8.0.1.nupkg.sha512"
     },
     "System.Security.Cryptography.ProtectedData/6.0.0": {
       "type": "package",

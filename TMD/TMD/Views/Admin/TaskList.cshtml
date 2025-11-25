@@ -180,13 +180,24 @@
 
                                                 <div class="tm-user-status-item">
                                                     <div class="tm-user-avatar-wrapper">
-                                                        @if (!string.IsNullOrEmpty(ut.User.Avatar))
+                                                        @if (!string.IsNullOrEmpty(ut.User.Avatar) && ut.User.Avatar != "/images/default-avatar.png")
                                                         {
-                                                            <img src="@ut.User.Avatar" alt="@ut.User.FullName" class="tm-user-avatar-sm">
+                                                            <img src="@ut.User.Avatar"
+                                                                 alt="@ut.User.FullName"
+                                                                 class="tm-user-avatar-sm"
+                                                                 style="object-fit: cover; width: 32px; height: 32px;"
+                                                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                                            <div class="tm-user-avatar-placeholder-sm rounded-circle"
+                                                                 style="display:none;width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">
+                                                                @ut.User.FullName.Substring(0, 1).ToUpper()
+                                                            </div>
                                                         }
                                                         else
                                                         {
-                                                            <div class="tm-user-avatar-placeholder-sm">@ut.User.FullName?.Substring(0, 1)</div>
+                                                            <div class="tm-user-avatar-placeholder-sm rounded-circle"
+                                                                 style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">
+                                                                @ut.User.FullName.Substring(0, 1).ToUpper()
+                                                            </div>
                                                         }
                                                         <span class="tm-user-name">@ut.User.FullName</span>
                                                     </div>
@@ -325,142 +336,165 @@
                 }, 4000);
             }
 
-            function viewTaskDetail(taskId) {
-                const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
-                const content = document.getElementById('taskDetailContent');
-                modal.show();
+                   // HÀM viewTaskDetail FULL - Copy toàn bộ hàm này vào TaskList.cshtml
+        function viewTaskDetail(taskId) {
+            const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+            const content = document.getElementById('taskDetailContent');
+            modal.show();
 
-                fetch(`/Admin/GetTaskDetails?id=${taskId}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        if (!data || !data.success) {
-                            content.innerHTML = `<div class="alert alert-danger">Lỗi: ${data?.message || 'Không thể tải dữ liệu'}</div>`;
-                            return;
-                        }
+            fetch(`/Admin/GetTaskDetails?id=${taskId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data || !data.success) {
+                        content.innerHTML = `<div class="alert alert-danger">Lỗi: ${data?.message || 'Không thể tải dữ liệu'}</div>`;
+                        return;
+                    }
 
-                        const t = data.task || {};
+                    const t = data.task || {};
 
-                        // ✅ TASK INFO
-                        const priorityBg = t.Priority === 'High' ? 'danger' : t.Priority === 'Medium' ? 'warning' : 'success';
-                        const statusBg = t.IsActive ? 'success' : 'secondary';
+                    // ✅ TASK INFO
+                    const priorityBg = t.Priority === 'High' ? 'danger' : t.Priority === 'Medium' ? 'warning' : 'success';
+                    const statusBg = t.IsActive ? 'success' : 'secondary';
 
-                        // ✅ USER TASKS TABLE
-                        let usersHTML = '';
-                        if (t.AssignedUsers && t.AssignedUsers.length > 0) {
-                            usersHTML = t.AssignedUsers.map(u => {
-                                const statusBg = u.StatusClass === 'success' ? 'bg-success' :
-                                                 u.StatusClass === 'warning' ? 'bg-warning' : 'bg-secondary';
-                                return `
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                ${u.Avatar ?
-                                                    `<img src="${u.Avatar}" alt="${u.FullName}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;margin-right:10px;">` :
-                                                    `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;margin-right:10px;font-size:14px;">${(u.FullName || 'U').substring(0,1)}</div>`
-                                                }
-                                                <div>
-                                                    <div class="fw-bold">${u.FullName || 'N/A'}</div>
-                                                    <small class="text-muted">${u.DepartmentName || 'N/A'}</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge ${statusBg}">${u.StatusText || 'N/A'}</span>
-                                        </td>
-                                        <td>
-                                            ${u.CompletedThisWeek ?? 0}
-                                        </td>
-                                        <td>
-                                            ${u.ReportLink ? `<a href="${u.ReportLink}" target="_blank" class="link-primary text-decoration-none"><i class="fas fa-external-link-alt"></i> Xem</a>` : '<span class="text-muted">—</span>'}
-                                        </td>
-                                        <td>
-                                            <small class="text-muted">${u.UpdatedAtStr || 'N/A'}</small>
-                                        </td>
-                                    </tr>
+                    // ✅ USER TASKS TABLE - FIX AVATAR
+                    let usersHTML = '';
+                    if (t.AssignedUsers && t.AssignedUsers.length > 0) {
+                        usersHTML = t.AssignedUsers.map(u => {
+                            const statusBg = u.StatusClass === 'success' ? 'bg-success' :
+                                             u.StatusClass === 'warning' ? 'bg-warning' : 'bg-secondary';
+
+                            // FIX: Avatar display - Kiểm tra có avatar không
+                            let avatarHTML = '';
+                            if (u.Avatar && u.Avatar !== '/images/default-avatar.png') {
+                                // Có avatar thì load, nếu lỗi thì ẩn và hiển thị placeholder
+                                avatarHTML = `
+                                    <img src="${u.Avatar}"
+                                         alt="${u.FullName}"
+                                         class="avatar-img"
+                                         style="width:36px;height:36px;border-radius:50%;object-fit:cover;margin-right:10px;display:block;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                    <div class="avatar-placeholder"
+                                         style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:none;align-items:center;justify-content:center;font-weight:700;margin-right:10px;font-size:14px;flex-shrink:0;">
+                                        ${(u.FullName || 'U').substring(0,1).toUpperCase()}
+                                    </div>
                                 `;
-                            }).join('');
-                        } else {
-                            usersHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Chưa có người được giao</td></tr>';
-                        }
+                            } else {
+                                // Không có avatar - dùng placeholder
+                                avatarHTML = `
+                                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;margin-right:10px;font-size:14px;flex-shrink:0;">
+                                        ${(u.FullName || 'U').substring(0,1).toUpperCase()}
+                                    </div>
+                                `;
+                            }
 
-                        content.innerHTML = `
-                            <div class="p-3">
-                                <!-- TASK INFO -->
-                                <div class="mb-4 pb-3 border-bottom">
-                                    <h5 class="mb-2">${t.TaskName || 'Không có tên'}</h5>
-                                    <p class="text-muted mb-3">${t.Description || 'Không có mô tả'}</p>
+                            return `
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            ${avatarHTML}
+                                            <div>
+                                                <div class="fw-bold">${u.FullName || 'N/A'}</div>
+                                                <small class="text-muted">${u.DepartmentName || 'N/A'}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge ${statusBg}">${u.StatusText || 'N/A'}</span>
+                                    </td>
+                                    <td>
+                                        ${u.CompletedThisWeek ?? 0}
+                                    </td>
+                                    <td>
+                                        ${u.ReportLink ? `<a href="${u.ReportLink}" target="_blank" class="link-primary text-decoration-none"><i class="fas fa-external-link-alt"></i> Xem</a>` : '<span class="text-muted">—</span>'}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">${u.UpdatedAtStr || 'N/A'}</small>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
+                    } else {
+                        usersHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Chưa có người được giao</td></tr>';
+                    }
 
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div>
-                                                <small class="text-muted d-block mb-1"><i class="fas fa-globe me-1"></i>Platform</small>
-                                                <strong>${t.Platform || '—'}</strong>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div>
-                                                <small class="text-muted d-block mb-1"><i class="fas fa-flag me-1"></i>Priority</small>
-                                                <span class="badge bg-${priorityBg}">${t.Priority || 'Medium'}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div>
-                                                <small class="text-muted d-block mb-1"><i class="far fa-calendar me-1"></i>Deadline</small>
-                                                <strong>${t.DeadlineStr || '<span class="text-muted">—</span>'}</strong>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div>
-                                                <small class="text-muted d-block mb-1"><i class="fas fa-toggle-on me-1"></i>Status</small>
-                                                <span class="badge bg-${statusBg}">${t.IsActive ? 'Hoạt động' : 'Ẩn'}</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div>
-                                                <small class="text-muted d-block mb-1"><i class="fas fa-bullseye me-1"></i>Target/Week</small>
-                                                <strong>${t.TargetPerWeek || '—'}</strong>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div>
-                                                <small class="text-muted d-block mb-1"><i class="fas fa-info-circle me-1"></i>Thời gian</small>
-                                                <small class="text-muted">
-                                                    Tạo: ${t.CreatedAtStr || 'N/A'}<br>
-                                                    Cập nhật: ${t.UpdatedAtStr || 'N/A'}
-                                                </small>
-                                            </div>
+                    content.innerHTML = `
+                        <div class="p-3">
+                            <!-- TASK INFO -->
+                            <div class="mb-4 pb-3 border-bottom">
+                                <h5 class="mb-2">${t.TaskName || 'Không có tên'}</h5>
+                                <p class="text-muted mb-3">${t.Description || 'Không có mô tả'}</p>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div>
+                                            <small class="text-muted d-block mb-1"><i class="fas fa-globe me-1"></i>Platform</small>
+                                            <strong>${t.Platform || '—'}</strong>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- USER TASKS -->
-                                <div>
-                                    <h6 class="mb-3"><i class="fas fa-users me-2"></i>Danh sách người làm (${t.AssignedUsers?.length || 0})</h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Người làm</th>
-                                                    <th>Trạng thái</th>
-                                                    <th>Hoàn thành tuần</th>
-                                                    <th>Báo cáo</th>
-                                                    <th>Cập nhật</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${usersHTML}
-                                            </tbody>
-                                        </table>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <small class="text-muted d-block mb-1"><i class="fas fa-flag me-1"></i>Priority</small>
+                                            <span class="badge bg-${priorityBg}">${t.Priority || 'Medium'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <small class="text-muted d-block mb-1"><i class="far fa-calendar me-1"></i>Deadline</small>
+                                            <strong>${t.DeadlineStr || '<span class="text-muted">—</span>'}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <small class="text-muted d-block mb-1"><i class="fas fa-toggle-on me-1"></i>Status</small>
+                                            <span class="badge bg-${statusBg}">${t.IsActive ? 'Hoạt động' : 'Ẩn'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <small class="text-muted d-block mb-1"><i class="fas fa-bullseye me-1"></i>Target/Week</small>
+                                            <strong>${t.TargetPerWeek || '—'}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <small class="text-muted d-block mb-1"><i class="fas fa-info-circle me-1"></i>Thời gian</small>
+                                            <small class="text-muted">
+                                                Tạo: ${t.CreatedAtStr || 'N/A'}<br>
+                                                Cập nhật: ${t.UpdatedAtStr || 'N/A'}
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        `;
-                    })
-                    .catch(err => {
-                        content.innerHTML = '<div class="alert alert-danger">Lỗi tải dữ liệu</div>';
-                        console.error(err);
-                    });
-            }
+
+                            <!-- USER TASKS -->
+                            <div>
+                                <h6 class="mb-3"><i class="fas fa-users me-2"></i>Danh sách người làm (${t.AssignedUsers?.length || 0})</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Người làm</th>
+                                                <th>Trạng thái</th>
+                                                <th>Hoàn thành tuần</th>
+                                                <th>Báo cáo</th>
+                                                <th>Cập nhật</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${usersHTML}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(err => {
+                    content.innerHTML = '<div class="alert alert-danger">Lỗi tải dữ liệu</div>';
+                    console.error(err);
+                });
+        }
 
             function deleteTask(taskId) {
                 fetch('@Url.Action("DeleteTask", "Admin")', {
@@ -492,93 +526,5 @@
         });
     </script>
 
-    <style>
-        .tm-user-status-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            max-height: 160px;
-            overflow-y: auto;
-        }
-
-        .tm-user-status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.4rem;
-            background: #f8f9fa;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-
-        .tm-user-avatar-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex: 1;
-        }
-
-        .tm-user-avatar-sm {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .tm-user-avatar-placeholder-sm {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        .tm-user-name {
-            font-weight: 500;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .tm-badge-sm {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.7rem;
-        }
-
-        .tm-text-sm {
-            font-size: 0.85rem;
-        }
-
-        .tm-user-status-list::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .tm-user-status-list::-webkit-scrollbar-thumb {
-            background: #ddd;
-            border-radius: 5px;
-        }
-
-        .tm-deadline-wrapper.is-overdue {
-            color: #dc3545;
-        }
-
-        .tm-row-overdue {
-            background-color: #fff5f5;
-            border-left: 3px solid #dc3545;
-        }
-
-        .modal-dialog-scrollable .modal-body {
-            max-height: 70vh;
-        }
-
-        .tm-modal-body {
-            padding: 1.5rem;
-        }
-    </style>
+   
 }

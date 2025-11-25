@@ -3,7 +3,6 @@
     ViewData["Title"] = "Nhật ký hoạt động";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/css/tasklist-ad.css" rel="stylesheet" />
 <link href="~/css/audit-logs.css" rel="stylesheet" />
 <div class="audit-container">
     <!-- HEADER -->
@@ -78,7 +77,18 @@
                             </td>
                             <td>
                                 <div class="user-info-small">
-                                    <div class="user-avatar-small">@(log.User?.FullName?.Substring(0, 1) ?? "?")</div>
+                                    <div class="user-avatar-small">
+                                        @if (!string.IsNullOrEmpty(log.User?.Avatar) && log.User.Avatar != "/images/default-avatar.png")
+                                        {
+                                            <img src="@log.User.Avatar" alt="@log.User.FullName"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <span style="display:none;">@(log.User?.FullName?.Substring(0, 1) ?? "?")</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@(log.User?.FullName?.Substring(0, 1) ?? "?")</span>
+                                        }
+                                    </div>
                                     <div>
                                         <div class="user-name-small">@(log.User?.FullName ?? "System")</div>
                                         <small class="text-muted">@(log.User?.Username ?? "-")</small>
@@ -166,7 +176,7 @@
     }
 }
 
-<style>
+@* <style>
     .audit-container {
         padding: 30px;
     }
@@ -409,7 +419,7 @@
     .text-break {
         word-break: break-word;
     }
-</style>
+</style> *@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

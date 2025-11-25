@@ -14,10 +14,42 @@
         <div class="col-lg-4">
             <div class="profile-card">
                 <div class="profile-card__header">
-                    <div class="profile-avatar">
-                        @user.FullName?.Substring(0, 1)
+                    <!-- ✅ AVATAR WITH PREVIEW -->
+                    <div class="profile-avatar-wrapper">
+                        @if (!string.IsNullOrEmpty(user.Avatar) && user.Avatar != "/images/default-avatar.png")
+                        {
+                            <img src="@user.Avatar"
+                                 alt="@user.FullName"
+                                 class="profile-avatar-img"
+                                 id="profileAvatarImg"
+                                 onerror="this.style.display='none'; document.getElementById('profileAvatarPlaceholder').style.display='flex';" />
+                            <div class="profile-avatar-placeholder" id="profileAvatarPlaceholder" style="display:none;">
+                                @user.FullName?.Substring(0, 1).ToUpper()
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="profile-avatar-placeholder" id="profileAvatarPlaceholder">
+                                @user.FullName?.Substring(0, 1).ToUpper()
+                            </div>
+                            <img src=""
+                                 alt="@user.FullName"
+                                 class="profile-avatar-img"
+                                 id="profileAvatarImg"
+                                 style="display:none;" />
+                        }
+
+                        <!-- Upload Button Overlay -->
+                        <label for="avatarUpload" class="avatar-upload-btn" title="Đổi ảnh đại diện">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file"
+                               id="avatarUpload"
+                               accept="image/jpeg,image/jpg,image/png"
+                               style="display:none;" />
                     </div>
-                    <h4>@user.FullName</h4>
+
+                    <h4 id="displayFullName">@user.FullName</h4>
                     <p class="text-muted">@@@user.Username</p>
                     <div class="profile-badges">
                         <span class="badge badge-role">
@@ -38,14 +70,14 @@
                             <i class="fas fa-envelope"></i>
                             <div>
                                 <span class="label">Email</span>
-                                <span class="value">@(user.Email ?? "Chưa cập nhật")</span>
+                                <span class="value" id="displayEmail">@(user.Email ?? "Chưa cập nhật")</span>
                             </div>
                         </div>
                         <div class="profile-info-item">
                             <i class="fas fa-phone"></i>
                             <div>
                                 <span class="label">Số điện thoại</span>
-                                <span class="value">@(user.PhoneNumber ?? "Chưa cập nhật")</span>
+                                <span class="value" id="displayPhone">@(user.PhoneNumber ?? "Chưa cập nhật")</span>
                             </div>
                         </div>
                         <div class="profile-info-item">
@@ -141,7 +173,9 @@
         padding: 30px;
     }
 
+    /* ========================================== */
     /* PROFILE CARD */
+    /* ========================================== */
     .profile-card {
         background: white;
         border-radius: 15px;
@@ -154,24 +188,77 @@
         color: white;
         padding: 30px;
         text-align: center;
+        position: relative;
     }
 
-    .profile-avatar {
-        width: 100px;
-        height: 100px;
+    /* ========================================== */
+    /* AVATAR WITH UPLOAD BUTTON - FIXED QUALITY */
+    /* ========================================== */
+    .profile-avatar-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 15px;
+    }
+
+    .profile-avatar-img,
+    .profile-avatar-placeholder {
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
+        border: 5px solid rgba(255,255,255,0.3);
+    }
+
+    .profile-avatar-img {
+        object-fit: cover;
+        display: block;
+        /* ✅ FIXED: Đảm bảo ảnh luôn rõ nét */
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+
+    .profile-avatar-placeholder {
         background: rgba(255,255,255,0.2);
         backdrop-filter: blur(10px);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 48px;
+        font-size: 60px;
         font-weight: 700;
-        margin: 0 auto 15px;
-        border: 4px solid rgba(255,255,255,0.3);
     }
 
+    /* Camera Button Overlay */
+    .avatar-upload-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 4px solid white;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+    }
+
+        .avatar-upload-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .avatar-upload-btn i {
+            font-size: 18px;
+        }
+
+    /* ========================================== */
+    /* PROFILE BADGES */
+    /* ========================================== */
     .profile-card__header h4 {
         margin: 0 0 5px 0;
         font-weight: 700;
@@ -204,6 +291,9 @@
         color: white;
     }
 
+    /* ========================================== */
+    /* PROFILE INFO */
+    /* ========================================== */
     .profile-card__body {
         padding: 25px;
     }
@@ -252,7 +342,9 @@
             color: #2d3748;
         }
 
+    /* ========================================== */
     /* CONTENT CARDS */
+    /* ========================================== */
     .content-card {
         background: white;
         border-radius: 15px;
@@ -276,6 +368,9 @@
         padding: 25px;
     }
 
+    /* ========================================== */
+    /* FORM STYLES */
+    /* ========================================== */
     .form-label {
         font-weight: 500;
         color: #2d3748;
@@ -325,26 +420,246 @@
         border-radius: 8px;
         border: none;
     }
+
+    /* ========================================== */
+    /* SWAL CUSTOM PREVIEW STYLE */
+    /* ========================================== */
+    .swal2-image {
+        width: 300px !important;
+        height: 300px !important;
+        object-fit: cover !important;
+        border-radius: 15px !important;
+        border: 3px solid #667eea !important;
+    }
+
+    /* ========================================== */
+    /* RESPONSIVE */
+    /* ========================================== */
+    
+    media (max-width: 768px) {
+        .profile-container
+
+    {
+        padding: 15px;
+    }
+
+    .profile-avatar-wrapper,
+    .profile-avatar-img,
+    .profile-avatar-placeholder {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-avatar-placeholder {
+        font-size: 48px;
+    }
+
+    .swal2-image {
+        width: 250px !important;
+        height: 250px !important;
+    }
+
+    }
 </style>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Update Profile
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+        let pendingAvatarFile = null;
+        let originalAvatarSrc = document.getElementById('profileAvatarImg').src;
+
+        // ============================================
+        // AVATAR UPLOAD WITH PREVIEW & CONFIRMATION
+        // ============================================
+        document.getElementById('avatarUpload').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+
+            if (!file) return;
+
+            // ✅ Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi định dạng',
+                    text: 'Chỉ chấp nhận file ảnh định dạng JPG, JPEG, PNG',
+                    confirmButtonColor: '#667eea'
+                });
+                e.target.value = '';
+                return;
+            }
+
+            // ✅ Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kích thước quá lớn',
+                    text: 'Kích thước ảnh không được vượt quá 5MB',
+                    confirmButtonColor: '#667eea'
+                });
+                e.target.value = '';
+                return;
+            }
+
+            // ✅ Create high-quality preview
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const imageData = event.target.result;
+
+                // ✅ SHOW PREVIEW WITH CONFIRMATION
+                const result = await Swal.fire({
+                    title: 'Xem trước ảnh đại diện',
+                    html: `
+                        <div style="margin: 20px 0;">
+                            <img src="${imageData}"
+                                 style="width: 300px; height: 300px; object-fit: cover; border-radius: 15px; border: 3px solid #667eea; image-rendering: -webkit-optimize-contrast;"
+                                 alt="Preview" />
+                        </div>
+                        <p style="color: #718096; margin-top: 15px;">
+                            <i class="fas fa-info-circle"></i>
+                            Kích thước: ${(file.size / 1024).toFixed(2)} KB
+                        </p>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-save"></i> Lưu ảnh này',
+                    cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+                    confirmButtonColor: '#667eea',
+                    cancelButtonColor: '#f56565',
+                    width: '450px',
+                    customClass: {
+                        popup: 'avatar-preview-popup'
+                    }
+                });
+
+                if (result.isConfirmed) {
+                    // ✅ User confirmed, upload to server
+                    await uploadAvatarToServer(file, imageData);
+                } else {
+                    // ✅ User cancelled
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Đã hủy',
+                        text: 'Ảnh đại diện chưa được thay đổi',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+
+                // Reset input
+                e.target.value = '';
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        // ============================================
+        // UPLOAD AVATAR TO SERVER
+        // ============================================
+        async function uploadAvatarToServer(file, previewData) {
+            Swal.fire({
+                title: 'Đang tải lên...',
+                html: '<div class="spinner-border text-primary" role="status"></div>',
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            try {
+                const response = await fetch('/Staff/UploadAvatar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // ✅ Update UI
+                    const avatarImg = document.getElementById('profileAvatarImg');
+                    const avatarPlaceholder = document.getElementById('profileAvatarPlaceholder');
+
+                    avatarImg.src = data.avatarUrl + '?t=' + new Date().getTime(); // Cache buster
+                    avatarImg.style.display = 'block';
+                    avatarPlaceholder.style.display = 'none';
+
+                    // ✅ Update navbar avatar if exists
+                    const navbarAvatar = document.querySelector('.navbar .user-avatar');
+                    const navbarPlaceholder = document.querySelector('.navbar .user-avatar-placeholder');
+
+                    if (navbarAvatar && data.avatarUrl) {
+                        navbarAvatar.src = data.avatarUrl + '?t=' + new Date().getTime();
+                        navbarAvatar.style.display = 'block';
+                        if (navbarPlaceholder) {
+                            navbarPlaceholder.style.display = 'none';
+                        }
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message,
+                        confirmButtonColor: '#667eea',
+                        timer: 2000
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại',
+                        text: data.message,
+                        confirmButtonColor: '#667eea'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi kết nối',
+                    text: 'Có lỗi xảy ra khi tải lên ảnh',
+                    confirmButtonColor: '#667eea'
+                });
+            }
+        }
+
+        // ============================================
+        // UPDATE PROFILE WITH CONFIRMATION
+        // ============================================
         document.getElementById('updateProfileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const formData = {
-                fullName: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
-                phoneNumber: document.getElementById('phoneNumber').value
-            };
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            // ✅ Show confirmation with preview
+            const result = await Swal.fire({
+                title: 'Xác nhận cập nhật',
+                html: `
+                    <div style="text-align: left; padding: 10px 20px;">
+                        <p><strong>Họ tên:</strong> ${fullName}</p>
+                        <p><strong>Email:</strong> ${email || 'Chưa cập nhật'}</p>
+                        <p><strong>Số điện thoại:</strong> ${phoneNumber || 'Chưa cập nhật'}</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-save"></i> Xác nhận lưu',
+                cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+                confirmButtonColor: '#667eea',
+                cancelButtonColor: '#a0aec0'
+            });
+
+            if (!result.isConfirmed) return;
 
             Swal.fire({
                 title: 'Đang cập nhật...',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
+
+            const formData = { fullName, email, phoneNumber };
 
             try {
                 const response = await fetch('/Staff/UpdateProfileJson', {
@@ -356,16 +671,38 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    Swal.fire('Thành công!', data.message, 'success').then(() => location.reload());
+                    // ✅ Update display info
+                    document.getElementById('displayFullName').textContent = fullName;
+                    document.getElementById('displayEmail').textContent = email || 'Chưa cập nhật';
+                    document.getElementById('displayPhone').textContent = phoneNumber || 'Chưa cập nhật';
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message,
+                        confirmButtonColor: '#667eea'
+                    }).then(() => location.reload());
                 } else {
-                    Swal.fire('Thất bại', data.message, 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại',
+                        text: data.message,
+                        confirmButtonColor: '#667eea'
+                    });
                 }
             } catch (error) {
-                Swal.fire('Lỗi!', 'Có lỗi xảy ra', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Có lỗi xảy ra',
+                    confirmButtonColor: '#667eea'
+                });
             }
         });
 
-        // Change Password
+        // ============================================
+        // CHANGE PASSWORD WITH CONFIRMATION
+        // ============================================
         document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -373,23 +710,49 @@
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
+            // ✅ Validate
             if (newPassword !== confirmPassword) {
-                Swal.fire('Lỗi', 'Mật khẩu xác nhận không khớp', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Mật khẩu xác nhận không khớp',
+                    confirmButtonColor: '#667eea'
+                });
                 return;
             }
 
             if (newPassword.length < 6) {
-                Swal.fire('Lỗi', 'Mật khẩu phải có ít nhất 6 ký tự', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Mật khẩu phải có ít nhất 6 ký tự',
+                    confirmButtonColor: '#667eea'
+                });
                 return;
             }
 
+            // ✅ Confirmation
             const result = await Swal.fire({
                 title: 'Xác nhận đổi mật khẩu?',
-                text: 'Bạn sẽ cần đăng nhập lại sau khi đổi mật khẩu',
+                html: `
+                    <div style="text-align: left; padding: 10px 20px;">
+                        <p style="color: #e53e3e;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Lưu ý quan trọng:</strong>
+                        </p>
+                        <ul style="text-align: left; color: #718096;">
+                            <li>Bạn sẽ cần đăng nhập lại sau khi đổi mật khẩu</li>
+                            <li>Mật khẩu mới phải khác mật khẩu cũ</li>
+                            <li>Không thể hoàn tác thao tác này</li>
+                        </ul>
+                    </div>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Có, đổi mật khẩu!',
-                cancelButtonText: 'Hủy'
+                confirmButtonText: '<i class="fas fa-key"></i> Đồng ý đổi',
+                cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+                confirmButtonColor: '#f56565',
+                cancelButtonColor: '#a0aec0'
             });
 
             if (!result.isConfirmed) return;
@@ -405,23 +768,38 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        currentPassword: currentPassword,
-                        newPassword: newPassword,
-                        confirmPassword: confirmPassword
+                        currentPassword,
+                        newPassword,
+                        confirmPassword
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    Swal.fire('Thành công!', data.message, 'success').then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: data.message,
+                        confirmButtonColor: '#667eea'
+                    }).then(() => {
                         window.location.href = '/Account/Login';
                     });
                 } else {
-                    Swal.fire('Thất bại', data.message, 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại',
+                        text: data.message,
+                        confirmButtonColor: '#667eea'
+                    });
                 }
             } catch (error) {
-                Swal.fire('Lỗi!', 'Có lỗi xảy ra', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Có lỗi xảy ra',
+                    confirmButtonColor: '#667eea'
+                });
             }
         });
     </script>
