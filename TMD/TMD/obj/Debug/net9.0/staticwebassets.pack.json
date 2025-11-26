@@ -25,6 +25,10 @@
       "PackagePath": "staticwebassets\\css\\audit-logs.css"
     },
     {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\auth-page.css",
+      "PackagePath": "staticwebassets\\css\\auth-page.css"
+    },
+    {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\dashboard-management.css",
       "PackagePath": "staticwebassets\\css\\dashboard-management.css"
     },
@@ -53,12 +57,20 @@
       "PackagePath": "staticwebassets\\css\\loginhistory.css"
     },
     {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\my-department.css",
+      "PackagePath": "staticwebassets\\css\\my-department.css"
+    },
+    {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\passwordresethistory.css",
       "PackagePath": "staticwebassets\\css\\passwordresethistory.css"
     },
     {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\pending-requests.css",
       "PackagePath": "staticwebassets\\css\\pending-requests.css"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\profile.css",
+      "PackagePath": "staticwebassets\\css\\profile.css"
     },
     {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\register-reset.css",
@@ -85,8 +97,16 @@
       "PackagePath": "staticwebassets\\css\\staff-dashboard.css"
     },
     {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\staff-requests.css",
+      "PackagePath": "staticwebassets\\css\\staff-requests.css"
+    },
+    {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\tasklist-ad.css",
       "PackagePath": "staticwebassets\\css\\tasklist-ad.css"
+    },
+    {
+      "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\tasklist-staff.css",
+      "PackagePath": "staticwebassets\\css\\tasklist-staff.css"
     },
     {
       "Id": "E:\\AIHUB TASK\\TMD_SYSTEM\\TMD_SYSTEM\\TMD\\TMD\\wwwroot\\css\\user-management.css",

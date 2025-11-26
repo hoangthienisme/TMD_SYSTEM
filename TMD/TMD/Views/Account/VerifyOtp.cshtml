@@ -12,104 +12,250 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #ff6b6b;
+            --primary-dark: #ff5252;
+            --secondary: #ffd93d;
+            --success: #51cf66;
+            --warning: #ffd93d;
+            --danger: #ff6b6b;
+            --dark: #2d3436;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --text-muted: #868e96;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light-bg);
             min-height: 100vh;
             display: flex;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
 
         .verify-container {
-            max-width: 500px;
+            max-width: 520px;
             margin: 50px auto;
+            width: 100%;
+            padding: 0 20px;
         }
 
         .verify-card {
-            background: white;
+            background: var(--white);
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             overflow: hidden;
+            border: 1px solid var(--gray-200);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         }
 
         .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
             color: white;
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
+            border-bottom: none;
         }
 
             .card-header i {
-                font-size: 50px;
-                margin-bottom: 15px;
+                font-size: 56px;
+                margin-bottom: 16px;
+                opacity: 0.95;
+            }
+
+            .card-header h3 {
+                margin: 0 0 8px 0;
+                font-weight: 700;
+                font-size: 24px;
+                letter-spacing: -0.5px;
+            }
+
+            .card-header p {
+                margin: 0;
+                font-size: 14px;
+                opacity: 0.9;
+                font-weight: 400;
             }
 
         .card-body {
-            padding: 40px;
+            padding: 40px 35px;
+        }
+
+        .email-info {
+            background: #fff5f5;
+            padding: 16px 18px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+            .email-info i {
+                color: var(--primary);
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+
+            .email-info p {
+                margin: 0;
+                color: var(--dark);
+                font-weight: 600;
+            }
+
+        .timer-box {
+            background: #fff9e6;
+            border-left: 4px solid var(--warning);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(255, 217, 61, 0.15);
+        }
+
+            .timer-box small {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--dark);
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+        .timer {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--warning);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            transition: color 0.3s ease;
+        }
+
+            .timer.warning {
+                color: var(--danger);
+                animation: pulse 1s ease-in-out infinite;
+            }
+
+        keyframes pulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
         }
 
         .otp-input-container {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            margin: 30px 0;
+            margin: 32px 0;
         }
 
         .otp-input {
-            width: 50px;
-            height: 60px;
+            width: 55px;
+            height: 65px;
             text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            transition: all 0.3s;
+            font-size: 28px;
+            font-weight: 700;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+            background: var(--white);
+            color: var(--dark);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
         }
 
             .otp-input:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
                 outline: none;
+                background: var(--white);
+                transform: scale(1.05);
             }
 
-        .timer-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .timer {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ff6b6b;
-            font-family: 'Courier New', monospace;
-        }
+            .otp-input:not(:placeholder-shown) {
+                border-color: var(--primary);
+                background: #fff5f5;
+            }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
             border: none;
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 14px 24px;
             font-size: 16px;
             font-weight: 600;
-            transition: transform 0.2s;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
             .btn-primary:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+                background: linear-gradient(135deg, #ff5252 0%, #ff6b6b 100%);
+            }
+
+            .btn-primary:active {
+                transform: translateY(0);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+                transform: none;
             }
 
         .btn-secondary {
-            background: #6c757d;
+            background: var(--gray-300);
+            color: var(--dark);
             border: none;
             border-radius: 10px;
-            padding: 10px 20px;
-            transition: all 0.3s;
+            padding: 10px 24px;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+
+            .btn-secondary:hover:not(:disabled) {
+                background: var(--text-muted);
+                color: var(--white);
+                transform: translateY(-2px);
+            }
 
             .btn-secondary:disabled {
                 opacity: 0.5;
@@ -117,31 +263,139 @@
             }
 
         .btn-back {
-            color: #667eea;
+            color: var(--primary);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            font-weight: 500;
-            transition: all 0.3s;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            padding: 8px 12px;
+            border-radius: 8px;
         }
 
             .btn-back:hover {
-                color: #764ba2;
-                gap: 8px;
+                background: rgba(255, 107, 107, 0.08);
+                gap: 10px;
+                color: var(--primary-dark);
             }
 
-        .email-info {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
+            .btn-back i {
+                transition: transform 0.2s ease;
+            }
+
+            .btn-back:hover i {
+                transform: translateX(-2px);
+            }
+
+        /* Loading spinner animation */
+        .fa-spinner {
+            animation: spin 1s linear infinite;
         }
 
-            .email-info i {
-                color: #667eea;
-                font-size: 20px;
+        keyframes spin {
+            from
+
+        {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        /* Responsive */
+        media (max-width: 576px) {
+            .verify-container
+
+        {
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+
+        .card-header {
+            padding: 32px 24px;
+        }
+
+            .card-header i {
+                font-size: 48px;
+            }
+
+            .card-header h3 {
+                font-size: 22px;
+            }
+
+        .card-body {
+            padding: 32px 24px;
+        }
+
+        .otp-input-container {
+            gap: 8px;
+            margin: 24px 0;
+        }
+
+        .otp-input {
+            width: 45px;
+            height: 55px;
+            font-size: 24px;
+        }
+
+        .timer {
+            font-size: 28px;
+        }
+
+        .btn-primary {
+            padding: 12px 20px;
+            font-size: 15px;
+        }
+
+        .btn-secondary {
+            padding: 9px 20px;
+            font-size: 13px;
+        }
+
+        }
+
+        media (max-width: 400px) {
+            .otp-input-container
+
+        {
+            gap: 6px;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 50px;
+            font-size: 22px;
+        }
+
+        }
+
+        /* SweetAlert2 custom styling to match theme */
+        .swal2-popup {
+            border-radius: 16px !important;
+            font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        }
+
+        .swal2-title {
+            font-weight: 700 !important;
+            font-size: 22px !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%) !important;
+            border-radius: 10px !important;
+            padding: 10px 28px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3) !important;
+        }
+
+            .swal2-confirm:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4) !important;
             }
     </style>
 </head>
@@ -151,17 +405,17 @@
             <div class="verify-card">
                 <div class="card-header">
                     <i class="fas fa-shield-alt"></i>
-                    <h3 class="mb-0">Xác Thực OTP</h3>
-                    <p class="mb-0 mt-2">Nhập mã 6 số đã gửi đến email</p>
+                    <h3>Xác Thực OTP</h3>
+                    <p>Nhập mã 6 số đã gửi đến email</p>
                 </div>
                 <div class="card-body">
                     <div class="email-info">
                         <i class="fas fa-envelope"></i>
-                        <p class="mb-0 mt-2"><strong>@ViewBag.Email</strong></p>
+                        <p><strong>@ViewBag.Email</strong></p>
                     </div>
 
                     <div class="timer-box">
-                        <small class="d-block mb-1">Mã OTP sẽ hết hạn sau:</small>
+                        <small>Mã OTP sẽ hết hạn sau:</small>
                         <div class="timer" id="timer">05:00</div>
                     </div>
 
@@ -169,22 +423,22 @@
                         <input type="hidden" id="email" value="@ViewBag.Email">
 
                         <div class="otp-input-container">
-                            <input type="text" class="otp-input" maxlength="1" id="otp1" pattern="[0-9]">
-                            <input type="text" class="otp-input" maxlength="1" id="otp2" pattern="[0-9]">
-                            <input type="text" class="otp-input" maxlength="1" id="otp3" pattern="[0-9]">
-                            <input type="text" class="otp-input" maxlength="1" id="otp4" pattern="[0-9]">
-                            <input type="text" class="otp-input" maxlength="1" id="otp5" pattern="[0-9]">
-                            <input type="text" class="otp-input" maxlength="1" id="otp6" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" id="otp1" pattern="[0-9]" inputmode="numeric">
+                            <input type="text" class="otp-input" maxlength="1" id="otp2" pattern="[0-9]" inputmode="numeric">
+                            <input type="text" class="otp-input" maxlength="1" id="otp3" pattern="[0-9]" inputmode="numeric">
+                            <input type="text" class="otp-input" maxlength="1" id="otp4" pattern="[0-9]" inputmode="numeric">
+                            <input type="text" class="otp-input" maxlength="1" id="otp5" pattern="[0-9]" inputmode="numeric">
+                            <input type="text" class="otp-input" maxlength="1" id="otp6" pattern="[0-9]" inputmode="numeric">
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 mb-3" id="btnVerify">
-                            <i class="fas fa-check me-2"></i>
+                            <i class="fas fa-check"></i>
                             Xác Nhận
                         </button>
 
                         <div class="text-center mb-3">
                             <button type="button" class="btn btn-secondary" id="btnResend" disabled>
-                                <i class="fas fa-redo me-2"></i>
+                                <i class="fas fa-redo"></i>
                                 <span id="resendText">Gửi lại mã (120s)</span>
                             </button>
                         </div>
@@ -212,16 +466,17 @@
 
         // Start OTP expiry timer
         function startExpiryTimer() {
+            const timerElement = document.getElementById('timer');
             timerInterval = setInterval(() => {
                 otpExpirySeconds--;
 
                 const minutes = Math.floor(otpExpirySeconds / 60);
                 const seconds = otpExpirySeconds % 60;
-                document.getElementById('timer').textContent =
+                timerElement.textContent =
                     `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
                 if (otpExpirySeconds <= 60) {
-                    document.getElementById('timer').style.color = '#ff6b6b';
+                    timerElement.classList.add('warning');
                 }
 
                 if (otpExpirySeconds <= 0) {
@@ -230,7 +485,7 @@
                         icon: 'warning',
                         title: 'Hết thời gian!',
                         text: 'Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới',
-                        confirmButtonColor: '#667eea'
+                        confirmButtonColor: '#ff6b6b'
                     }).then(() => {
                         window.location.href = '/Account/ForgotPassword';
                     });
@@ -278,6 +533,18 @@
                     e.preventDefault();
                 }
             });
+
+            // Paste support
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').replace(/\D/g, '');
+                if (pastedData.length === 6) {
+                    otpInputs.forEach((inp, idx) => {
+                        inp.value = pastedData[idx] || '';
+                    });
+                    otpInputs[5].focus();
+                }
+            });
         });
 
         // Focus first input on load
@@ -299,7 +566,7 @@
                     icon: 'warning',
                     title: 'Chú ý!',
                     text: 'Vui lòng nhập đầy đủ 6 số',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#ff6b6b'
                 });
                 return;
             }
@@ -307,7 +574,7 @@
             const btn = document.getElementById('btnVerify');
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xác thực...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Đang xác thực...';
 
             try {
                 const response = await fetch('/Account/VerifyOtpJson', {
@@ -331,7 +598,7 @@
                         icon: 'success',
                         title: 'Thành công!',
                         text: result.message,
-                        confirmButtonColor: '#667eea',
+                        confirmButtonColor: '#ff6b6b',
                         timer: 1500
                     });
 
@@ -341,7 +608,7 @@
                         icon: 'error',
                         title: 'Lỗi!',
                         text: result.message,
-                        confirmButtonColor: '#667eea'
+                        confirmButtonColor: '#ff6b6b'
                     });
 
                     // Clear OTP inputs
@@ -356,7 +623,7 @@
                     icon: 'error',
                     title: 'Lỗi!',
                     text: 'Có lỗi xảy ra. Vui lòng thử lại',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#ff6b6b'
                 });
 
                 btn.disabled = false;
@@ -371,7 +638,7 @@
             const originalText = btn.innerHTML;
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang gửi...</span>';
 
             try {
                 const response = await fetch('/Account/ResendOtpJson', {
@@ -388,6 +655,7 @@
                     // Reset timers
                     clearInterval(timerInterval);
                     otpExpirySeconds = 300;
+                    document.getElementById('timer').classList.remove('warning');
                     startExpiryTimer();
                     startResendCooldown();
 
@@ -399,7 +667,7 @@
                         icon: 'success',
                         title: 'Thành công!',
                         text: result.message,
-                        confirmButtonColor: '#667eea',
+                        confirmButtonColor: '#ff6b6b',
                         timer: 2000
                     });
                 } else {
@@ -407,7 +675,7 @@
                         icon: 'error',
                         title: 'Lỗi!',
                         text: result.message,
-                        confirmButtonColor: '#667eea'
+                        confirmButtonColor: '#ff6b6b'
                     });
 
                     btn.disabled = false;
@@ -418,7 +686,7 @@
                     icon: 'error',
                     title: 'Lỗi!',
                     text: 'Có lỗi xảy ra. Vui lòng thử lại',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#ff6b6b'
                 });
 
                 btn.disabled = false;

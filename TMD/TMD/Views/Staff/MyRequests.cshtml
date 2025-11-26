@@ -155,65 +155,7 @@
 <!-- ... reuse your existing modals from previous file ... -->
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        /* reuse existing styles */
-        .stat-card {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem;
-            border-radius: 10px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-            .stat-card i {
-                font-size: 2.5rem;
-            }
-
-            .stat-card h3 {
-                margin: 0;
-                font-size: 2rem;
-                font-weight: 700;
-            }
-
-            .stat-card p {
-                margin: 0;
-                color: #6c757d;
-            }
-
-        .stat-pending {
-            border-left: 4px solid #ffc107
-        }
-
-        .stat-approved {
-            border-left: 4px solid #28a745
-        }
-
-        .stat-rejected {
-            border-left: 4px solid #dc3545
-        }
-
-        .stat-cancelled {
-            border-left: 4px solid #6c757d
-        }
-
-        .request-card {
-            background: #fff;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-            height: 100%;
-        }
-
-        .request-detail-grid .detail-row {
-            margin: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            align-items: center;
-        }
-    </style>
+  
 
     <script>
         let allRequests = { overtime: [], leave: [], late: [] };
